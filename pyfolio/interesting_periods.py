@@ -40,7 +40,7 @@ PERIODS['Fall2007'] = (pd.Timestamp('20071001'), pd.Timestamp('20081031'))
 PERIODS['Mar2008'] = (pd.Timestamp('20080301'), pd.Timestamp('20080401'))
 
 # Lehmann Brothers
-PERIODS['June2008'] = (pd.Timestamp('20080601'), pd.Timestamp('20080631'))
+PERIODS['June2008'] = (pd.Timestamp('20080601'), pd.Timestamp('20080630'))
 
 PERIODS['Fall2009'] = (pd.Timestamp('20090801'), pd.Timestamp('20090831'))
 

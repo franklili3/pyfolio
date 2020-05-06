@@ -104,7 +104,7 @@ def annual_return(returns, period=DAILY):
         Annual Return as CAGR (Compounded Annual Growth Rate).
     """
 
-    return ep.annual_return(returns, period=period)
+    return ep.annual_return(returns, period=period, annualization=APPROX_BDAYS_PER_YEAR)
 
 
 @deprecated(msg=DEPRECATION_WARNING)
@@ -128,7 +128,7 @@ def annual_volatility(returns, period=DAILY):
         Annual volatility.
     """
 
-    return ep.annual_volatility(returns, period=period)
+    return ep.annual_volatility(returns, period=period, annualization=APPROX_BDAYS_PER_YEAR)
 
 
 @deprecated(msg=DEPRECATION_WARNING)
@@ -157,7 +157,7 @@ def calmar_ratio(returns, period=DAILY):
     See https://en.wikipedia.org/wiki/Calmar_ratio for more details.
     """
 
-    return ep.calmar_ratio(returns, period=period)
+    return ep.calmar_ratio(returns, period=period, annualization=APPROX_BDAYS_PER_YEAR)
 
 
 @deprecated(msg=DEPRECATION_WARNING)
@@ -195,7 +195,7 @@ def omega_ratio(returns, annual_return_threshhold=0.0):
     """
 
     return ep.omega_ratio(returns,
-                          required_return=annual_return_threshhold)
+                          required_return=annual_return_threshhold, annualization=APPROX_BDAYS_PER_YEAR)
 
 
 @deprecated(msg=DEPRECATION_WARNING)
@@ -224,7 +224,7 @@ def sortino_ratio(returns, required_return=0, period=DAILY):
         Annualized Sortino ratio.
     """
 
-    return ep.sortino_ratio(returns, required_return=required_return)
+    return ep.sortino_ratio(returns, required_return=required_return, annualization=APPROX_BDAYS_PER_YEAR)
 
 
 @deprecated(msg=DEPRECATION_WARNING)
@@ -255,7 +255,7 @@ def downside_risk(returns, required_return=0, period=DAILY):
 
     return ep.downside_risk(returns,
                             required_return=required_return,
-                            period=period)
+                            period=period, annualization=APPROX_BDAYS_PER_YEAR)
 
 
 @deprecated(msg=DEPRECATION_WARNING)
@@ -287,7 +287,7 @@ def sharpe_ratio(returns, risk_free=0, period=DAILY):
     See https://en.wikipedia.org/wiki/Sharpe_ratio for more details.
     """
 
-    return ep.sharpe_ratio(returns, risk_free=risk_free, period=period)
+    return ep.sharpe_ratio(returns, risk_free=risk_free, period=period, annualization=APPROX_BDAYS_PER_YEAR)
 
 
 @deprecated(msg=DEPRECATION_WARNING)
@@ -313,7 +313,7 @@ def alpha_beta(returns, factor_returns):
         Beta.
     """
 
-    return ep.alpha_beta(returns, factor_returns=factor_returns)
+    return ep.alpha_beta(returns, factor_returns=factor_returns, annualization=APPROX_BDAYS_PER_YEAR)
 
 
 @deprecated(msg=DEPRECATION_WARNING)
@@ -337,7 +337,7 @@ def alpha(returns, factor_returns):
         Alpha.
     """
 
-    return ep.alpha(returns, factor_returns=factor_returns)
+    return ep.alpha(returns, factor_returns=factor_returns, annualization=APPROX_BDAYS_PER_YEAR)
 
 
 @deprecated(msg=DEPRECATION_WARNING)
