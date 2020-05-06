@@ -25,7 +25,8 @@ import scipy.stats as stats
 from sklearn import linear_model
 
 from .deprecate import deprecated
-from .interesting_periods import PERIODS
+#from .interesting_periods import PERIODS
+from . import interesting_periods
 from .txn import get_turnover
 from .utils import APPROX_BDAYS_PER_MONTH, APPROX_BDAYS_PER_YEAR
 from .utils import DAILY
@@ -33,7 +34,6 @@ from .utils import DAILY
 DEPRECATION_WARNING = ("Risk functions in pyfolio.timeseries are deprecated "
                        "and will be removed in a future release. Please "
                        "install the empyrical package instead.")
-
 
 def var_cov_var_normal(P, c, mu=0, sigma=1):
     """
@@ -1219,7 +1219,7 @@ def extract_interesting_date_ranges(returns, periods=None):
         Date ranges, with returns, of all valid events.
     """
     if periods is None:
-        periods = PERIODS
+        periods = interesting_periods.PERIODS
     returns_dupe = returns.copy()
     returns_dupe.index = returns_dupe.index.map(pd.Timestamp)
     ranges = OrderedDict()

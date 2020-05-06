@@ -781,7 +781,7 @@ def plot_rolling_returns(returns,
         raise ValueError('volatility_match requires passing of '
                          'factor_returns.')
     elif volatility_match and factor_returns is not None:
-        bmark_vol = factor_returns.loc[returns.index].std()
+        bmark_vol = factor_returns.reindex(returns.index).std()
         returns = (returns / returns.std()) * bmark_vol
 
     cum_rets = ep.cum_returns(returns, 1.0)
