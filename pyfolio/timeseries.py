@@ -650,14 +650,17 @@ def value_at_risk(returns, period=None, sigma=2.0):
 
 SIMPLE_STAT_FUNCS = [
     ep.annual_return,
-    ep.cum_returns_final,
     ep.annual_volatility,
     ep.sharpe_ratio,
     ep.calmar_ratio,
-    ep.stability_of_timeseries,
-    ep.max_drawdown,
     ep.omega_ratio,
     ep.sortino_ratio,
+]
+
+SIMPLE_STAT_FUNCS1 = [
+    ep.cum_returns_final,
+    ep.stability_of_timeseries,
+    ep.max_drawdown,
     stats.skew,
     stats.kurtosis,
     ep.tail_ratio,
@@ -671,24 +674,25 @@ FACTOR_STAT_FUNCS = [
 
 STAT_FUNC_NAMES = {
     'annual_return': 'Annual return',
-    'cum_returns_final': 'Cumulative returns',
     'annual_volatility': 'Annual volatility',
     'sharpe_ratio': 'Sharpe ratio',
     'calmar_ratio': 'Calmar ratio',
-    'stability_of_timeseries': 'Stability',
-    'max_drawdown': 'Max drawdown',
     'omega_ratio': 'Omega ratio',
     'sortino_ratio': 'Sortino ratio',
+    'alpha': 'Alpha',
+}
+
+STAT_FUNC_NAMES1 = {
+    'cum_returns_final': 'Cumulative returns',
+    'stability_of_timeseries': 'Stability',
+    'max_drawdown': 'Max drawdown',
     'skew': 'Skew',
     'kurtosis': 'Kurtosis',
     'tail_ratio': 'Tail ratio',
     'common_sense_ratio': 'Common sense ratio',
     'value_at_risk': 'Daily value at risk',
-    'alpha': 'Alpha',
     'beta': 'Beta',
 }
-
-
 def perf_stats(returns, factor_returns=None, positions=None,
                transactions=None, turnover_denom='AGB'):
     """
@@ -723,7 +727,8 @@ def perf_stats(returns, factor_returns=None, positions=None,
 
     stats = pd.Series()
     for stat_func in SIMPLE_STAT_FUNCS:
-        stats[STAT_FUNC_NAMES[stat_func.__name__]] = stat_func(returns)
+        stats[STAT_FUNC_NAMES[stat_func.__name__]] = stat_func(returns, annualization=APPROX_BDAYS_PER_YEAR)
+        stats[STAT_FUNC_NAMES1[stat_func.__name__]] = stat_func(returns)
 
     if positions is not None:
         stats['Gross leverage'] = gross_lev(positions).mean()
@@ -733,7 +738,7 @@ def perf_stats(returns, factor_returns=None, positions=None,
                                                    turnover_denom).mean()
     if factor_returns is not None:
         for stat_func in FACTOR_STAT_FUNCS:
-            res = stat_func(returns, factor_returns)
+            res = stat_func(returns, factor_returns, annualization=APPROX_BDAYS_PER_YEAR)
             stats[STAT_FUNC_NAMES[stat_func.__name__]] = res
 
     return stats

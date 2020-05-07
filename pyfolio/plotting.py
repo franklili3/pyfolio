@@ -36,8 +36,7 @@ from . import pos
 from . import timeseries
 from . import txn
 from . import utils
-from .utils import (APPROX_BDAYS_PER_MONTH,
-                    MM_DISPLAY_UNIT)
+from .utils import APPROX_BDAYS_PER_MONTH, APPROX_BDAYS_PER_YEAR, MM_DISPLAY_UNIT
 
 
 def customize(func):
@@ -619,14 +618,14 @@ def show_perf_stats(returns, factor_returns=None, positions=None,
             factor_returns=factor_returns,
             positions=positions_is,
             transactions=transactions_is,
-            turnover_denom=turnover_denom)
+            turnover_denom=turnover_denom, annualization=annualization)
 
         perf_stats_oos = perf_func(
             returns_oos,
             factor_returns=factor_returns,
             positions=positions_oos,
             transactions=transactions_oos,
-            turnover_denom=turnover_denom)
+            turnover_denom=turnover_denom, annualization=annualization)
         if len(returns.index) > 0:
             date_rows['In-sample months'] = int(len(returns_is) /
                                                 APPROX_BDAYS_PER_MONTH)
