@@ -287,7 +287,7 @@ def sharpe_ratio(returns, risk_free=0, period=DAILY):
     See https://en.wikipedia.org/wiki/Sharpe_ratio for more details.
     """
 
-    return ep.sharpe_ratio(returns, risk_free=risk_free, period=period, annualization=APPROX_BDAYS_PER_YEAR)
+    return ep.sharpe_ratio(returns, risk_free=risk_free, period=period)
 
 
 @deprecated(msg=DEPRECATION_WARNING)
@@ -313,7 +313,7 @@ def alpha_beta(returns, factor_returns):
         Beta.
     """
 
-    return ep.alpha_beta(returns, factor_returns=factor_returns, annualization=APPROX_BDAYS_PER_YEAR)
+    return ep.alpha_beta(returns, factor_returns=factor_returns)
 
 
 @deprecated(msg=DEPRECATION_WARNING)
@@ -337,7 +337,7 @@ def alpha(returns, factor_returns):
         Alpha.
     """
 
-    return ep.alpha(returns, factor_returns=factor_returns, annualization=APPROX_BDAYS_PER_YEAR)
+    return ep.alpha(returns, factor_returns=factor_returns)
 
 
 @deprecated(msg=DEPRECATION_WARNING)
@@ -667,10 +667,13 @@ SIMPLE_STAT_FUNCS1 = [
     value_at_risk
 ]
 
-FACTOR_STAT_FUNCS = [
-    ep.alpha,
-    ep.beta,
-]
+# FACTOR_STAT_FUNCS = [
+#     ep.alpha
+# ]
+
+# FACTOR_STAT_FUNCS1 = [
+#     ep.beta
+# ]
 
 STAT_FUNC_NAMES = {
     'annual_return': 'Annual return',
@@ -691,7 +694,6 @@ STAT_FUNC_NAMES1 = {
     'tail_ratio': 'Tail ratio',
     'common_sense_ratio': 'Common sense ratio',
     'value_at_risk': 'Daily value at risk',
-    'beta': 'Beta',
 }
 def perf_stats(returns, factor_returns=None, positions=None,
                transactions=None, turnover_denom='AGB'):
@@ -728,6 +730,7 @@ def perf_stats(returns, factor_returns=None, positions=None,
     stats = pd.Series()
     for stat_func in SIMPLE_STAT_FUNCS:
         stats[STAT_FUNC_NAMES[stat_func.__name__]] = stat_func(returns, annualization=APPROX_BDAYS_PER_YEAR)
+    for stat_func in SIMPLE_STAT_FUNCS1:
         stats[STAT_FUNC_NAMES1[stat_func.__name__]] = stat_func(returns)
 
     if positions is not None:
@@ -737,9 +740,14 @@ def perf_stats(returns, factor_returns=None, positions=None,
                                                    transactions,
                                                    turnover_denom).mean()
     if factor_returns is not None:
-        for stat_func in FACTOR_STAT_FUNCS:
-            res = stat_func(returns, factor_returns, annualization=APPROX_BDAYS_PER_YEAR)
-            stats[STAT_FUNC_NAMES[stat_func.__name__]] = res
+        stats['Alpha'] = ep.alpha(returns, factor_returns, annualization=APPROX_BDAYS_PER_YEAR)
+        stats['Beta'] = ep.beta(returns, factor_returns)
+       # for stat_func in FACTOR_STAT_FUNCS:
+        #     res = stat_func(returns, factor_returns, annualization=APPROX_BDAYS_PER_YEAR)
+        #     stats[STAT_FUNC_NAMES[stat_func.__name__]] = res
+        # for stat_func in FACTOR_STAT_FUNCS1:
+        #     res = stat_func(returns, factor_returns)
+        #     stats[STAT_FUNC_NAMES1[stat_func.__name__]] = res
 
     return stats
 
@@ -778,8 +786,10 @@ def perf_stats_bootstrap(returns, factor_returns=None, return_stats=True,
 
     for stat_func in SIMPLE_STAT_FUNCS:
         stat_name = STAT_FUNC_NAMES[stat_func.__name__]
-        bootstrap_values[stat_name] = calc_bootstrap(stat_func,
-                                                     returns)
+        bootstrap_values[stat_name] = calc_bootstrap(stat_func, returns)
+    for stat_func in SIMPLE_STAT_FUNCS1:
+        stat_name = STAT_FUNC_NAMES1[stat_func.__name__]
+        bootstrap_values[stat_name] = calc_bootstrap(stat_func, returns)
 
     if factor_returns is not None:
         for stat_func in FACTOR_STAT_FUNCS:
