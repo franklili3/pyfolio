@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 
 from .pos import get_percent_alloc
 from .txn import get_turnover
-from .utils import print_table, configure_legend
+from .utils import print_table, configure_legend, APPROX_BDAYS_PER_MONTH, APPROX_BDAYS_PER_YEAR
 
 PERF_ATTRIB_TURNOVER_THRESHOLD = 0.25
 
@@ -227,14 +227,14 @@ def create_perf_attrib_stats(perf_attrib, risk_exposures):
     common_returns = perf_attrib['common_returns']
 
     summary['Annualized Specific Return'] =\
-        ep.annual_return(specific_returns)
+        ep.annual_return(specific_returns, annualization=APPROX_BDAYS_PER_YEAR)
     summary['Annualized Common Return'] =\
-        ep.annual_return(common_returns)
+        ep.annual_return(common_returns, annualization=APPROX_BDAYS_PER_YEAR)
     summary['Annualized Total Return'] =\
-        ep.annual_return(total_returns)
+        ep.annual_return(total_returns, annualization=APPROX_BDAYS_PER_YEAR)
 
     summary['Specific Sharpe Ratio'] =\
-        ep.sharpe_ratio(specific_returns)
+        ep.sharpe_ratio(specific_returns, annualization=APPROX_BDAYS_PER_YEAR)
 
     summary['Cumulative Specific Return'] =\
         ep.cum_returns_final(specific_returns)
@@ -245,7 +245,7 @@ def create_perf_attrib_stats(perf_attrib, risk_exposures):
 
     summary = pd.Series(summary, name='')
 
-    annualized_returns_by_factor = [ep.annual_return(perf_attrib[c])
+    annualized_returns_by_factor = [ep.annual_return(perf_attrib[c], annualization=APPROX_BDAYS_PER_YEAR)
                                     for c in risk_exposures.columns]
     cumulative_returns_by_factor = [ep.cum_returns_final(perf_attrib[c])
                                     for c in risk_exposures.columns]

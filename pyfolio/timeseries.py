@@ -104,7 +104,7 @@ def annual_return(returns, period=DAILY):
         Annual Return as CAGR (Compounded Annual Growth Rate).
     """
 
-    return ep.annual_return(returns, period=period)
+    return ep.annual_return(returns, period=period, annualization=APPROX_BDAYS_PER_YEAR)
 
 
 @deprecated(msg=DEPRECATION_WARNING)
@@ -128,7 +128,7 @@ def annual_volatility(returns, period=DAILY):
         Annual volatility.
     """
 
-    return ep.annual_volatility(returns, period=period)
+    return ep.annual_volatility(returns, period=period, annualization=APPROX_BDAYS_PER_YEAR)
 
 
 @deprecated(msg=DEPRECATION_WARNING)
@@ -157,7 +157,7 @@ def calmar_ratio(returns, period=DAILY):
     See https://en.wikipedia.org/wiki/Calmar_ratio for more details.
     """
 
-    return ep.calmar_ratio(returns, period=period)
+    return ep.calmar_ratio(returns, period=period, annualization=APPROX_BDAYS_PER_YEAR)
 
 
 @deprecated(msg=DEPRECATION_WARNING)
@@ -195,7 +195,7 @@ def omega_ratio(returns, annual_return_threshhold=0.0):
     """
 
     return ep.omega_ratio(returns,
-                          required_return=annual_return_threshhold)
+                          required_return=annual_return_threshhold, annualization=APPROX_BDAYS_PER_YEAR)
 
 
 @deprecated(msg=DEPRECATION_WARNING)
@@ -224,7 +224,7 @@ def sortino_ratio(returns, required_return=0, period=DAILY):
         Annualized Sortino ratio.
     """
 
-    return ep.sortino_ratio(returns, required_return=required_return)
+    return ep.sortino_ratio(returns, required_return=required_return, annualization=APPROX_BDAYS_PER_YEAR)
 
 
 @deprecated(msg=DEPRECATION_WARNING)
@@ -255,7 +255,7 @@ def downside_risk(returns, required_return=0, period=DAILY):
 
     return ep.downside_risk(returns,
                             required_return=required_return,
-                            period=period)
+                            period=period, annualization=APPROX_BDAYS_PER_YEAR)
 
 
 @deprecated(msg=DEPRECATION_WARNING)
@@ -650,45 +650,51 @@ def value_at_risk(returns, period=None, sigma=2.0):
 
 SIMPLE_STAT_FUNCS = [
     ep.annual_return,
-    ep.cum_returns_final,
     ep.annual_volatility,
     ep.sharpe_ratio,
     ep.calmar_ratio,
-    ep.stability_of_timeseries,
-    ep.max_drawdown,
     ep.omega_ratio,
     ep.sortino_ratio,
+]
+
+SIMPLE_STAT_FUNCS1 = [
+    ep.cum_returns_final,
+    ep.stability_of_timeseries,
+    ep.max_drawdown,
     stats.skew,
     stats.kurtosis,
     ep.tail_ratio,
     value_at_risk
 ]
 
-FACTOR_STAT_FUNCS = [
-    ep.alpha,
-    ep.beta,
-]
+# FACTOR_STAT_FUNCS = [
+#     ep.alpha
+# ]
+
+# FACTOR_STAT_FUNCS1 = [
+#     ep.beta
+# ]
 
 STAT_FUNC_NAMES = {
     'annual_return': 'Annual return',
-    'cum_returns_final': 'Cumulative returns',
     'annual_volatility': 'Annual volatility',
     'sharpe_ratio': 'Sharpe ratio',
     'calmar_ratio': 'Calmar ratio',
-    'stability_of_timeseries': 'Stability',
-    'max_drawdown': 'Max drawdown',
     'omega_ratio': 'Omega ratio',
     'sortino_ratio': 'Sortino ratio',
+    'alpha': 'Alpha',
+}
+
+STAT_FUNC_NAMES1 = {
+    'cum_returns_final': 'Cumulative returns',
+    'stability_of_timeseries': 'Stability',
+    'max_drawdown': 'Max drawdown',
     'skew': 'Skew',
     'kurtosis': 'Kurtosis',
     'tail_ratio': 'Tail ratio',
     'common_sense_ratio': 'Common sense ratio',
     'value_at_risk': 'Daily value at risk',
-    'alpha': 'Alpha',
-    'beta': 'Beta',
 }
-
-
 def perf_stats(returns, factor_returns=None, positions=None,
                transactions=None, turnover_denom='AGB'):
     """
@@ -723,7 +729,9 @@ def perf_stats(returns, factor_returns=None, positions=None,
 
     stats = pd.Series()
     for stat_func in SIMPLE_STAT_FUNCS:
-        stats[STAT_FUNC_NAMES[stat_func.__name__]] = stat_func(returns)
+        stats[STAT_FUNC_NAMES[stat_func.__name__]] = stat_func(returns, annualization=APPROX_BDAYS_PER_YEAR)
+    for stat_func in SIMPLE_STAT_FUNCS1:
+        stats[STAT_FUNC_NAMES1[stat_func.__name__]] = stat_func(returns)
 
     if positions is not None:
         stats['Gross leverage'] = gross_lev(positions).mean()
@@ -732,9 +740,14 @@ def perf_stats(returns, factor_returns=None, positions=None,
                                                    transactions,
                                                    turnover_denom).mean()
     if factor_returns is not None:
-        for stat_func in FACTOR_STAT_FUNCS:
-            res = stat_func(returns, factor_returns)
-            stats[STAT_FUNC_NAMES[stat_func.__name__]] = res
+        stats['Alpha'] = ep.alpha(returns, factor_returns, annualization=APPROX_BDAYS_PER_YEAR)
+        stats['Beta'] = ep.beta(returns, factor_returns)
+       # for stat_func in FACTOR_STAT_FUNCS:
+        #     res = stat_func(returns, factor_returns, annualization=APPROX_BDAYS_PER_YEAR)
+        #     stats[STAT_FUNC_NAMES[stat_func.__name__]] = res
+        # for stat_func in FACTOR_STAT_FUNCS1:
+        #     res = stat_func(returns, factor_returns)
+        #     stats[STAT_FUNC_NAMES1[stat_func.__name__]] = res
 
     return stats
 
@@ -773,8 +786,10 @@ def perf_stats_bootstrap(returns, factor_returns=None, return_stats=True,
 
     for stat_func in SIMPLE_STAT_FUNCS:
         stat_name = STAT_FUNC_NAMES[stat_func.__name__]
-        bootstrap_values[stat_name] = calc_bootstrap(stat_func,
-                                                     returns)
+        bootstrap_values[stat_name] = calc_bootstrap(stat_func, returns)
+    for stat_func in SIMPLE_STAT_FUNCS1:
+        stat_name = STAT_FUNC_NAMES1[stat_func.__name__]
+        bootstrap_values[stat_name] = calc_bootstrap(stat_func, returns)
 
     if factor_returns is not None:
         for stat_func in FACTOR_STAT_FUNCS:

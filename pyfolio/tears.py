@@ -72,7 +72,8 @@ def create_full_tear_sheet(returns,
                            factor_loadings=None,
                            pos_in_dollars=True,
                            header_rows=None,
-                           factor_partitions=FACTOR_PARTITIONS):
+                           factor_partitions=FACTOR_PARTITIONS
+                           ):
     """
     Generate a number of tear sheets that are useful
     for analyzing a strategy's performance.
@@ -187,7 +188,8 @@ def create_full_tear_sheet(returns,
         bootstrap=bootstrap,
         turnover_denom=turnover_denom,
         header_rows=header_rows,
-        set_context=set_context)
+        set_context=set_context
+        )
 
     create_interesting_times_tear_sheet(returns,
                                         benchmark_rets=benchmark_rets,
@@ -236,7 +238,8 @@ def create_simple_tear_sheet(returns,
                              estimate_intraday='infer',
                              live_start_date=None,
                              turnover_denom='AGB',
-                             header_rows=None):
+                             header_rows=None
+                             ):
     """
     Simpler version of create_full_tear_sheet; generates summary performance
     statistics and important plots as a single image.
@@ -326,12 +329,13 @@ def create_simple_tear_sheet(returns,
         live_start_date = ep.utils.get_utc_timestamp(live_start_date)
 
     plotting.show_perf_stats(returns,
-                             benchmark_rets,
+                             factor_returns=benchmark_rets,
                              positions=positions,
                              transactions=transactions,
                              turnover_denom=turnover_denom,
                              live_start_date=live_start_date,
-                             header_rows=header_rows)
+                             header_rows=header_rows
+                             )
 
     fig = plt.figure(figsize=(14, vertical_sections * 6))
     gs = gridspec.GridSpec(vertical_sections, 3, wspace=0.5, hspace=0.5)
@@ -406,15 +410,17 @@ def create_simple_tear_sheet(returns,
 
 
 @plotting.customize
-def create_returns_tear_sheet(returns, positions=None,
-                              transactions=None,
-                              live_start_date=None,
-                              cone_std=(1.0, 1.5, 2.0),
-                              benchmark_rets=None,
-                              bootstrap=False,
-                              turnover_denom='AGB',
-                              header_rows=None,
-                              return_fig=False):
+def create_returns_tear_sheet(returns,
+                            positions=None,
+                            transactions=None,
+                            live_start_date=None,
+                            cone_std=(1.0, 1.5, 2.0),
+                            benchmark_rets=None,
+                            bootstrap=False,
+                            turnover_denom='AGB',
+                            header_rows=None,
+                            return_fig=False
+                            ):
     """
     Generate a number of plots for analyzing a strategy's returns.
 
@@ -463,13 +469,15 @@ def create_returns_tear_sheet(returns, positions=None,
     if benchmark_rets is not None:
         returns = utils.clip_returns_to_benchmark(returns, benchmark_rets)
 
-    plotting.show_perf_stats(returns, benchmark_rets,
-                             positions=positions,
-                             transactions=transactions,
-                             turnover_denom=turnover_denom,
-                             bootstrap=bootstrap,
-                             live_start_date=live_start_date,
-                             header_rows=header_rows)
+    plotting.show_perf_stats(returns,
+                            factor_returns= benchmark_rets,
+                            positions=positions,
+                            transactions=transactions,
+                            turnover_denom=turnover_denom,
+                            live_start_date=live_start_date,
+                            bootstrap=bootstrap,
+                            header_rows=header_rows
+                            )
 
     plotting.show_worst_drawdown_periods(returns)
 
