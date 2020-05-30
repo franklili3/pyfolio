@@ -494,7 +494,7 @@ def create_returns_tear_sheet(returns,
         vertical_sections += 1
 
     fig = plt.figure(figsize=(14, vertical_sections * 6))
-    gs = gridspec.GridSpec(vertical_sections, 3, wspace=2, hspace=0.5)
+    gs = gridspec.GridSpec(vertical_sections, 3, wspace=0.5, hspace=0.5)
     ax_rolling_returns = plt.subplot(gs[:2, :])
 
     i = 2

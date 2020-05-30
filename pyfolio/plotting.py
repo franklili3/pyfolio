@@ -37,6 +37,9 @@ from . import timeseries
 from . import txn
 from . import utils
 from .utils import APPROX_BDAYS_PER_MONTH, APPROX_BDAYS_PER_YEAR, MM_DISPLAY_UNIT
+matplotlib.rcParams['font.sans-serif'] = ['SimHei'] 
+matplotlib.rcParams['font.family'] = 'sans-serif'
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
 
 
 def customize(func):
@@ -773,7 +776,7 @@ def plot_rolling_returns(returns,
         ax = plt.gca()
 
     ax.set_xlabel('')
-    ax.set_ylabel('Cumulative returns')
+    ax.set_ylabel('累计收益率')#Cumulative returns')
     ax.set_yscale('log' if logy else 'linear')
 
     if volatility_match and factor_returns is None:
@@ -804,7 +807,7 @@ def plot_rolling_returns(returns,
         oos_cum_returns = pd.Series([])
 
     is_cum_returns.plot(lw=3, color='forestgreen', alpha=0.6,
-                        label='Backtest', ax=ax, **kwargs)
+                        label='策略', ax=ax, **kwargs)#Backtest
 
     if len(oos_cum_returns) > 0:
         oos_cum_returns.plot(lw=4, color='red', alpha=0.6,
