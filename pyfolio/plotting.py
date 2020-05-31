@@ -37,9 +37,7 @@ from . import timeseries
 from . import txn
 from . import utils
 from .utils import APPROX_BDAYS_PER_MONTH, APPROX_BDAYS_PER_YEAR, MM_DISPLAY_UNIT
-matplotlib.rcParams['font.sans-serif'] = ['SimHei'] 
-matplotlib.rcParams['font.family'] = 'sans-serif'
-plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
+
 
 
 def customize(func):
@@ -178,9 +176,9 @@ def plot_monthly_returns_heatmap(returns, ax=None, **kwargs):
         cbar=False,
         cmap=matplotlib.cm.RdYlGn,
         ax=ax, **kwargs)
-    ax.set_ylabel('Year')
-    ax.set_xlabel('Month')
-    ax.set_title("Monthly returns (%)")
+    ax.set_ylabel('年')#Year')
+    ax.set_xlabel('月')#Month')
+    ax.set_title("月收益率(%)")#Monthly returns (%)")
     return ax
 
 
@@ -227,10 +225,10 @@ def plot_annual_returns(returns, ax=None, **kwargs):
      ).plot(ax=ax, kind='barh', alpha=0.70, **kwargs)
     ax.axvline(0.0, color='black', linestyle='-', lw=3)
 
-    ax.set_ylabel('Year')
-    ax.set_xlabel('Returns')
-    ax.set_title("Annual returns")
-    ax.legend(['Mean'], frameon=True, framealpha=0.5)
+    ax.set_ylabel('年')#Year')
+    ax.set_xlabel('收益率')#Returns')
+    #ax.set_title("年收益率")#Annual returns")
+    ax.legend(['平均年收益率'], frameon=True, framealpha=0.5)
     return ax
 
 
@@ -278,10 +276,10 @@ def plot_monthly_returns_dist(returns, ax=None, **kwargs):
         alpha=1.0)
 
     ax.axvline(0.0, color='black', linestyle='-', lw=3, alpha=0.75)
-    ax.legend(['Mean'], frameon=True, framealpha=0.5)
-    ax.set_ylabel('Number of months')
-    ax.set_xlabel('Returns')
-    ax.set_title("Distribution of monthly returns")
+    ax.legend(['平均值'], frameon=True, framealpha=0.5)
+    ax.set_ylabel('月数')#Number of months')
+    ax.set_xlabel('收益率')#Returns')
+    ax.set_title("月收益率分布")#Distribution of monthly returns")
     return ax
 
 
@@ -447,9 +445,9 @@ def plot_drawdown_periods(returns, top=10, ax=None, **kwargs):
                         alpha=.4,
                         color=colors[i])
     ax.set_ylim(lim)
-    ax.set_title('Top %i drawdown periods' % top)
-    ax.set_ylabel('Cumulative returns')
-    ax.legend(['Portfolio'], loc='upper left',
+    ax.set_title('最大 %i 回撤期间' % top)
+    ax.set_ylabel('累计收益率')#Cumulative returns')
+    ax.legend(['投资组合'], loc='upper left',
               frameon=True, framealpha=0.5)
     ax.set_xlabel('')
     return ax
@@ -486,8 +484,8 @@ def plot_drawdown_underwater(returns, ax=None, **kwargs):
     running_max = np.maximum.accumulate(df_cum_rets)
     underwater = -100 * ((running_max - df_cum_rets) / running_max)
     (underwater).plot(ax=ax, kind='area', color='coral', alpha=0.7, **kwargs)
-    ax.set_ylabel('Drawdown')
-    ax.set_title('Underwater plot')
+    ax.set_ylabel('回撤')#Drawdown')
+    #ax.set_title('回撤比率')#Underwater plot')
     ax.set_xlabel('')
     return ax
 
@@ -696,7 +694,7 @@ def plot_returns(returns,
         ax = plt.gca()
 
     ax.set_label('')
-    ax.set_ylabel('Returns')
+    ax.set_ylabel('收益率')#Returns')
 
     if live_start_date is not None:
         live_start_date = ep.utils.get_utc_timestamp(live_start_date)
@@ -774,8 +772,8 @@ def plot_rolling_returns(returns,
 
     if ax is None:
         ax = plt.gca()
-
-    ax.set_xlabel('')
+    
+    ax.set_xlabel(' ')
     ax.set_ylabel('累计收益率')#Cumulative returns')
     ax.set_yscale('log' if logy else 'linear')
 
@@ -811,7 +809,7 @@ def plot_rolling_returns(returns,
 
     if len(oos_cum_returns) > 0:
         oos_cum_returns.plot(lw=4, color='red', alpha=0.6,
-                             label='Live', ax=ax, **kwargs)
+                             label='实盘', ax=ax, **kwargs)
 
         if cone_std is not None:
             if isinstance(cone_std, (float, int)):
@@ -871,8 +869,8 @@ def plot_rolling_beta(returns, factor_returns, legend_loc='best',
     y_axis_formatter = FuncFormatter(utils.two_dec_places)
     ax.yaxis.set_major_formatter(FuncFormatter(y_axis_formatter))
 
-    ax.set_title("Rolling portfolio beta to " + str(factor_returns.name))
-    ax.set_ylabel('Beta')
+    #ax.set_title("投资组合相对" + str(factor_returns.name) + '的滚动贝塔值')
+    ax.set_ylabel('贝塔值')
     rb_1 = timeseries.rolling_beta(
         returns, factor_returns, rolling_window=APPROX_BDAYS_PER_MONTH * 6)
     rb_1.plot(color='steelblue', lw=3, alpha=0.6, ax=ax, **kwargs)
@@ -883,8 +881,8 @@ def plot_rolling_beta(returns, factor_returns, legend_loc='best',
     ax.axhline(0.0, color='black', linestyle='-', lw=2)
 
     ax.set_xlabel('')
-    ax.legend(['6-mo',
-               '12-mo'],
+    ax.legend(['6个月',
+               '12个月', '平均值'],
               loc=legend_loc, frameon=True, framealpha=0.5)
     ax.set_ylim((-1.0, 1.0))
     return ax
@@ -937,7 +935,7 @@ def plot_rolling_volatility(returns, factor_returns=None,
         rolling_vol_ts_factor.plot(alpha=.7, lw=3, color='grey', ax=ax,
                                    **kwargs)
 
-    ax.set_title('Rolling volatility (6-month)')
+    #ax.set_title('投资组合的6个月滚动波动率')
     ax.axhline(
         rolling_vol_ts.mean(),
         color='steelblue',
@@ -946,13 +944,13 @@ def plot_rolling_volatility(returns, factor_returns=None,
 
     ax.axhline(0.0, color='black', linestyle='-', lw=2)
 
-    ax.set_ylabel('Volatility')
+    ax.set_ylabel('波动率')
     ax.set_xlabel('')
     if factor_returns is None:
-        ax.legend(['Volatility', 'Average volatility'],
+        ax.legend(['波动率', '平均波动率'],
                   loc=legend_loc, frameon=True, framealpha=0.5)
     else:
-        ax.legend(['Volatility', 'Benchmark volatility', 'Average volatility'],
+        ax.legend(['波动率', '比较基准的波动率', '平均波动率'],
                   loc=legend_loc, frameon=True, framealpha=0.5)
     return ax
 
@@ -1005,7 +1003,7 @@ def plot_rolling_sharpe(returns, factor_returns=None,
         rolling_sharpe_ts_factor.plot(alpha=.7, lw=3, color='grey', ax=ax,
                                       **kwargs)
 
-    ax.set_title('Rolling Sharpe ratio (6-month)')
+    #ax.set_title('6个月滚动夏普比率')
     ax.axhline(
         rolling_sharpe_ts.mean(),
         color='steelblue',
@@ -1013,13 +1011,13 @@ def plot_rolling_sharpe(returns, factor_returns=None,
         lw=3)
     ax.axhline(0.0, color='black', linestyle='-', lw=3)
 
-    ax.set_ylabel('Sharpe ratio')
+    ax.set_ylabel('夏普比率')
     ax.set_xlabel('')
     if factor_returns is None:
-        ax.legend(['Sharpe', 'Average'],
+        ax.legend(['夏普比率', '平均夏普比率'],
                   loc=legend_loc, frameon=True, framealpha=0.5)
     else:
-        ax.legend(['Sharpe', 'Benchmark Sharpe', 'Average'],
+        ax.legend(['夏普比率', '比较基准的夏普比率', '平均夏普比率'],
                   loc=legend_loc, frameon=True, framealpha=0.5)
 
     return ax
@@ -1316,11 +1314,11 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, **kwargs):
                       color="red",
                       marker="d", **kwargs)
         red_dots = matplotlib.lines.Line2D([], [], color="red", marker="d",
-                                           label="Out-of-sample data",
+                                           label="实盘数据",#Out-of-sample data",
                                            linestyle='')
         ax.legend(handles=[red_dots], frameon=True, framealpha=0.5)
-    ax.set_xticklabels(['Daily', 'Weekly', 'Monthly'])
-    ax.set_title('Return quantiles')
+    ax.set_xticklabels(['日', '周', '月'])#Daily', 'Weekly', 'Monthly'])
+    ax.set_title('收益率四分位')#Return quantiles')
 
     return ax
 

@@ -47,19 +47,19 @@ PERIODS['Fall2009'] = (pd.Timestamp('20090801'), pd.Timestamp('20090831'))
 PERIODS['Fall2010'] = (
     pd.Timestamp('20100401'), pd.Timestamp('20100630'))
 
-PERIODS['Fall2011'] = (pd.Timestamp('20110901'),
+PERIODS['2011年下跌期'] = (pd.Timestamp('20110901'),
                                             pd.Timestamp('20111230'))
 
-PERIODS['Fall2012'] = (
+PERIODS['2012年下跌期'] = (
     pd.Timestamp('20120601'), pd.Timestamp('20121130'))
 
 
 # Market down-turn in August/Sept 2015
-PERIODS['Fall2015'] = (pd.Timestamp('20150601'), pd.Timestamp('20150930'))
+PERIODS['2015年下跌期'] = (pd.Timestamp('20150601'), pd.Timestamp('20150930'))
 
-PERIODS['Fall2016'] = (pd.Timestamp('20160101'), pd.Timestamp('20160129'))
+PERIODS['2016年下跌期'] = (pd.Timestamp('20160101'), pd.Timestamp('20160129'))
 
-PERIODS['Fall2018'] = (pd.Timestamp('20180201'), pd.Timestamp('20181228'))
+PERIODS['2018年下跌期'] = (pd.Timestamp('20180201'), pd.Timestamp('20181228'))
 
-PERIODS['New Normal'] = (pd.Timestamp('20190101'),
+PERIODS['新常态'] = (pd.Timestamp('20190101'),
                          pd.Timestamp('today'))
