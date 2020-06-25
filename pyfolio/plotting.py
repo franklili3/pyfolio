@@ -947,10 +947,10 @@ def plot_rolling_volatility(returns, factor_returns=None,
     ax.set_ylabel('波动率')
     ax.set_xlabel('')
     if factor_returns is None:
-        ax.legend(['波动率', '平均波动率'],
+        ax.legend(['策略', '策略的平均波动率'],
                   loc=legend_loc, frameon=True, framealpha=0.5)
     else:
-        ax.legend(['波动率', '中证800指数的波动率', '平均波动率'],
+        ax.legend(['策略', '中证800指数', '策略的平均波动率'],
                   loc=legend_loc, frameon=True, framealpha=0.5)
     return ax
 
@@ -1014,10 +1014,10 @@ def plot_rolling_sharpe(returns, factor_returns=None,
     ax.set_ylabel('夏普比率')
     ax.set_xlabel('')
     if factor_returns is None:
-        ax.legend(['夏普比率', '平均夏普比率'],
+        ax.legend(['策略', '策略的平均夏普比率'],
                   loc=legend_loc, frameon=True, framealpha=0.5)
     else:
-        ax.legend(['夏普比率', '中证800指数的夏普比率', '平均夏普比率'],
+        ax.legend(['策略', '中证800指数', '策略平均夏普比率'],
                   loc=legend_loc, frameon=True, framealpha=0.5)
 
     return ax
