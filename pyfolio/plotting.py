@@ -773,7 +773,7 @@ def plot_rolling_returns(returns,
     if ax is None:
         ax = plt.gca()
     
-    ax.set_xlabel(' ')
+    #ax.set_xlabel(' ')
     ax.set_ylabel('累计收益率')#Cumulative returns')
     ax.set_yscale('log' if logy else 'linear')
 
