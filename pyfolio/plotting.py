@@ -165,6 +165,8 @@ def plot_monthly_returns_heatmap(returns, ax=None, **kwargs):
 
     monthly_ret_table = ep.aggregate_returns(returns, 'monthly')
     monthly_ret_table = monthly_ret_table.unstack().round(3)
+    monthly_ret_table1 = monthly_ret_table.fillna(0) * 100.0
+    monthly_ret_table1.to_csv('~/fmz-btc-strategy/monthly_returns.csv')
 
     sns.heatmap(
         monthly_ret_table.fillna(0) *
@@ -213,6 +215,8 @@ def plot_annual_returns(returns, ax=None, **kwargs):
         ep.aggregate_returns(
             returns,
             'yearly'))
+    ann_ret_df1 = 100 * ann_ret_df.sort_index(ascending=False)
+    ann_ret_df1.to_csv('~/fmz-btc-strategy/annual_returns.csv')
 
     ax.axvline(
         100 *
@@ -430,6 +434,7 @@ def plot_drawdown_periods(returns, top=10, ax=None, **kwargs):
 
     df_cum_rets = ep.cum_returns(returns, starting_value=1.0)
     df_drawdowns = timeseries.gen_drawdown_table(returns, top=top)
+    df_drawdowns.to_csv('~/fmz-btc-strategy/drawdowns_period.csv')
 
     df_cum_rets.plot(ax=ax, **kwargs)
 
@@ -483,6 +488,7 @@ def plot_drawdown_underwater(returns, ax=None, **kwargs):
     df_cum_rets = ep.cum_returns(returns, starting_value=1.0)
     running_max = np.maximum.accumulate(df_cum_rets)
     underwater = -100 * ((running_max - df_cum_rets) / running_max)
+    underwater.to_csv('~/fmz-btc-strategy/underwater.csv')
     (underwater).plot(ax=ax, kind='area', color='coral', alpha=0.7, **kwargs)
     ax.set_ylabel('回撤')#Drawdown')
     #ax.set_title('回撤比率')#Underwater plot')
@@ -792,6 +798,7 @@ def plot_rolling_returns(returns,
     if factor_returns is not None:
         cum_factor_returns = ep.cum_returns(
             factor_returns[cum_rets.index], 1.0)
+        cum_factor_returns.to_csv('~/fmz-btc-strategy/cum_factor_returns.csv')
         cum_factor_returns.plot(lw=2, color='gray',
                                 label=factor_returns.name, alpha=0.60,
                                 ax=ax, **kwargs)
@@ -803,9 +810,11 @@ def plot_rolling_returns(returns,
     else:
         is_cum_returns = cum_rets
         oos_cum_returns = pd.Series([])
+    is_cum_returns.to_csv('~/fmz-btc-strategy/backtest_cum_returns.csv')
+    oos_cum_returns.to_csv('~/fmz-btc-strategy/live_cum_returns.csv')
 
     is_cum_returns.plot(lw=3, color='forestgreen', alpha=0.6,
-                        label='策略', ax=ax, **kwargs)#Backtest
+                        label='回测', ax=ax, **kwargs)#Backtest
 
     if len(oos_cum_returns) > 0:
         oos_cum_returns.plot(lw=4, color='red', alpha=0.6,
@@ -873,9 +882,11 @@ def plot_rolling_beta(returns, factor_returns, legend_loc='best',
     ax.set_ylabel('贝塔值')
     rb_1 = timeseries.rolling_beta(
         returns, factor_returns, rolling_window=APPROX_BDAYS_PER_MONTH * 6)
+    rb_1.to_csv('~/fmz-btc-strategy/rolling_beta_6MONTH.csv')
     rb_1.plot(color='steelblue', lw=3, alpha=0.6, ax=ax, **kwargs)
     rb_2 = timeseries.rolling_beta(
         returns, factor_returns, rolling_window=APPROX_BDAYS_PER_MONTH * 12)
+    rb_2.to_csv('~/fmz-btc-strategy/rolling_beta_12MONTH.csv')
     rb_2.plot(color='grey', lw=3, alpha=0.4, ax=ax, **kwargs)
     ax.axhline(rb_1.mean(), color='steelblue', linestyle='--', lw=3)
     ax.axhline(0.0, color='black', linestyle='-', lw=2)
@@ -927,11 +938,13 @@ def plot_rolling_volatility(returns, factor_returns=None,
 
     rolling_vol_ts = timeseries.rolling_volatility(
         returns, rolling_window)
+    rolling_vol_ts.to_csv('~/fmz-btc-strategy/rolling_volatility_6MONTH.csv')
     rolling_vol_ts.plot(alpha=.7, lw=3, color='orangered', ax=ax,
                         **kwargs)
     if factor_returns is not None:
         rolling_vol_ts_factor = timeseries.rolling_volatility(
             factor_returns, rolling_window)
+        rolling_vol_ts_factor.to_csv('~/fmz-btc-strategy/rolling_volatility_factor_6MONTH.csv')
         rolling_vol_ts_factor.plot(alpha=.7, lw=3, color='grey', ax=ax,
                                    **kwargs)
 
@@ -994,12 +1007,14 @@ def plot_rolling_sharpe(returns, factor_returns=None,
 
     rolling_sharpe_ts = timeseries.rolling_sharpe(
         returns, rolling_window)
+    rolling_sharpe_ts.to_csv('~/fmz-btc-strategy/rolling_sharpe_6MONTH.csv')
     rolling_sharpe_ts.plot(alpha=.7, lw=3, color='orangered', ax=ax,
                            **kwargs)
 
     if factor_returns is not None:
         rolling_sharpe_ts_factor = timeseries.rolling_sharpe(
             factor_returns, rolling_window)
+        rolling_sharpe_ts_factor.to_csv('~/fmz-btc-strategy/rolling_sharpe_factor_6MONTH.csv')
         rolling_sharpe_ts_factor.plot(alpha=.7, lw=3, color='grey', ax=ax,
                                       **kwargs)
 
@@ -1300,7 +1315,9 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, **kwargs):
     is_returns = returns if live_start_date is None \
         else returns.loc[returns.index < live_start_date]
     is_weekly = ep.aggregate_returns(is_returns, 'weekly')
+    is_weekly.to_csv('~/fmz-btc-strategy/backtest_weekly_returns.csv')
     is_monthly = ep.aggregate_returns(is_returns, 'monthly')
+    is_monthly.to_csv('~/fmz-btc-strategy/backtest_monthly_returns.csv')
     sns.boxplot(data=[is_returns, is_weekly, is_monthly],
                 palette=["#4c72B0", "#55A868", "#CCB974"],
                 ax=ax, **kwargs)
@@ -1308,7 +1325,9 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, **kwargs):
     if live_start_date is not None:
         oos_returns = returns.loc[returns.index >= live_start_date]
         oos_weekly = ep.aggregate_returns(oos_returns, 'weekly')
+        oos_weekly.to_csv('~/fmz-btc-strategy/live_weekly_returns.csv')
         oos_monthly = ep.aggregate_returns(oos_returns, 'monthly')
+        oos_monthly.to_csv('~/fmz-btc-strategy/live_monthly_returns.csv')
 
         sns.swarmplot(data=[oos_returns, oos_weekly, oos_monthly], ax=ax,
                       color="red",

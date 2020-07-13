@@ -60,6 +60,3 @@ PERIODS['2015年下跌期'] = (pd.Timestamp('20150601'), pd.Timestamp('20150930'
 PERIODS['2016年下跌期'] = (pd.Timestamp('20160101'), pd.Timestamp('20160129'))
 
 PERIODS['2018年下跌期'] = (pd.Timestamp('20180201'), pd.Timestamp('20181228'))
-
-PERIODS['新常态'] = (pd.Timestamp('20190101'),
-                         pd.Timestamp('today'))
