@@ -1357,9 +1357,12 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, machine_id=Non
     if live_start_date is not None:
         oos_returns = returns.loc[returns.index >= live_start_date]
         oos_weekly = ep.aggregate_returns(oos_returns, 'weekly')
-        oos_weekly.to_csv('~/fmz-btc-strategy/live_weekly_returns.csv')
         oos_monthly = ep.aggregate_returns(oos_returns, 'monthly')
-        oos_monthly.to_csv('~/fmz-btc-strategy/live_monthly_returns.csv')
+        if machine_id is not None:
+            file_name3 = '~/fmz-btc-strategy/live_weekly_returns_' + str(machine_id) + '.csv'
+            file_name4 = '~/fmz-btc-strategy/live_monthly_returns_' + str(machine_id) + '.csv'
+            oos_weekly.to_csv(file_name3)
+            oos_monthly.to_csv(file_name4)
 
         sns.swarmplot(data=[oos_returns, oos_weekly, oos_monthly], ax=ax,
                       color="red",
