@@ -1345,6 +1345,17 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, machine_id=Non
         else returns.loc[returns.index < live_start_date]
     is_weekly = ep.aggregate_returns(is_returns, 'weekly')
     is_monthly = ep.aggregate_returns(is_returns, 'monthly')
+    quartile_dict = {'x': [], 'low': [], 'q1': [], 'median': [], 'q3': [], 'high': []}
+    quartile_1_daily_return = is_returns.quantile(0.25)
+    quartile_2_daily_return = is_returns.quantile(0.5)
+    quartile_3_daily_return = is_returns.quantile(0.75)
+    interquartile_range = quartile_3_daily_return - quartile_1_daily_return
+    upper = quartile_3_daily_return + 1.5 * interquartile_range
+    lower = quartile_1_daily_return - 1.5 * interquartile_range
+    quartile_dict['x'].append('日')
+    quartile_dict['low'].append(lower)
+    quartile_dict['q1'].append(quartile_1_daily_return)
+    quartile_dict['median'].append(quartile_2_daily_return)
     if machine_id is not None:
         file_name1 = '~/fmz-btc-strategy/backtest_weekly_returns_' + str(machine_id) + '.csv'
         file_name2 = '~/fmz-btc-strategy/backtest_monthly_returns_' + str(machine_id) + '.csv'
