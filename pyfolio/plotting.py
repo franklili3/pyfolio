@@ -1349,18 +1349,43 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, machine_id=Non
     quartile_1_daily_return = is_returns.quantile(0.25)
     quartile_2_daily_return = is_returns.quantile(0.5)
     quartile_3_daily_return = is_returns.quantile(0.75)
-    interquartile_range = quartile_3_daily_return - quartile_1_daily_return
-    upper = quartile_3_daily_return + 1.5 * interquartile_range
-    lower = quartile_1_daily_return - 1.5 * interquartile_range
+    interquartile_range_daily = quartile_3_daily_return - quartile_1_daily_return
+    upper_daily = quartile_3_daily_return + 1.5 * interquartile_range_daily
+    lower_daily = quartile_1_daily_return - 1.5 * interquartile_range_daily
     quartile_dict['x'].append('日')
-    quartile_dict['low'].append(lower)
+    quartile_dict['low'].append(lower_daily)
     quartile_dict['q1'].append(quartile_1_daily_return)
     quartile_dict['median'].append(quartile_2_daily_return)
+    quartile_dict['q3'].append(quartile_3_daily_return)
+    quartile_dict['high'].append(upper_daily)
+    quartile_1_weekly_return = is_weekly.quantile(0.25)
+    quartile_2_weekly_return = is_weekly.quantile(0.5)
+    quartile_3_weekly_return = is_weekly.quantile(0.75)
+    interquartile_range_weekly = quartile_3_weekly_return - quartile_1_weekly_return
+    upper_weekly = quartile_3_weekly_return + 1.5 * interquartile_range_weekly
+    lower_weekly = quartile_1_weekly_return - 1.5 * interquartile_range_weekly
+    quartile_dict['x'].append('周')
+    quartile_dict['low'].append(lower_weekly)
+    quartile_dict['q1'].append(quartile_1_weekly_return)
+    quartile_dict['median'].append(quartile_2_weekly_return)
+    quartile_dict['q3'].append(quartile_3_weekly_return)
+    quartile_dict['high'].append(upper_weekly)
+    quartile_1_monthly_return = is_monthly.quantile(0.25)
+    quartile_2_monthly_return = is_monthly.quantile(0.5)
+    quartile_3_monthly_return = is_monthly.quantile(0.75)
+    interquartile_range_monthly = quartile_3_monthly_return - quartile_1_monthly_return
+    upper_monthly = quartile_3_monthly_return + 1.5 * interquartile_range_monthly
+    lower_monthly = quartile_1_monthly_return - 1.5 * interquartile_range_monthly
+    quartile_dict['x'].append('月')
+    quartile_dict['low'].append(lower_monthly)
+    quartile_dict['q1'].append(quartile_1_monthly_return)
+    quartile_dict['median'].append(quartile_2_monthly_return)
+    quartile_dict['q3'].append(quartile_3_monthly_return)
+    quartile_dict['high'].append(upper_monthly)
+    quartile_df = pd.DataFrame(quartile_dict)
     if machine_id is not None:
-        file_name1 = '~/fmz-btc-strategy/backtest_weekly_returns_' + str(machine_id) + '.csv'
-        file_name2 = '~/fmz-btc-strategy/backtest_monthly_returns_' + str(machine_id) + '.csv'
-        is_weekly.to_csv(file_name1)
-        is_monthly.to_csv(file_name2)
+        file_name1 = '~/fmz-btc-strategy/returns_quartiles_' + str(machine_id) + '.csv'
+        quartile_df.to_csv(file_name1)
     sns.boxplot(data=[is_returns, is_weekly, is_monthly],
                 palette=["#4c72B0", "#55A868", "#CCB974"],
                 ax=ax, **kwargs)
