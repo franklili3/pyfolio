@@ -807,9 +807,13 @@ def plot_rolling_returns(returns,
     if factor_returns is not None:
         cum_factor_returns = ep.cum_returns(
             factor_returns[cum_rets.index], 1.0)
+        cum_factor_returns1 = cum_factor_returns.reset_index()
+        cum_factor_returns1['time_stamp'] = cum_factor_returns1['date'].time_stamp()
+        cum_factor_returns1 = cum_factor_returns1.drop('date', axis = 1)
+        cum_factor_returns1 = cum_factor_returns1.set_index('time_stamp')
         if machine_id is not None:
             file_name = '~/fmz-btc-strategy/cum_factor_returns_' + str(machine_id) + '.csv'
-            cum_factor_returns.to_csv(file_name)
+            cum_factor_returns1.to_csv(file_name)
         cum_factor_returns.plot(lw=2, color='gray',
                                 label=factor_returns.name, alpha=0.60,
                                 ax=ax, **kwargs)
@@ -821,6 +825,15 @@ def plot_rolling_returns(returns,
     else:
         is_cum_returns = cum_rets
         oos_cum_returns = pd.Series([])
+    is_cum_returns1 = is_cum_returns.reset_index()
+    is_cum_returns1['time_stamp'] = is_cum_returns1['date'].time_stamp()
+    is_cum_returns1 = is_cum_returns1.drop('date', axis = 1)
+    is_cum_returns1 = is_cum_returns1.set_index('time_stamp')
+    oos_cum_returns1 = oos_cum_returns.reset_index()
+    oos_cum_returns1['time_stamp'] = oos_cum_returns1['date'].time_stamp()
+    oos_cum_returns1 = oos_cum_returns1.drop('date', axis = 1)
+    oos_cum_returns1 = oos_cum_returns1.set_index('time_stamp')
+
     if machine_id is not None:
         if volatility_match and factor_returns is not None:
             file_name1 = '~/fmz-btc-strategy/backtest_cum_returns_volatility_match_' + str(machine_id) + '.csv'
@@ -828,8 +841,8 @@ def plot_rolling_returns(returns,
         else:
             file_name1 = '~/fmz-btc-strategy/backtest_cum_returns_' + str(machine_id) + '.csv'
             file_name2 = '~/fmz-btc-strategy/live_cum_returns_' + str(machine_id) + '.csv'
-        is_cum_returns.to_csv(file_name1)
-        oos_cum_returns.to_csv(file_name2)
+        is_cum_returns1.to_csv(file_name1)
+        oos_cum_returns1.to_csv(file_name2)
 
     is_cum_returns.plot(lw=3, color='forestgreen', alpha=0.6,
                         label='回测', ax=ax, **kwargs)#Backtest
@@ -906,8 +919,18 @@ def plot_rolling_beta(returns, factor_returns, legend_loc='best',
     if machine_id is not None:
         file_name1 = '~/fmz-btc-strategy/rolling_beta_6MONTH_' + str(machine_id) + '.csv'
         file_name2 = '~/fmz-btc-strategy/rolling_beta_12MONTH_' + str(machine_id) + '.csv'
-        rb_1.to_csv(file_name1)
-        rb_2.to_csv(file_name2)
+        rb_1_1 = rb_1
+        rb_1_1 = rb_1_1.reset_index()
+        rb_1_1['time_stamp'] = rb_1_1['date'].time_stamp()
+        rb_1_1 = rb_1_1.drop('date', axis = 1)
+        rb_1_1 = rb_1_1.set_index('time_stamp')
+        rb_1_1.to_csv(file_name1)
+        rb_2_1 = rb_2
+        rb_2_1 = rb_2_1.reset_index()
+        rb_2_1['time_stamp'] = rb_2_1['date'].time_stamp()
+        rb_2_1 = rb_2_1.drop('date', axis = 1)
+        rb_2_1 = rb_2_1.set_index('time_stamp')
+        rb_2_1.to_csv(file_name2)
     rb_2.plot(color='grey', lw=3, alpha=0.4, ax=ax, **kwargs)
     ax.axhline(rb_1.mean(), color='steelblue', linestyle='--', lw=3)
     ax.axhline(0.0, color='black', linestyle='-', lw=2)
@@ -961,7 +984,12 @@ def plot_rolling_volatility(returns, factor_returns=None,
         returns, rolling_window)
     if machine_id is not None:
         file_name1 = '~/fmz-btc-strategy/rolling_volatility_6MONTH_' + str(machine_id) + '.csv'
-        rolling_vol_ts.to_csv(file_name1)
+        rolling_vol_ts1 = rolling_vol_ts
+        rolling_vol_ts1 = rolling_vol_ts1.reset_index()
+        rolling_vol_ts1['time_stamp'] = rolling_vol_ts1['date'].time_stamp()
+        rolling_vol_ts1 = rolling_vol_ts1.drop('date', axis = 1)
+        rolling_vol_ts1 = rolling_vol_ts1.set_index('time_stamp')
+        rolling_vol_ts1.to_csv(file_name1)
     rolling_vol_ts.plot(alpha=.7, lw=3, color='orangered', ax=ax,
                         **kwargs)
     if factor_returns is not None:
