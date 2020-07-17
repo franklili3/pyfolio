@@ -818,7 +818,7 @@ def plot_rolling_returns(returns,
             factor_returns[cum_rets.index], 1.0)
         cum_factor_returns_df = pd.DataFrame(cum_factor_returns)
         cum_factor_returns1 = cum_factor_returns_df.reset_index()
-        print('columns of cum_factor_returns1: ', cum_factor_returns1.columns.values.tolist())
+        #print('columns of cum_factor_returns1: ', cum_factor_returns1.columns.values.tolist())
         cum_factor_returns1['time_stamp'] = cum_factor_returns1['date'].apply(lambda x: x.timestamp())
         cum_factor_returns1 = cum_factor_returns1.drop('date', axis = 1)
         cum_factor_returns1 = cum_factor_returns1.set_index('time_stamp')
