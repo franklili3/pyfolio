@@ -819,8 +819,8 @@ def plot_rolling_returns(returns,
         cum_factor_returns_df = pd.DataFrame(cum_factor_returns)
         cum_factor_returns1 = cum_factor_returns_df.reset_index()
         print('columns of cum_factor_returns1: ', cum_factor_returns1.columns.values.tolist())
-        cum_factor_returns1['time_stamp'] = cum_factor_returns1['date_time'].apply(lambda x: x.timestamp())
-        cum_factor_returns1 = cum_factor_returns1.drop('date_time', axis = 1)
+        cum_factor_returns1['time_stamp'] = cum_factor_returns1['date'].apply(lambda x: x.timestamp())
+        cum_factor_returns1 = cum_factor_returns1.drop('date', axis = 1)
         cum_factor_returns1 = cum_factor_returns1.set_index('time_stamp')
         if machine_id is not None:
             file_name = 'cum_factor_returns_' + str(machine_id) + '.csv'
@@ -838,13 +838,13 @@ def plot_rolling_returns(returns,
         oos_cum_returns = pd.Series([])
     is_cum_returns1 = pd.DataFrame(is_cum_returns)
     is_cum_returns1 = is_cum_returns1.reset_index()
-    is_cum_returns1['time_stamp'] = is_cum_returns1['date_time'].apply(lambda x: x.timestamp())
-    is_cum_returns1 = is_cum_returns1.drop('date_time', axis = 1)
+    is_cum_returns1['time_stamp'] = is_cum_returns1['date'].apply(lambda x: x.timestamp())
+    is_cum_returns1 = is_cum_returns1.drop('date', axis = 1)
     is_cum_returns1 = is_cum_returns1.set_index('time_stamp')
     oos_cum_returns1 = pd.DataFrame(oos_cum_returns)
     oos_cum_returns1 = oos_cum_returns1.reset_index()
-    oos_cum_returns1['time_stamp'] = oos_cum_returns1['date_time'].apply(lambda x: x.timestamp())
-    oos_cum_returns1 = oos_cum_returns1.drop('date_time', axis = 1)
+    oos_cum_returns1['time_stamp'] = oos_cum_returns1['date'].apply(lambda x: x.timestamp())
+    oos_cum_returns1 = oos_cum_returns1.drop('date', axis = 1)
     oos_cum_returns1 = oos_cum_returns1.set_index('time_stamp')
 
     if machine_id is not None:
@@ -934,14 +934,14 @@ def plot_rolling_beta(returns, factor_returns, legend_loc='best',
         file_name2 = 'rolling_beta_12MONTH_' + str(machine_id) + '.csv'
         rb_1_1 = pd.DataFrame(rb_1)
         rb_1_1 = rb_1_1.reset_index()
-        rb_1_1['time_stamp'] = rb_1_1['date_time'].apply(lambda x: x.timestamp())
-        rb_1_1 = rb_1_1.drop('date_time', axis = 1)
+        rb_1_1['time_stamp'] = rb_1_1['date'].apply(lambda x: x.timestamp())
+        rb_1_1 = rb_1_1.drop('date', axis = 1)
         rb_1_1 = rb_1_1.set_index('time_stamp')
         rb_1_1.to_csv(file_name1)
         rb_2_1 = pd.DataFrame(rb_2)
         rb_2_1 = rb_2_1.reset_index()
-        rb_2_1['time_stamp'] = rb_2_1['date_time'].apply(lambda x: x.timestamp())
-        rb_2_1 = rb_2_1.drop('date_time', axis = 1)
+        rb_2_1['time_stamp'] = rb_2_1['date'].apply(lambda x: x.timestamp())
+        rb_2_1 = rb_2_1.drop('date', axis = 1)
         rb_2_1 = rb_2_1.set_index('time_stamp')
         rb_2_1.to_csv(file_name2)
     rb_2.plot(color='grey', lw=3, alpha=0.4, ax=ax, **kwargs)
@@ -999,8 +999,8 @@ def plot_rolling_volatility(returns, factor_returns=None,
         file_name1 = 'rolling_volatility_6MONTH_' + str(machine_id) + '.csv'
         rolling_vol_ts1 = pd.DataFrame(rolling_vol_ts)
         rolling_vol_ts1 = rolling_vol_ts1.reset_index()
-        rolling_vol_ts1['time_stamp'] = rolling_vol_ts1['date_time'].apply(lambda x: x.timestamp())
-        rolling_vol_ts1 = rolling_vol_ts1.drop('date_time', axis = 1)
+        rolling_vol_ts1['time_stamp'] = rolling_vol_ts1['date'].apply(lambda x: x.timestamp())
+        rolling_vol_ts1 = rolling_vol_ts1.drop('date', axis = 1)
         rolling_vol_ts1 = rolling_vol_ts1.set_index('time_stamp')
         rolling_vol_ts1.to_csv(file_name1)
     rolling_vol_ts.plot(alpha=.7, lw=3, color='orangered', ax=ax,
@@ -1082,8 +1082,8 @@ def plot_rolling_sharpe(returns, factor_returns=None,
         file_name1 = 'rolling_sharpe_6MONTH_' + str(machine_id) + '.csv'
         rolling_sharpe_ts1 = pd.DataFrame(rolling_sharpe_ts)
         rolling_sharpe_ts1 = rolling_sharpe_ts1.reset_index()
-        rolling_sharpe_ts1['time_stamp'] = rolling_sharpe_ts1['date_time'].apply(lambda x: x.timestamp())
-        rolling_sharpe_ts1 = rolling_sharpe_ts1.drop('date_time', axis = 1)
+        rolling_sharpe_ts1['time_stamp'] = rolling_sharpe_ts1['date'].apply(lambda x: x.timestamp())
+        rolling_sharpe_ts1 = rolling_sharpe_ts1.drop('date', axis = 1)
         rolling_sharpe_ts1 = rolling_sharpe_ts1.set_index('time_stamp')
         rolling_sharpe_ts1.to_csv(file_name1)
     rolling_sharpe_ts.plot(alpha=.7, lw=3, color='orangered', ax=ax,
