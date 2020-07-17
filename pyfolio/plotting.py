@@ -42,7 +42,7 @@ import os
 
 # 根据不同平台设定工作目录
 if sys.platform == 'linux': 
-    os.chdir('~/fmz-btc-strategy') # Linux path
+    os.chdir('/home/admin/fmz-btc-strategy') # Linux path
 else:
     os.chdir('G:\\zwrk\\fmz-btc-strategy') # Windows path
     #os.chdir('E:\MyProjects\Python-for-Finance1') # Windows path
