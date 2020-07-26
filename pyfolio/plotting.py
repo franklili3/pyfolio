@@ -505,9 +505,14 @@ def plot_drawdown_underwater(returns, ax=None, machine_id=None, **kwargs):
     underwater = -100 * ((running_max - df_cum_rets) / running_max)
     if machine_id is not None:
         file_name = 'underwater_' + str(machine_id) + '.csv'
-        underwater.to_csv(file_name)
+        underwater1 = pd.DataFrame(underwater)
+        underwater1 = underwater1.reset_index()
+        underwater1['time_stamp'] = underwater1['date'].apply(lambda x: x.timestamp())
+        underwater1 = underwater1.drop('date', axis = 1)
+        underwater1 = underwater1.set_index('time_stamp')
+        underwater1.to_csv(file_name)
     (underwater).plot(ax=ax, kind='area', color='coral', alpha=0.7, **kwargs)
-    ax.set_ylabel('回撤')#Drawdown')
+    ax.set_ylabel('回撤比率')#Drawdown')
     #ax.set_title('回撤比率')#Underwater plot')
     ax.set_xlabel('')
     return ax
