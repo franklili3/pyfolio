@@ -226,7 +226,7 @@ def plot_annual_returns(returns, ax=None, machine_id=None, **kwargs):
         ep.aggregate_returns(
             returns,
             'yearly'))
-    ann_ret_df1 = 100 * ann_ret_df.sort_index(ascending=False)
+    ann_ret_df1 = 100 * ann_ret_df.sort_index()
     if machine_id is not None:
         file_name = 'annual_returns_' + str(machine_id) + '.csv'
         ann_ret_df1.to_csv(file_name)
