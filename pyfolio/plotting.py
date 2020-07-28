@@ -169,8 +169,6 @@ def plot_monthly_returns_heatmap(returns, ax=None, machine_id=None, **kwargs):
         The axes that were plotted on.
     """
 
-    if ax is None:
-        ax = plt.gca()
 
     monthly_ret_table = ep.aggregate_returns(returns, 'monthly')
     monthly_ret_table = monthly_ret_table.unstack().round(3)
@@ -178,7 +176,10 @@ def plot_monthly_returns_heatmap(returns, ax=None, machine_id=None, **kwargs):
     if machine_id is not None:
         file_name = 'monthly_returns_' + str(machine_id) + '.csv'
         monthly_ret_table1.to_csv(file_name)
-
+        if ax is None:
+            return 
+    if ax is None:
+        ax = plt.gca()
     sns.heatmap(
         monthly_ret_table.fillna(0) *
         100.0,
@@ -215,12 +216,6 @@ def plot_annual_returns(returns, ax=None, machine_id=None, **kwargs):
         The axes that were plotted on.
     """
 
-    if ax is None:
-        ax = plt.gca()
-
-    x_axis_formatter = FuncFormatter(utils.percentage)
-    ax.xaxis.set_major_formatter(FuncFormatter(x_axis_formatter))
-    ax.tick_params(axis='x', which='major')
 
     ann_ret_df = pd.DataFrame(
         ep.aggregate_returns(
@@ -230,7 +225,14 @@ def plot_annual_returns(returns, ax=None, machine_id=None, **kwargs):
     if machine_id is not None:
         file_name = 'annual_returns_' + str(machine_id) + '.csv'
         ann_ret_df1.to_csv(file_name)
+        if ax is None:
+            return
+    if ax is None:
+        ax = plt.gca()
 
+    x_axis_formatter = FuncFormatter(utils.percentage)
+    ax.xaxis.set_major_formatter(FuncFormatter(x_axis_formatter))
+    ax.tick_params(axis='x', which='major')
     ax.axvline(
         100 *
         ann_ret_df.values.mean(),
@@ -269,15 +271,15 @@ def plot_monthly_returns_dist(returns, ax=None, **kwargs):
         The axes that were plotted on.
     """
 
+
+    monthly_ret_table = ep.aggregate_returns(returns, 'monthly')
+
     if ax is None:
         ax = plt.gca()
 
     x_axis_formatter = FuncFormatter(utils.percentage)
     ax.xaxis.set_major_formatter(FuncFormatter(x_axis_formatter))
     ax.tick_params(axis='x', which='major')
-
-    monthly_ret_table = ep.aggregate_returns(returns, 'monthly')
-
     ax.hist(
         100 * monthly_ret_table,
         color='orangered',
@@ -439,18 +441,19 @@ def plot_drawdown_periods(returns, top=10, ax=None, machine_id=None, **kwargs):
         The axes that were plotted on.
     """
 
-    if ax is None:
-        ax = plt.gca()
-
-    y_axis_formatter = FuncFormatter(utils.two_dec_places)
-    ax.yaxis.set_major_formatter(FuncFormatter(y_axis_formatter))
 
     df_cum_rets = ep.cum_returns(returns, starting_value=1.0)
     df_drawdowns = timeseries.gen_drawdown_table(returns, top=top)
     if machine_id is not None:
         file_name = 'drawdowns_period_' + str(machine_id) + '.csv'
         df_drawdowns.to_csv(file_name)
+        if ax is None:
+            return
+    if ax is None:
+        ax = plt.gca()
 
+    y_axis_formatter = FuncFormatter(utils.two_dec_places)
+    ax.yaxis.set_major_formatter(FuncFormatter(y_axis_formatter))
     df_cum_rets.plot(ax=ax, **kwargs)
 
     lim = ax.get_ylim()
@@ -494,11 +497,6 @@ def plot_drawdown_underwater(returns, ax=None, machine_id=None, **kwargs):
         The axes that were plotted on.
     """
 
-    if ax is None:
-        ax = plt.gca()
-
-    y_axis_formatter = FuncFormatter(utils.percentage)
-    ax.yaxis.set_major_formatter(FuncFormatter(y_axis_formatter))
 
     df_cum_rets = ep.cum_returns(returns, starting_value=1.0)
     running_max = np.maximum.accumulate(df_cum_rets)
@@ -511,6 +509,13 @@ def plot_drawdown_underwater(returns, ax=None, machine_id=None, **kwargs):
         underwater1 = underwater1.drop('date', axis = 1)
         underwater1 = underwater1.set_index('time_stamp')
         underwater1.to_csv(file_name)
+        if ax is None:
+            return
+    if ax is None:
+        ax = plt.gca()
+
+    y_axis_formatter = FuncFormatter(utils.percentage)
+    ax.yaxis.set_major_formatter(FuncFormatter(y_axis_formatter))
     (underwater).plot(ax=ax, kind='area', color='coral', alpha=0.7, **kwargs)
     ax.set_ylabel('回撤比率')#Drawdown')
     #ax.set_title('回撤比率')#Underwater plot')
@@ -799,12 +804,6 @@ def plot_rolling_returns(returns,
         The axes that were plotted on.
     """
 
-    if ax is None:
-        ax = plt.gca()
-    
-    #ax.set_xlabel(' ')
-    ax.set_ylabel('累计收益率')#Cumulative returns')
-    ax.set_yscale('log' if logy else 'linear')
 
     if volatility_match and factor_returns is None:
         raise ValueError('volatility_match requires passing of '
@@ -815,8 +814,6 @@ def plot_rolling_returns(returns,
 
     cum_rets = ep.cum_returns(returns, 1.0)
 
-    y_axis_formatter = FuncFormatter(utils.two_dec_places)
-    ax.yaxis.set_major_formatter(FuncFormatter(y_axis_formatter))
 
     if factor_returns is not None:
         cum_factor_returns = ep.cum_returns(
@@ -861,7 +858,16 @@ def plot_rolling_returns(returns,
             file_name2 = 'live_cum_returns_' + str(machine_id) + '.csv'
         is_cum_returns1.to_csv(file_name1)
         oos_cum_returns1.to_csv(file_name2)
-
+        if ax is None:
+            return
+    if ax is None:
+        ax = plt.gca()
+    
+    #ax.set_xlabel(' ')
+    ax.set_ylabel('累计收益率')#Cumulative returns')
+    ax.set_yscale('log' if logy else 'linear')
+    y_axis_formatter = FuncFormatter(utils.two_dec_places)
+    ax.yaxis.set_major_formatter(FuncFormatter(y_axis_formatter))
     is_cum_returns.plot(lw=3, color='forestgreen', alpha=0.6,
                         label='回测', ax=ax, **kwargs)#Backtest
 
@@ -921,17 +927,8 @@ def plot_rolling_beta(returns, factor_returns, legend_loc='best',
         The axes that were plotted on.
     """
 
-    if ax is None:
-        ax = plt.gca()
-
-    y_axis_formatter = FuncFormatter(utils.two_dec_places)
-    ax.yaxis.set_major_formatter(FuncFormatter(y_axis_formatter))
-
-    #ax.set_title("投资组合相对" + str(factor_returns.name) + '的滚动贝塔值')
-    ax.set_ylabel('贝塔值')
     rb_1 = timeseries.rolling_beta(
         returns, factor_returns, rolling_window=APPROX_BDAYS_PER_MONTH * 6)
-    rb_1.plot(color='steelblue', lw=3, alpha=0.6, ax=ax, **kwargs)
     rb_2 = timeseries.rolling_beta(
         returns, factor_returns, rolling_window=APPROX_BDAYS_PER_MONTH * 12)
     if machine_id is not None:
@@ -949,6 +946,17 @@ def plot_rolling_beta(returns, factor_returns, legend_loc='best',
         rb_2_1 = rb_2_1.drop('date', axis = 1)
         rb_2_1 = rb_2_1.set_index('time_stamp')
         rb_2_1.to_csv(file_name2)
+        if ax is None:
+            return
+    if ax is None:
+        ax = plt.gca()
+
+    y_axis_formatter = FuncFormatter(utils.two_dec_places)
+    ax.yaxis.set_major_formatter(FuncFormatter(y_axis_formatter))
+
+    #ax.set_title("投资组合相对" + str(factor_returns.name) + '的滚动贝塔值')
+    ax.set_ylabel('贝塔值')
+    rb_1.plot(color='steelblue', lw=3, alpha=0.6, ax=ax, **kwargs)
     rb_2.plot(color='grey', lw=3, alpha=0.4, ax=ax, **kwargs)
     ax.axhline(rb_1.mean(), color='steelblue', linestyle='--', lw=3)
     ax.axhline(0.0, color='black', linestyle='-', lw=2)
@@ -992,11 +1000,6 @@ def plot_rolling_volatility(returns, factor_returns=None,
         The axes that were plotted on.
     """
 
-    if ax is None:
-        ax = plt.gca()
-
-    y_axis_formatter = FuncFormatter(utils.two_dec_places)
-    ax.yaxis.set_major_formatter(FuncFormatter(y_axis_formatter))
 
     rolling_vol_ts = timeseries.rolling_volatility(
         returns, rolling_window)
@@ -1008,8 +1011,6 @@ def plot_rolling_volatility(returns, factor_returns=None,
         rolling_vol_ts1 = rolling_vol_ts1.drop('date', axis = 1)
         rolling_vol_ts1 = rolling_vol_ts1.set_index('time_stamp')
         rolling_vol_ts1.to_csv(file_name1)
-    rolling_vol_ts.plot(alpha=.7, lw=3, color='orangered', ax=ax,
-                        **kwargs)
     if factor_returns is not None:
         rolling_vol_ts_factor = timeseries.rolling_volatility(
             factor_returns, rolling_window)
@@ -1021,6 +1022,16 @@ def plot_rolling_volatility(returns, factor_returns=None,
             rolling_vol_ts_factor1 = rolling_vol_ts_factor1.drop('date', axis = 1)
             rolling_vol_ts_factor1 = rolling_vol_ts_factor1.set_index('time_stamp')
             rolling_vol_ts_factor1.to_csv(file_name2)
+            if ax is None:
+                return
+    if ax is None:
+        ax = plt.gca()
+
+    y_axis_formatter = FuncFormatter(utils.two_dec_places)
+    ax.yaxis.set_major_formatter(FuncFormatter(y_axis_formatter))
+    rolling_vol_ts.plot(alpha=.7, lw=3, color='orangered', ax=ax,
+                        **kwargs)
+    if factor_returns is not None:
         rolling_vol_ts_factor.plot(alpha=.7, lw=3, color='grey', ax=ax,
                                    **kwargs)
 
@@ -1075,11 +1086,6 @@ def plot_rolling_sharpe(returns, factor_returns=None,
         The axes that were plotted on.
     """
 
-    if ax is None:
-        ax = plt.gca()
-
-    y_axis_formatter = FuncFormatter(utils.two_dec_places)
-    ax.yaxis.set_major_formatter(FuncFormatter(y_axis_formatter))
 
     rolling_sharpe_ts = timeseries.rolling_sharpe(
         returns, rolling_window)
@@ -1091,8 +1097,6 @@ def plot_rolling_sharpe(returns, factor_returns=None,
         rolling_sharpe_ts1 = rolling_sharpe_ts1.drop('date', axis = 1)
         rolling_sharpe_ts1 = rolling_sharpe_ts1.set_index('time_stamp')
         rolling_sharpe_ts1.to_csv(file_name1)
-    rolling_sharpe_ts.plot(alpha=.7, lw=3, color='orangered', ax=ax,
-                           **kwargs)
 
     if factor_returns is not None:
         rolling_sharpe_ts_factor = timeseries.rolling_sharpe(
@@ -1105,9 +1109,18 @@ def plot_rolling_sharpe(returns, factor_returns=None,
             rolling_sharpe_ts_factor1 = rolling_sharpe_ts_factor1.drop('date', axis = 1)
             rolling_sharpe_ts_factor1 = rolling_sharpe_ts_factor1.set_index('time_stamp')
             rolling_sharpe_ts_factor1.to_csv(file_name2)
+            if ax is None:
+                return
+    if ax is None:
+        ax = plt.gca()
+
+    y_axis_formatter = FuncFormatter(utils.two_dec_places)
+    ax.yaxis.set_major_formatter(FuncFormatter(y_axis_formatter))
+    rolling_sharpe_ts.plot(alpha=.7, lw=3, color='orangered', ax=ax,
+                           **kwargs)
+    if factor_returns is not None:
         rolling_sharpe_ts_factor.plot(alpha=.7, lw=3, color='grey', ax=ax,
                                       **kwargs)
-
     #ax.set_title('6个月滚动夏普比率')
     ax.axhline(
         rolling_sharpe_ts.mean(),
@@ -1399,8 +1412,6 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, machine_id=Non
         The axes that were plotted on.
     """
 
-    if ax is None:
-        ax = plt.gca()
 
     is_returns = returns if live_start_date is None \
         else returns.loc[returns.index < live_start_date]
@@ -1447,9 +1458,8 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, machine_id=Non
     if machine_id is not None:
         file_name1 = 'returns_quartiles_' + str(machine_id) + '.csv'
         quartile_df.to_csv(file_name1)
-    sns.boxplot(data=[is_returns, is_weekly, is_monthly],
-                palette=["#4c72B0", "#55A868", "#CCB974"],
-                ax=ax, **kwargs)
+        if ax is None:
+            return
 
     if live_start_date is not None:
         oos_returns = returns.loc[returns.index >= live_start_date]
@@ -1460,7 +1470,14 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, machine_id=Non
             file_name4 = 'live_monthly_returns_' + str(machine_id) + '.csv'
             oos_weekly.to_csv(file_name3)
             oos_monthly.to_csv(file_name4)
-
+            if ax is None:
+                return
+    if ax is None:
+        ax = plt.gca()
+    sns.boxplot(data=[is_returns, is_weekly, is_monthly],
+                palette=["#4c72B0", "#55A868", "#CCB974"],
+                ax=ax, **kwargs)
+    if live_start_date is not None:
         sns.swarmplot(data=[oos_returns, oos_weekly, oos_monthly], ax=ax,
                       color="red",
                       marker="d", **kwargs)
@@ -1469,6 +1486,7 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, machine_id=Non
                                            linestyle='')
         ax.legend(handles=[red_dots], frameon=True, framealpha=0.5)
     ax.set_xticklabels(['日', '周', '月'])#Daily', 'Weekly', 'Monthly'])
+    ax.set_ylabel(['收益率'])#Daily', 'Weekly', 'Monthly'])
     ax.set_title('收益率四分位')#Return quantiles')
 
     return ax
@@ -1827,7 +1845,7 @@ def show_worst_drawdown_periods(returns, top=5):
     )
 
 
-def plot_monthly_returns_timeseries(returns, ax=None, **kwargs):
+def plot_monthly_returns_timeseries(returns, ax=None, machine_id=None, **kwargs):
     """
     Plots monthly returns as a timeseries.
 
@@ -1850,12 +1868,21 @@ def plot_monthly_returns_timeseries(returns, ax=None, **kwargs):
     def cumulate_returns(x):
         return ep.cum_returns(x)[-1]
 
-    if ax is None:
-        ax = plt.gca()
 
     monthly_rets = returns.resample('M').apply(lambda x: cumulate_returns(x))
     monthly_rets = monthly_rets.to_period()
-
+    if machine_id is not None:
+        file_name1 = 'monthly_returns_timeseries' + str(machine_id) + '.csv'
+        monthly_rets1 = pd.DataFrame(monthly_rets)
+        monthly_rets1 = monthly_rets1.reset_index()
+        monthly_rets1['time_stamp'] = monthly_rets1['date'].apply(lambda x: x.timestamp())
+        monthly_rets1 = monthly_rets1.drop('date', axis = 1)
+        monthly_rets1 = monthly_rets1.set_index('time_stamp')
+        monthly_rets1.to_csv(file_name1)
+        if ax is None:
+            return
+    if ax is None:
+        ax = plt.gca()
     sns.barplot(x=monthly_rets.index,
                 y=monthly_rets.values,
                 color='steelblue')
