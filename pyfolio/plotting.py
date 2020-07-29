@@ -1873,12 +1873,7 @@ def plot_monthly_returns_timeseries(returns, ax=None, machine_id=None, **kwargs)
     monthly_rets = monthly_rets.to_period()
     if machine_id is not None:
         file_name1 = 'monthly_returns_timeseries' + str(machine_id) + '.csv'
-        monthly_rets1 = pd.DataFrame(monthly_rets)
-        monthly_rets1 = monthly_rets1.reset_index()
-        monthly_rets1['time_stamp'] = monthly_rets1['date'].apply(lambda x: x.timestamp())
-        monthly_rets1 = monthly_rets1.drop('date', axis = 1)
-        monthly_rets1 = monthly_rets1.set_index('time_stamp')
-        monthly_rets1.to_csv(file_name1)
+        monthly_rets.to_csv(file_name1)
         if ax is None:
             return
     if ax is None:
