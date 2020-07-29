@@ -1872,7 +1872,7 @@ def plot_monthly_returns_timeseries(returns, ax=None, machine_id=None, **kwargs)
     monthly_rets = returns.resample('M').apply(lambda x: cumulate_returns(x))
     monthly_rets = monthly_rets.to_period()
     if machine_id is not None:
-        file_name1 = 'monthly_returns_timeseries' + str(machine_id) + '.csv'
+        file_name1 = 'monthly_returns_timeseries_' + str(machine_id) + '.csv'
         monthly_rets.to_csv(file_name1)
         if ax is None:
             return
