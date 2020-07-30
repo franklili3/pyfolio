@@ -824,9 +824,10 @@ def plot_rolling_returns(returns,
         cum_factor_returns1['time_stamp'] = cum_factor_returns1['date'].apply(lambda x: x.timestamp())
         cum_factor_returns1 = cum_factor_returns1.drop('date', axis = 1)
         cum_factor_returns1 = cum_factor_returns1.set_index('time_stamp')
-        if machine_id is not None:
-            file_name = 'cum_factor_returns_' + str(machine_id) + '.csv'
-            cum_factor_returns1.to_csv(file_name)
+        cum_factor_returns1 = cum_factor_returns1.rename(columns={'0': '中证800指数累计收益率'})
+        #if machine_id is not None:
+            #file_name = 'cum_factor_returns_' + str(machine_id) + '.csv'
+            #cum_factor_returns1.to_csv(file_name)
 
     if live_start_date is not None:
         live_start_date = ep.utils.get_utc_timestamp(live_start_date)
@@ -840,21 +841,26 @@ def plot_rolling_returns(returns,
     is_cum_returns1['time_stamp'] = is_cum_returns1['date'].apply(lambda x: x.timestamp())
     is_cum_returns1 = is_cum_returns1.drop('date', axis = 1)
     is_cum_returns1 = is_cum_returns1.set_index('time_stamp')
+    is_cum_returns1 = is_cum_returns1.rename(columns={'0': '策略累计收益率'})
+
     oos_cum_returns1 = pd.DataFrame(oos_cum_returns)
     oos_cum_returns1 = oos_cum_returns1.reset_index()
     oos_cum_returns1['time_stamp'] = oos_cum_returns1['date'].apply(lambda x: x.timestamp())
     oos_cum_returns1 = oos_cum_returns1.drop('date', axis = 1)
     oos_cum_returns1 = oos_cum_returns1.set_index('time_stamp')
+    oos_cum_returns1 = oos_cum_returns1.rename(columns={'0': '实盘累计收益率'})
+    cum_returns_all = pd.merge(is_cum_returns1, cum_factor_returns1, left_index=True, right_index=True)
+    cum_returns_all1 = pd.merge(cum_returns_all, oos_cum_returns1, left_index=True, right_index=True)
 
     if machine_id is not None:
         if volatility_match and factor_returns is not None:
-            file_name1 = 'backtest_cum_returns_volatility_match_' + str(machine_id) + '.csv'
-            file_name2 = 'live_cum_returns_volatility_match_' + str(machine_id) + '.csv'
+            file_name1 = 'cum_returns_volatility_match_' + str(machine_id) + '.csv'
+            #file_name2 = 'live_cum_returns_volatility_match_' + str(machine_id) + '.csv'
         else:
-            file_name1 = 'backtest_cum_returns_' + str(machine_id) + '.csv'
-            file_name2 = 'live_cum_returns_' + str(machine_id) + '.csv'
-        is_cum_returns1.to_csv(file_name1)
-        oos_cum_returns1.to_csv(file_name2)
+            file_name1 = 'cum_returns_' + str(machine_id) + '.csv'
+            #file_name2 = 'live_cum_returns_' + str(machine_id) + '.csv'
+        cum_returns_all1.to_csv(file_name1)
+        #oos_cum_returns1.to_csv(file_name2)
         if ax is None:
             return
     if ax is None:
