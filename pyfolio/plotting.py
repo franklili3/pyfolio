@@ -939,20 +939,21 @@ def plot_rolling_beta(returns, factor_returns, legend_loc='best',
     rb_2 = timeseries.rolling_beta(
         returns, factor_returns, rolling_window=APPROX_BDAYS_PER_MONTH * 12)
     if machine_id is not None:
-        file_name1 = 'rolling_beta_6MONTH_' + str(machine_id) + '.csv'
-        file_name2 = 'rolling_beta_12MONTH_' + str(machine_id) + '.csv'
+        file_name2 = 'rolling_beta_' + str(machine_id) + '.csv'
         rb_1_1 = pd.DataFrame(rb_1)
         rb_1_1 = rb_1_1.reset_index()
         rb_1_1['time_stamp'] = rb_1_1['date'].apply(lambda x: x.timestamp())
         rb_1_1 = rb_1_1.drop('date', axis = 1)
         rb_1_1 = rb_1_1.set_index('time_stamp')
-        rb_1_1.to_csv(file_name1)
+        rb_1_1.columns = ['策略相对中证800指数6个月滚动贝塔值']
         rb_2_1 = pd.DataFrame(rb_2)
         rb_2_1 = rb_2_1.reset_index()
         rb_2_1['time_stamp'] = rb_2_1['date'].apply(lambda x: x.timestamp())
         rb_2_1 = rb_2_1.drop('date', axis = 1)
         rb_2_1 = rb_2_1.set_index('time_stamp')
-        rb_2_1.to_csv(file_name2)
+        rb_2_1.columns = ['策略相对中证800指数12个月滚动贝塔值']
+        rb_1_2 = pd.merge(rb_1_1, rb_2_1, how='outer', left_index=True, right_index=True)
+        rb_1_2.to_csv(file_name2)
         if ax is None:
             return
     if ax is None:
