@@ -849,8 +849,8 @@ def plot_rolling_returns(returns,
     oos_cum_returns1 = oos_cum_returns1.drop('date', axis = 1)
     oos_cum_returns1 = oos_cum_returns1.set_index('time_stamp')
     oos_cum_returns1 = oos_cum_returns1.rename(columns={'0': '实盘累计收益率'})
-    cum_returns_all = pd.merge(is_cum_returns1, cum_factor_returns1, left_index=True, right_index=True)
-    cum_returns_all1 = pd.merge(cum_returns_all, oos_cum_returns1, left_index=True, right_index=True)
+    cum_returns_all = pd.merge(is_cum_returns1, cum_factor_returns1, how='outer', left_index=True, right_index=True)
+    cum_returns_all1 = pd.merge(cum_returns_all, oos_cum_returns1, how='outer', left_index=True, right_index=True)
 
     if machine_id is not None:
         if volatility_match and factor_returns is not None:
