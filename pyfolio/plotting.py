@@ -841,7 +841,7 @@ def plot_rolling_returns(returns,
     is_cum_returns1['time_stamp'] = is_cum_returns1['date'].apply(lambda x: x.timestamp())
     is_cum_returns1 = is_cum_returns1.drop('date', axis = 1)
     is_cum_returns1 = is_cum_returns1.set_index('time_stamp')
-    is_cum_returns1 = is_cum_returns1.rename(columns={'0': '策略累计收益率'})
+    is_cum_returns1 = is_cum_returns1.rename(columns={'0': '策略回测累计收益率'})
 
     oos_cum_returns1 = pd.DataFrame(oos_cum_returns)
     oos_cum_returns1 = oos_cum_returns1.reset_index()
