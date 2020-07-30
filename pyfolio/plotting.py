@@ -824,7 +824,7 @@ def plot_rolling_returns(returns,
         cum_factor_returns1['time_stamp'] = cum_factor_returns1['date'].apply(lambda x: x.timestamp())
         cum_factor_returns1 = cum_factor_returns1.drop('date', axis = 1)
         cum_factor_returns1 = cum_factor_returns1.set_index('time_stamp')
-        cum_factor_returns1.columns = '中证800指数累计收益率'
+        cum_factor_returns1.columns = ['中证800指数累计收益率']
         #if machine_id is not None:
             #file_name = 'cum_factor_returns_' + str(machine_id) + '.csv'
             #cum_factor_returns1.to_csv(file_name)
@@ -841,14 +841,14 @@ def plot_rolling_returns(returns,
     is_cum_returns1['time_stamp'] = is_cum_returns1['date'].apply(lambda x: x.timestamp())
     is_cum_returns1 = is_cum_returns1.drop('date', axis = 1)
     is_cum_returns1 = is_cum_returns1.set_index('time_stamp')
-    is_cum_returns1.columns = '策略回测累计收益率'
+    is_cum_returns1.columns = ['策略回测累计收益率']
 
     oos_cum_returns1 = pd.DataFrame(oos_cum_returns)
     oos_cum_returns1 = oos_cum_returns1.reset_index()
     oos_cum_returns1['time_stamp'] = oos_cum_returns1['date'].apply(lambda x: x.timestamp())
     oos_cum_returns1 = oos_cum_returns1.drop('date', axis = 1)
     oos_cum_returns1 = oos_cum_returns1.set_index('time_stamp')
-    oos_cum_returns1.columns = '实盘累计收益率'
+    oos_cum_returns1.columns = ['实盘累计收益率']
     cum_returns_all = pd.merge(is_cum_returns1, cum_factor_returns1, how='outer', left_index=True, right_index=True)
     cum_returns_all1 = pd.merge(cum_returns_all, oos_cum_returns1, how='outer', left_index=True, right_index=True)
 
