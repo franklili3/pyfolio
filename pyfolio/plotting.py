@@ -224,6 +224,7 @@ def plot_annual_returns(returns, ax=None, machine_id=None, **kwargs):
     ann_ret_df1 = 100 * ann_ret_df.sort_index()
     if machine_id is not None:
         file_name = 'annual_returns_' + str(machine_id) + '.csv'
+        ann_ret_df1.columns = ['年收益率（%）']
         ann_ret_df1.to_csv(file_name)
         if ax is None:
             return
@@ -1012,24 +1013,25 @@ def plot_rolling_volatility(returns, factor_returns=None,
     rolling_vol_ts = timeseries.rolling_volatility(
         returns, rolling_window)
     if machine_id is not None:
-        file_name1 = 'rolling_volatility_6MONTH_' + str(machine_id) + '.csv'
         rolling_vol_ts1 = pd.DataFrame(rolling_vol_ts)
         rolling_vol_ts1 = rolling_vol_ts1.reset_index()
         rolling_vol_ts1['time_stamp'] = rolling_vol_ts1['date'].apply(lambda x: x.timestamp())
         rolling_vol_ts1 = rolling_vol_ts1.drop('date', axis = 1)
         rolling_vol_ts1 = rolling_vol_ts1.set_index('time_stamp')
-        rolling_vol_ts1.to_csv(file_name1)
+        rolling_vol_ts1.columns = ['策略6个月滚动波动率']
     if factor_returns is not None:
         rolling_vol_ts_factor = timeseries.rolling_volatility(
             factor_returns, rolling_window)
         if machine_id is not None:
-            file_name2 = 'rolling_volatility_factor_6MONTH_' + str(machine_id) + '.csv'
+            file_name2 = 'rolling_volatility_' + str(machine_id) + '.csv'
             rolling_vol_ts_factor1 = pd.DataFrame(rolling_vol_ts_factor)
             rolling_vol_ts_factor1 = rolling_vol_ts_factor1.reset_index()
             rolling_vol_ts_factor1['time_stamp'] = rolling_vol_ts_factor1['date'].apply(lambda x: x.timestamp())
             rolling_vol_ts_factor1 = rolling_vol_ts_factor1.drop('date', axis = 1)
             rolling_vol_ts_factor1 = rolling_vol_ts_factor1.set_index('time_stamp')
-            rolling_vol_ts_factor1.to_csv(file_name2)
+            rolling_vol_ts_factor1.columns = ['中证800指数6个月滚动波动率']
+            rolling_vol = pd.merge(rolling_vol_ts1, rolling_vol_ts_factor1, how='outer', left_index=True, right_index=True)
+            rolling_vol.to_csv(file_name2)
             if ax is None:
                 return
     if ax is None:
@@ -1098,25 +1100,26 @@ def plot_rolling_sharpe(returns, factor_returns=None,
     rolling_sharpe_ts = timeseries.rolling_sharpe(
         returns, rolling_window)
     if machine_id is not None:
-        file_name1 = 'rolling_sharpe_6MONTH_' + str(machine_id) + '.csv'
         rolling_sharpe_ts1 = pd.DataFrame(rolling_sharpe_ts)
         rolling_sharpe_ts1 = rolling_sharpe_ts1.reset_index()
         rolling_sharpe_ts1['time_stamp'] = rolling_sharpe_ts1['date'].apply(lambda x: x.timestamp())
         rolling_sharpe_ts1 = rolling_sharpe_ts1.drop('date', axis = 1)
         rolling_sharpe_ts1 = rolling_sharpe_ts1.set_index('time_stamp')
-        rolling_sharpe_ts1.to_csv(file_name1)
+        rolling_sharpe_ts1.columns = ['策略6个月滚动夏普比率']
 
     if factor_returns is not None:
         rolling_sharpe_ts_factor = timeseries.rolling_sharpe(
             factor_returns, rolling_window)
         if machine_id is not None:
-            file_name2 = 'rolling_sharpe_factor_6MONTH_' + str(machine_id) + '.csv'
+            file_name2 = 'rolling_sharpe_' + str(machine_id) + '.csv'
             rolling_sharpe_ts_factor1 = pd.DataFrame(rolling_sharpe_ts_factor)
             rolling_sharpe_ts_factor1 = rolling_sharpe_ts_factor1.reset_index()
             rolling_sharpe_ts_factor1['time_stamp'] = rolling_sharpe_ts_factor1['date'].apply(lambda x: x.timestamp())
             rolling_sharpe_ts_factor1 = rolling_sharpe_ts_factor1.drop('date', axis = 1)
             rolling_sharpe_ts_factor1 = rolling_sharpe_ts_factor1.set_index('time_stamp')
-            rolling_sharpe_ts_factor1.to_csv(file_name2)
+            rolling_sharpe_ts_factor1.columns = ['中证800指数6个月滚动夏普比率']
+            rolling_sharpe = pd.merge(rolling_sharpe_ts1, rolling_sharpe_ts_factor1, how='outer', left_index=True, right_index=True)
+            rolling_sharpe.to_csv(file_name2)
             if ax is None:
                 return
     if ax is None:
