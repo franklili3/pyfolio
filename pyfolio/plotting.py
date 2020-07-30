@@ -827,9 +827,6 @@ def plot_rolling_returns(returns,
         if machine_id is not None:
             file_name = 'cum_factor_returns_' + str(machine_id) + '.csv'
             cum_factor_returns1.to_csv(file_name)
-        cum_factor_returns.plot(lw=2, color='gray',
-                                label=factor_returns.name, alpha=0.60,
-                                ax=ax, **kwargs)
 
     if live_start_date is not None:
         live_start_date = ep.utils.get_utc_timestamp(live_start_date)
@@ -862,7 +859,11 @@ def plot_rolling_returns(returns,
             return
     if ax is None:
         ax = plt.gca()
-    
+    if factor_returns is not None:
+        cum_factor_returns.plot(lw=2, color='gray',
+                                label=factor_returns.name, alpha=0.60,
+                                ax=ax, **kwargs)
+
     #ax.set_xlabel(' ')
     ax.set_ylabel('累计收益率')#Cumulative returns')
     ax.set_yscale('log' if logy else 'linear')
