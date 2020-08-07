@@ -444,10 +444,14 @@ def plot_drawdown_periods(returns, top=10, ax=None, machine_id=None, **kwargs):
 
 
     df_cum_rets = ep.cum_returns(returns, starting_value=1.0)
+    df_cum_rets.columns = ['累计收益率']
+
     df_drawdowns = timeseries.gen_drawdown_table(returns, top=top)
     if machine_id is not None:
         file_name = 'drawdowns_period_' + str(machine_id) + '.csv'
         df_drawdowns.to_csv(file_name)
+        file_name2 = 'cum_returns_all_' + str(machine_id) + '.csv'
+        df_cum_rets.to_csv(file_name2)
         if ax is None:
             return
     if ax is None:
