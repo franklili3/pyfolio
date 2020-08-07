@@ -509,6 +509,7 @@ def plot_drawdown_underwater(returns, ax=None, machine_id=None, **kwargs):
         underwater1['time_stamp'] = underwater1['date'].apply(lambda x: x.timestamp())
         underwater1 = underwater1.drop('date', axis = 1)
         underwater1 = underwater1.set_index('time_stamp')
+        underwater1.columns = ['回撤比率%']
         underwater1.to_csv(file_name)
         if ax is None:
             return
