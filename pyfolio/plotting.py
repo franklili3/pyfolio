@@ -444,12 +444,12 @@ def plot_drawdown_periods(returns, top=10, ax=None, machine_id=None, **kwargs):
 
 
     cum_rets = ep.cum_returns(returns, starting_value=1.0)
-    df_cum_rets1 = pd.DataFrame(cum_rets)
-    df_cum_rets1 = df_cum_rets1.reset_index()
+    df_cum_rets = pd.DataFrame(cum_rets)
+    df_cum_rets1 = df_cum_rets.reset_index()
     df_cum_rets1['time_stamp'] = df_cum_rets1['date'].apply(lambda x: x.timestamp())
     df_cum_rets1 = df_cum_rets1.drop('date', axis = 1)
     df_cum_rets1 = df_cum_rets1.set_index('time_stamp')
-    df_cum_rets1.columns = ['累计收益率']
+    df_cum_rets1  = df_cum_rets1.rename(columns={'returns': '累计收益率'})
 
     df_drawdowns = timeseries.gen_drawdown_table(returns, top=top)
     if machine_id is not None:
