@@ -449,7 +449,7 @@ def plot_drawdown_periods(returns, top=10, ax=None, machine_id=None, **kwargs):
     df_cum_rets1['time_stamp'] = df_cum_rets1['date'].apply(lambda x: x.timestamp() * 1000)
     df_cum_rets1 = df_cum_rets1.drop('date', axis = 1)
     df_cum_rets1 = df_cum_rets1.set_index('time_stamp')
-    df_cum_rets1.columns = ['累计收益率']
+    df_cum_rets1  = df_cum_rets1.rename(columns={'returns': '累计收益率'})
 
     df_drawdowns = timeseries.gen_drawdown_table(returns, top=top)
     if machine_id is not None:
