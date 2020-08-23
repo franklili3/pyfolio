@@ -446,7 +446,7 @@ def plot_drawdown_periods(returns, top=10, ax=None, machine_id=None, **kwargs):
     cum_rets = ep.cum_returns(returns, starting_value=1.0)
     df_cum_rets1 = pd.DataFrame(cum_rets)
     df_cum_rets1 = df_cum_rets1.reset_index()
-    df_cum_rets1['time_stamp'] = df_cum_rets1['date'].apply(lambda x: x.timestamp())
+    df_cum_rets1['time_stamp'] = df_cum_rets1['date'].apply(lambda x: x.timestamp() * 1000)
     df_cum_rets1 = df_cum_rets1.drop('date', axis = 1)
     df_cum_rets1 = df_cum_rets1.set_index('time_stamp')
     df_cum_rets1.columns = ['累计收益率']
@@ -515,7 +515,7 @@ def plot_drawdown_underwater(returns, ax=None, machine_id=None, **kwargs):
         file_name = 'underwater_' + str(machine_id) + '.csv'
         underwater1 = pd.DataFrame(underwater)
         underwater1 = underwater1.reset_index()
-        underwater1['time_stamp'] = underwater1['date'].apply(lambda x: x.timestamp())
+        underwater1['time_stamp'] = underwater1['date'].apply(lambda x: x.timestamp() * 1000)
         underwater1 = underwater1.drop('date', axis = 1)
         underwater1 = underwater1.set_index('time_stamp')
         underwater1.columns = ['回撤比率%']
@@ -832,7 +832,7 @@ def plot_rolling_returns(returns,
         cum_factor_returns_df = pd.DataFrame(cum_factor_returns)
         cum_factor_returns1 = cum_factor_returns_df.reset_index()
         #print('columns of cum_factor_returns1: ', cum_factor_returns1.columns.values.tolist())
-        cum_factor_returns1['time_stamp'] = cum_factor_returns1['date'].apply(lambda x: x.timestamp())
+        cum_factor_returns1['time_stamp'] = cum_factor_returns1['date'].apply(lambda x: x.timestamp() * 1000)
         cum_factor_returns1 = cum_factor_returns1.drop('date', axis = 1)
         cum_factor_returns1 = cum_factor_returns1.set_index('time_stamp')
         cum_factor_returns1.columns = ['中证800指数累计收益率']
@@ -849,14 +849,14 @@ def plot_rolling_returns(returns,
         oos_cum_returns = pd.Series([])
     is_cum_returns1 = pd.DataFrame(is_cum_returns)
     is_cum_returns1 = is_cum_returns1.reset_index()
-    is_cum_returns1['time_stamp'] = is_cum_returns1['date'].apply(lambda x: x.timestamp())
+    is_cum_returns1['time_stamp'] = is_cum_returns1['date'].apply(lambda x: x.timestamp() * 1000)
     is_cum_returns1 = is_cum_returns1.drop('date', axis = 1)
     is_cum_returns1 = is_cum_returns1.set_index('time_stamp')
     is_cum_returns1.columns = ['策略回测累计收益率']
 
     oos_cum_returns1 = pd.DataFrame(oos_cum_returns)
     oos_cum_returns1 = oos_cum_returns1.reset_index()
-    oos_cum_returns1['time_stamp'] = oos_cum_returns1['date'].apply(lambda x: x.timestamp())
+    oos_cum_returns1['time_stamp'] = oos_cum_returns1['date'].apply(lambda x: x.timestamp() * 1000)
     oos_cum_returns1 = oos_cum_returns1.drop('date', axis = 1)
     oos_cum_returns1 = oos_cum_returns1.set_index('time_stamp')
     oos_cum_returns1.columns = ['实盘累计收益率']
@@ -953,13 +953,13 @@ def plot_rolling_beta(returns, factor_returns, legend_loc='best',
         file_name2 = 'rolling_beta_' + str(machine_id) + '.csv'
         rb_1_1 = pd.DataFrame(rb_1)
         rb_1_1 = rb_1_1.reset_index()
-        rb_1_1['time_stamp'] = rb_1_1['date'].apply(lambda x: x.timestamp())
+        rb_1_1['time_stamp'] = rb_1_1['date'].apply(lambda x: x.timestamp() * 1000)
         rb_1_1 = rb_1_1.drop('date', axis = 1)
         rb_1_1 = rb_1_1.set_index('time_stamp')
         rb_1_1.columns = ['策略相对中证800指数6个月滚动贝塔值']
         rb_2_1 = pd.DataFrame(rb_2)
         rb_2_1 = rb_2_1.reset_index()
-        rb_2_1['time_stamp'] = rb_2_1['date'].apply(lambda x: x.timestamp())
+        rb_2_1['time_stamp'] = rb_2_1['date'].apply(lambda x: x.timestamp() * 1000)
         rb_2_1 = rb_2_1.drop('date', axis = 1)
         rb_2_1 = rb_2_1.set_index('time_stamp')
         rb_2_1.columns = ['策略相对中证800指数12个月滚动贝塔值']
@@ -1025,7 +1025,7 @@ def plot_rolling_volatility(returns, factor_returns=None,
     if machine_id is not None:
         rolling_vol_ts1 = pd.DataFrame(rolling_vol_ts)
         rolling_vol_ts1 = rolling_vol_ts1.reset_index()
-        rolling_vol_ts1['time_stamp'] = rolling_vol_ts1['date'].apply(lambda x: x.timestamp())
+        rolling_vol_ts1['time_stamp'] = rolling_vol_ts1['date'].apply(lambda x: x.timestamp() * 1000)
         rolling_vol_ts1 = rolling_vol_ts1.drop('date', axis = 1)
         rolling_vol_ts1 = rolling_vol_ts1.set_index('time_stamp')
         rolling_vol_ts1.columns = ['策略6个月滚动波动率']
@@ -1036,7 +1036,7 @@ def plot_rolling_volatility(returns, factor_returns=None,
             file_name2 = 'rolling_volatility_' + str(machine_id) + '.csv'
             rolling_vol_ts_factor1 = pd.DataFrame(rolling_vol_ts_factor)
             rolling_vol_ts_factor1 = rolling_vol_ts_factor1.reset_index()
-            rolling_vol_ts_factor1['time_stamp'] = rolling_vol_ts_factor1['date'].apply(lambda x: x.timestamp())
+            rolling_vol_ts_factor1['time_stamp'] = rolling_vol_ts_factor1['date'].apply(lambda x: x.timestamp() * 1000)
             rolling_vol_ts_factor1 = rolling_vol_ts_factor1.drop('date', axis = 1)
             rolling_vol_ts_factor1 = rolling_vol_ts_factor1.set_index('time_stamp')
             rolling_vol_ts_factor1.columns = ['中证800指数6个月滚动波动率']
@@ -1112,7 +1112,7 @@ def plot_rolling_sharpe(returns, factor_returns=None,
     if machine_id is not None:
         rolling_sharpe_ts1 = pd.DataFrame(rolling_sharpe_ts)
         rolling_sharpe_ts1 = rolling_sharpe_ts1.reset_index()
-        rolling_sharpe_ts1['time_stamp'] = rolling_sharpe_ts1['date'].apply(lambda x: x.timestamp())
+        rolling_sharpe_ts1['time_stamp'] = rolling_sharpe_ts1['date'].apply(lambda x: x.timestamp() * 1000)
         rolling_sharpe_ts1 = rolling_sharpe_ts1.drop('date', axis = 1)
         rolling_sharpe_ts1 = rolling_sharpe_ts1.set_index('time_stamp')
         rolling_sharpe_ts1.columns = ['策略6个月滚动夏普比率']
@@ -1124,7 +1124,7 @@ def plot_rolling_sharpe(returns, factor_returns=None,
             file_name2 = 'rolling_sharpe_' + str(machine_id) + '.csv'
             rolling_sharpe_ts_factor1 = pd.DataFrame(rolling_sharpe_ts_factor)
             rolling_sharpe_ts_factor1 = rolling_sharpe_ts_factor1.reset_index()
-            rolling_sharpe_ts_factor1['time_stamp'] = rolling_sharpe_ts_factor1['date'].apply(lambda x: x.timestamp())
+            rolling_sharpe_ts_factor1['time_stamp'] = rolling_sharpe_ts_factor1['date'].apply(lambda x: x.timestamp() * 1000)
             rolling_sharpe_ts_factor1 = rolling_sharpe_ts_factor1.drop('date', axis = 1)
             rolling_sharpe_ts_factor1 = rolling_sharpe_ts_factor1.set_index('time_stamp')
             rolling_sharpe_ts_factor1.columns = ['中证800指数6个月滚动夏普比率']
