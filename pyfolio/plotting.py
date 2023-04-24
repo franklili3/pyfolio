@@ -493,7 +493,7 @@ def plot_drawdown_periods(returns, top=10, ax=None, machine_id=None, **kwargs):
     return ax
 
 
-def plot_drawdown_underwater(returns, ax=None, machine_id=None, **kwargs):
+def plot_drawdown_underwater(returns, ax=None, upload_path=None, **kwargs):
     """
     Plots how far underwaterr returns are over time, or plots current
     drawdown vs. date.
@@ -518,17 +518,15 @@ def plot_drawdown_underwater(returns, ax=None, machine_id=None, **kwargs):
     df_cum_rets = ep.cum_returns(returns, starting_value=1.0)
     running_max = np.maximum.accumulate(df_cum_rets)
     underwater = -100 * ((running_max - df_cum_rets) / running_max)
-    if machine_id is not None:
-        file_name = 'underwater_' + str(machine_id) + '.csv'
-        underwater1 = pd.DataFrame(underwater)
-        underwater1 = underwater1.reset_index()
-        underwater1['time_stamp'] = underwater1['date'].apply(lambda x: x.timestamp() * 1000)
-        underwater1 = underwater1.drop('date', axis = 1)
-        underwater1 = underwater1.set_index('time_stamp')
-        underwater1.columns = ['回撤比率%']
-        underwater1.to_csv(file_name)
-        if ax is None:
-            return
+    
+    file_name = upload_path + 'underwater.csv'
+    underwater1 = pd.DataFrame(underwater)
+    underwater1 = underwater1.reset_index()
+    underwater1['time_stamp'] = underwater1['date'].apply(lambda x: x.timestamp() * 1000)
+    underwater1 = underwater1.drop('date', axis = 1)
+    underwater1 = underwater1.set_index('time_stamp')
+    underwater1.columns = ['回撤比率%']
+    underwater1.to_csv(file_name)
     if ax is None:
         ax = plt.gca()
 
@@ -769,7 +767,7 @@ def plot_rolling_returns(returns,
                          volatility_match=False,
                          cone_function=timeseries.forecast_cone_bootstrap,
                          ax=None,
-                         machine_id=None, **kwargs):
+                         upload_path=None, **kwargs):
     """
     Plots cumulative rolling returns versus some benchmarks'.
 
@@ -837,12 +835,12 @@ def plot_rolling_returns(returns,
         cum_factor_returns = ep.cum_returns(
             factor_returns[cum_rets.index], 1.0)
         cum_factor_returns_df = pd.DataFrame(cum_factor_returns)
-        cum_factor_returns1 = cum_factor_returns_df.reset_index()
+        #cum_factor_returns1 = cum_factor_returns_df.reset_index()
         #print('columns of cum_factor_returns1: ', cum_factor_returns1.columns.values.tolist())
-        cum_factor_returns1['time_stamp'] = cum_factor_returns1['date'].apply(lambda x: x.timestamp() * 1000)
-        cum_factor_returns1 = cum_factor_returns1.drop('date', axis = 1)
-        cum_factor_returns1 = cum_factor_returns1.set_index('time_stamp')
-        cum_factor_returns1.columns = ['中证800指数累计收益率']
+        #cum_factor_returns1['time_stamp'] = cum_factor_returns1['date'].apply(lambda x: x.timestamp() * 1000)
+        #cum_factor_returns1 = cum_factor_returns1.drop('date', axis = 1)
+        #cum_factor_returns1 = cum_factor_returns1.set_index('date')
+        cum_factor_returns_df.columns = ['中证800指数累计收益率']
         #if machine_id is not None:
             #file_name = 'cum_factor_returns_' + str(machine_id) + '.csv'
             #cum_factor_returns1.to_csv(file_name)
@@ -855,32 +853,29 @@ def plot_rolling_returns(returns,
         is_cum_returns = cum_rets
         oos_cum_returns = pd.Series([])
     is_cum_returns1 = pd.DataFrame(is_cum_returns)
-    is_cum_returns1 = is_cum_returns1.reset_index()
-    is_cum_returns1['time_stamp'] = is_cum_returns1['date'].apply(lambda x: x.timestamp() * 1000)
-    is_cum_returns1 = is_cum_returns1.drop('date', axis = 1)
-    is_cum_returns1 = is_cum_returns1.set_index('time_stamp')
+    #is_cum_returns1 = is_cum_returns1.reset_index()
+    #is_cum_returns1['time_stamp'] = is_cum_returns1['date'].apply(lambda x: x.timestamp() * 1000)
+    #is_cum_returns1 = is_cum_returns1.drop('date', axis = 1)
+    #is_cum_returns1 = is_cum_returns1.set_index('time_stamp')
     is_cum_returns1.columns = ['策略回测累计收益率']
 
     oos_cum_returns1 = pd.DataFrame(oos_cum_returns)
-    oos_cum_returns1 = oos_cum_returns1.reset_index()
-    oos_cum_returns1['time_stamp'] = oos_cum_returns1['date'].apply(lambda x: x.timestamp() * 1000)
-    oos_cum_returns1 = oos_cum_returns1.drop('date', axis = 1)
-    oos_cum_returns1 = oos_cum_returns1.set_index('time_stamp')
+    #oos_cum_returns1 = oos_cum_returns1.reset_index()
+    #oos_cum_returns1['time_stamp'] = oos_cum_returns1['date'].apply(lambda x: x.timestamp() * 1000)
+    #oos_cum_returns1 = oos_cum_returns1.drop('date', axis = 1)
+    #oos_cum_returns1 = oos_cum_returns1.set_index('time_stamp')
     oos_cum_returns1.columns = ['实盘累计收益率']
-    cum_returns_all = pd.merge(is_cum_returns1, cum_factor_returns1, how='outer', left_index=True, right_index=True)
+    cum_returns_all = pd.merge(is_cum_returns1, cum_factor_returns_df, how='outer', left_index=True, right_index=True)
     cum_returns_all1 = pd.merge(cum_returns_all, oos_cum_returns1, how='outer', left_index=True, right_index=True)
 
-    if machine_id is not None:
-        if volatility_match and factor_returns is not None:
-            file_name1 = 'cum_returns_volatility_match_' + str(machine_id) + '.csv'
-            #file_name2 = 'live_cum_returns_volatility_match_' + str(machine_id) + '.csv'
-        else:
-            file_name1 = 'cum_returns_' + str(machine_id) + '.csv'
-            #file_name2 = 'live_cum_returns_' + str(machine_id) + '.csv'
-        cum_returns_all1.to_csv(file_name1)
-        #oos_cum_returns1.to_csv(file_name2)
-        if ax is None:
-            return
+    if volatility_match and factor_returns is not None:
+        file_name1 = upload_path + 'cum_returns_volatility_match.csv'
+        #file_name2 = 'live_cum_returns_volatility_match_' + str(machine_id) + '.csv'
+    else:
+        file_name1 = upload_path + 'cum_returns.csv'
+        #file_name2 = 'live_cum_returns_' + str(machine_id) + '.csv'
+    cum_returns_all1.to_csv(file_name1)
+    #oos_cum_returns1.to_csv(file_name2)
     if ax is None:
         ax = plt.gca()
     if factor_returns is not None:
@@ -926,7 +921,7 @@ def plot_rolling_returns(returns,
 
 
 def plot_rolling_beta(returns, factor_returns, legend_loc='best',
-                      ax=None, machine_id=None, **kwargs):
+                      ax=None, upload_path=None, **kwargs):
     """
     Plots the rolling 6-month and 12-month beta versus date.
 
@@ -956,24 +951,21 @@ def plot_rolling_beta(returns, factor_returns, legend_loc='best',
         returns, factor_returns, rolling_window=APPROX_BDAYS_PER_MONTH * 6)
     rb_2 = timeseries.rolling_beta(
         returns, factor_returns, rolling_window=APPROX_BDAYS_PER_MONTH * 12)
-    if machine_id is not None:
-        file_name2 = 'rolling_beta_' + str(machine_id) + '.csv'
-        rb_1_1 = pd.DataFrame(rb_1)
-        rb_1_1 = rb_1_1.reset_index()
-        rb_1_1['time_stamp'] = rb_1_1['date'].apply(lambda x: x.timestamp() * 1000)
-        rb_1_1 = rb_1_1.drop('date', axis = 1)
-        rb_1_1 = rb_1_1.set_index('time_stamp')
-        rb_1_1.columns = ['策略相对中证800指数6个月滚动贝塔值']
-        rb_2_1 = pd.DataFrame(rb_2)
-        rb_2_1 = rb_2_1.reset_index()
-        rb_2_1['time_stamp'] = rb_2_1['date'].apply(lambda x: x.timestamp() * 1000)
-        rb_2_1 = rb_2_1.drop('date', axis = 1)
-        rb_2_1 = rb_2_1.set_index('time_stamp')
-        rb_2_1.columns = ['策略相对中证800指数12个月滚动贝塔值']
-        rb_1_2 = pd.merge(rb_1_1, rb_2_1, how='outer', left_index=True, right_index=True)
-        rb_1_2.to_csv(file_name2)
-        if ax is None:
-            return
+    file_name2 = upload_path +'rolling_beta.csv'
+    rb_1_1 = pd.DataFrame(rb_1)
+    #rb_1_1 = rb_1_1.reset_index()
+    #rb_1_1['time_stamp'] = rb_1_1['date'].apply(lambda x: x.timestamp() * 1000)
+    #rb_1_1 = rb_1_1.drop('date', axis = 1)
+    #rb_1_1 = rb_1_1.set_index('time_stamp')
+    rb_1_1.columns = ['策略相对中证800指数6个月滚动贝塔值']
+    rb_2_1 = pd.DataFrame(rb_2)
+    #rb_2_1 = rb_2_1.reset_index()
+    #rb_2_1['time_stamp'] = rb_2_1['date'].apply(lambda x: x.timestamp() * 1000)
+    #rb_2_1 = rb_2_1.drop('date', axis = 1)
+    #rb_2_1 = rb_2_1.set_index('time_stamp')
+    rb_2_1.columns = ['策略相对中证800指数12个月滚动贝塔值']
+    rb_1_2 = pd.merge(rb_1_1, rb_2_1, how='outer', left_index=True, right_index=True)
+    rb_1_2.to_csv(file_name2)
     if ax is None:
         ax = plt.gca()
 
@@ -997,7 +989,7 @@ def plot_rolling_beta(returns, factor_returns, legend_loc='best',
 
 def plot_rolling_volatility(returns, factor_returns=None,
                             rolling_window=APPROX_BDAYS_PER_MONTH * 6,
-                            legend_loc='best', ax=None, machine_id=None, **kwargs):
+                            legend_loc='best', ax=None, upload_path=None, **kwargs):
     """
     Plots the rolling volatility versus date.
 
@@ -1029,28 +1021,24 @@ def plot_rolling_volatility(returns, factor_returns=None,
 
     rolling_vol_ts = timeseries.rolling_volatility(
         returns, rolling_window)
-    if machine_id is not None:
-        rolling_vol_ts1 = pd.DataFrame(rolling_vol_ts)
-        rolling_vol_ts1 = rolling_vol_ts1.reset_index()
-        rolling_vol_ts1['time_stamp'] = rolling_vol_ts1['date'].apply(lambda x: x.timestamp() * 1000)
-        rolling_vol_ts1 = rolling_vol_ts1.drop('date', axis = 1)
-        rolling_vol_ts1 = rolling_vol_ts1.set_index('time_stamp')
-        rolling_vol_ts1.columns = ['策略6个月滚动波动率']
+    rolling_vol_ts1 = pd.DataFrame(rolling_vol_ts)
+    #rolling_vol_ts1 = rolling_vol_ts1.reset_index()
+    #rolling_vol_ts1['time_stamp'] = rolling_vol_ts1['date'].apply(lambda x: x.timestamp() * 1000)
+    #rolling_vol_ts1 = rolling_vol_ts1.drop('date', axis = 1)
+    #rolling_vol_ts1 = rolling_vol_ts1.set_index('time_stamp')
+    rolling_vol_ts1.columns = ['策略6个月滚动波动率']
     if factor_returns is not None:
         rolling_vol_ts_factor = timeseries.rolling_volatility(
             factor_returns, rolling_window)
-        if machine_id is not None:
-            file_name2 = 'rolling_volatility_' + str(machine_id) + '.csv'
-            rolling_vol_ts_factor1 = pd.DataFrame(rolling_vol_ts_factor)
-            rolling_vol_ts_factor1 = rolling_vol_ts_factor1.reset_index()
-            rolling_vol_ts_factor1['time_stamp'] = rolling_vol_ts_factor1['date'].apply(lambda x: x.timestamp() * 1000)
-            rolling_vol_ts_factor1 = rolling_vol_ts_factor1.drop('date', axis = 1)
-            rolling_vol_ts_factor1 = rolling_vol_ts_factor1.set_index('time_stamp')
-            rolling_vol_ts_factor1.columns = ['中证800指数6个月滚动波动率']
-            rolling_vol = pd.merge(rolling_vol_ts1, rolling_vol_ts_factor1, how='outer', left_index=True, right_index=True)
-            rolling_vol.to_csv(file_name2)
-            if ax is None:
-                return
+        file_name2 = upload_path + 'rolling_volatility.csv'
+        rolling_vol_ts_factor1 = pd.DataFrame(rolling_vol_ts_factor)
+        #rolling_vol_ts_factor1 = rolling_vol_ts_factor1.reset_index()
+        #rolling_vol_ts_factor1['time_stamp'] = rolling_vol_ts_factor1['date'].apply(lambda x: x.timestamp() * 1000)
+        #rolling_vol_ts_factor1 = rolling_vol_ts_factor1.drop('date', axis = 1)
+        #rolling_vol_ts_factor1 = rolling_vol_ts_factor1.set_index('time_stamp')
+        rolling_vol_ts_factor1.columns = ['中证800指数6个月滚动波动率']
+        rolling_vol = pd.merge(rolling_vol_ts1, rolling_vol_ts_factor1, how='outer', left_index=True, right_index=True)
+        rolling_vol.to_csv(file_name2)
     if ax is None:
         ax = plt.gca()
 
@@ -1084,7 +1072,7 @@ def plot_rolling_volatility(returns, factor_returns=None,
 
 def plot_rolling_sharpe(returns, factor_returns=None,
                         rolling_window=APPROX_BDAYS_PER_MONTH * 6,
-                        legend_loc='best', ax=None, machine_id=None, **kwargs):
+                        legend_loc='best', ax=None, upload_path=None, **kwargs):
     """
     Plots the rolling Sharpe ratio versus date.
 
@@ -1116,29 +1104,27 @@ def plot_rolling_sharpe(returns, factor_returns=None,
 
     rolling_sharpe_ts = timeseries.rolling_sharpe(
         returns, rolling_window)
-    if machine_id is not None:
-        rolling_sharpe_ts1 = pd.DataFrame(rolling_sharpe_ts)
-        rolling_sharpe_ts1 = rolling_sharpe_ts1.reset_index()
-        rolling_sharpe_ts1['time_stamp'] = rolling_sharpe_ts1['date'].apply(lambda x: x.timestamp() * 1000)
-        rolling_sharpe_ts1 = rolling_sharpe_ts1.drop('date', axis = 1)
-        rolling_sharpe_ts1 = rolling_sharpe_ts1.set_index('time_stamp')
-        rolling_sharpe_ts1.columns = ['策略6个月滚动夏普比率']
+    
+    rolling_sharpe_ts1 = pd.DataFrame(rolling_sharpe_ts)
+    #rolling_sharpe_ts1 = rolling_sharpe_ts1.reset_index()
+    #rolling_sharpe_ts1['time_stamp'] = rolling_sharpe_ts1['date'].apply(lambda x: x.timestamp() * 1000)
+    #rolling_sharpe_ts1 = rolling_sharpe_ts1.drop('date', axis = 1)
+    #rolling_sharpe_ts1 = rolling_sharpe_ts1.set_index('time_stamp')
+    rolling_sharpe_ts1.columns = ['策略6个月滚动夏普比率']
 
     if factor_returns is not None:
         rolling_sharpe_ts_factor = timeseries.rolling_sharpe(
             factor_returns, rolling_window)
-        if machine_id is not None:
-            file_name2 = 'rolling_sharpe_' + str(machine_id) + '.csv'
-            rolling_sharpe_ts_factor1 = pd.DataFrame(rolling_sharpe_ts_factor)
-            rolling_sharpe_ts_factor1 = rolling_sharpe_ts_factor1.reset_index()
-            rolling_sharpe_ts_factor1['time_stamp'] = rolling_sharpe_ts_factor1['date'].apply(lambda x: x.timestamp() * 1000)
-            rolling_sharpe_ts_factor1 = rolling_sharpe_ts_factor1.drop('date', axis = 1)
-            rolling_sharpe_ts_factor1 = rolling_sharpe_ts_factor1.set_index('time_stamp')
-            rolling_sharpe_ts_factor1.columns = ['中证800指数6个月滚动夏普比率']
-            rolling_sharpe = pd.merge(rolling_sharpe_ts1, rolling_sharpe_ts_factor1, how='outer', left_index=True, right_index=True)
-            rolling_sharpe.to_csv(file_name2)
-            if ax is None:
-                return
+        
+        file_name2 = upload_path + 'rolling_sharpe.csv'
+        rolling_sharpe_ts_factor1 = pd.DataFrame(rolling_sharpe_ts_factor)
+        #rolling_sharpe_ts_factor1 = rolling_sharpe_ts_factor1.reset_index()
+        #rolling_sharpe_ts_factor1['time_stamp'] = rolling_sharpe_ts_factor1['date'].apply(lambda x: x.timestamp() * 1000)
+        #rolling_sharpe_ts_factor1 = rolling_sharpe_ts_factor1.drop('date', axis = 1)
+        #rolling_sharpe_ts_factor1 = rolling_sharpe_ts_factor1.set_index('time_stamp')
+        rolling_sharpe_ts_factor1.columns = ['中证800指数6个月滚动夏普比率']
+        rolling_sharpe = pd.merge(rolling_sharpe_ts1, rolling_sharpe_ts_factor1, how='outer', left_index=True, right_index=True)
+        rolling_sharpe.to_csv(file_name2)
     if ax is None:
         ax = plt.gca()
 
