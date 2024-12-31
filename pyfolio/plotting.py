@@ -39,7 +39,7 @@ from . import utils
 from .utils import APPROX_BDAYS_PER_MONTH, APPROX_BDAYS_PER_YEAR, MM_DISPLAY_UNIT
 import sys
 import os
-
+'''
 # 根据不同平台设定工作目录
 if sys.platform == 'linux': 
     os.chdir('/home/noroot') # Linux path
@@ -47,7 +47,7 @@ else:
     os.chdir('G:\\zwrk\\strategy_returns') # Windows path
     #os.chdir('E:\MyProjects\Python-for-Finance1') # Windows path
     #os.chdir('/home/ubuntu/Python-for-Finance1') # Linux path
-
+'''
 
 def customize(func):
     """
@@ -696,7 +696,7 @@ def show_perf_stats(returns, factor_returns=None, positions=None,
         perf_stats = pd.DataFrame(perf_stats_all, columns=['Backtest'])
 
     for column in perf_stats.columns:
-        for stat, value in perf_stats[column].iteritems():
+        for stat, value in perf_stats[column].items():
             if stat in STAT_FUNCS_PCT:
                 perf_stats.loc[stat, column] = str(np.round(value * 100,
                                                             3)) + '%'
