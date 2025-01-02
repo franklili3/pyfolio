@@ -17,3 +17,6 @@ del get_versions
 __all__ = ['utils', 'timeseries', 'pos', 'txn',
            'interesting_periods', 'capacity', 'round_trips',
            'perf_attrib']
+
+from . import _version
+__version__ = _version.get_versions()['version']
