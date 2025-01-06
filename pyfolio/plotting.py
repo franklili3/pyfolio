@@ -463,7 +463,7 @@ def plot_drawdown_periods(returns, top=10, ax=None, machine_id=None, **kwargs):
     df_drawdowns['Valley_timestamp'] = df_drawdowns['Valley date'].apply(lambda x: x.timestamp())# * 1000)
     #df_drawdowns['Recovery_datetime'] = df_drawdowns['Recovery date'].apply(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'))
     df_drawdowns['Recovery_timestamp'] = df_drawdowns['Recovery date'].apply(lambda x: x.timestamp())# * 1000)
-    df_drawdowns = df_drawdowns.drop(['Peak date', 'Valley date', 'Recovery date'], axis=1)
+    #df_drawdowns = df_drawdowns.drop(['Peak date', 'Valley date', 'Recovery date'], axis=1)
     if machine_id is not None:
         file_name = 'drawdowns_period_' + str(machine_id) + '.csv'
         df_drawdowns.to_csv(file_name)
