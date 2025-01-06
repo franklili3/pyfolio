@@ -863,7 +863,7 @@ def plot_rolling_returns(returns,
 
     oos_cum_returns1 = pd.DataFrame(oos_cum_returns)
     oos_cum_returns1 = oos_cum_returns1.reset_index()
-    oos_cum_returns1['time_stamp'] = oos_cum_returns1.index.apply(lambda x: x.timestamp() * 1000)
+    oos_cum_returns1['time_stamp'] = oos_cum_returns1.index.map(lambda x: x.timestamp() * 1000)
     oos_cum_returns1 = oos_cum_returns1.drop(oos_cum_returns1.columns[0], axis=1)  # 删除原来的索引列
     oos_cum_returns1 = oos_cum_returns1.set_index('time_stamp')
     oos_cum_returns1.columns = ['实盘累计收益率']
