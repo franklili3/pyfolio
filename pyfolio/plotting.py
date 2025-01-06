@@ -699,12 +699,12 @@ def show_perf_stats(returns, factor_returns=None, positions=None,
             date_rows['Total months'] = int(len(returns) /
                                             APPROX_BDAYS_PER_MONTH)
         perf_stats = pd.DataFrame(perf_stats_all, columns=['Backtest'])
-        perf_stats.loc[stat, column] = f"{np.round(value * 100, 3):.3f}%"
     for column in perf_stats.columns:
         for stat, value in perf_stats[column].items():
             if stat in STAT_FUNCS_PCT:
-                perf_stats.loc[stat, column] = str(np.round(value * 100,
-                                                            3)) + '%'
+                perf_stats.loc[stat, column] = f"{np.round(value * 100, 3):.3f}%"
+            else:
+                perf_stats.loc[stat, column] = value                                                           3)) + '%'
     if header_rows is None:
         header_rows = date_rows
     else:
