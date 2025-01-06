@@ -1,8 +1,8 @@
 from . import utils
+from . import interesting_periods
 from . import timeseries
 from . import pos
 from . import txn
-from . import interesting_periods
 from . import capacity
 from . import round_trips
 from . import perf_attrib
@@ -18,5 +18,6 @@ __all__ = ['utils', 'timeseries', 'pos', 'txn',
            'interesting_periods', 'capacity', 'round_trips',
            'perf_attrib']
 
-from . import _version
-__version__ = _version.get_versions()['version']
+from ._version import get_versions
+__version__ = get_versions()['version']
+del get_versions
