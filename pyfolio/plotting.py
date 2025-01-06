@@ -49,7 +49,7 @@ else:
     #os.chdir('/home/ubuntu/Python-for-Finance1') # Linux path
 '''
 # 设置字体为 SimHei（黑体），你可以根据系统安装的字体进行调整
-plt.rcParams['font.sans-serif'] = ['Helvetica']  # 用来正常显示中文标签
+plt.rcParams['font.sans-serif'] = ['Songti SC']  # 用来正常显示中文标签
 plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
 
 # 如果你使用的是 Jupyter Notebook，可以使用以下命令来更新字体缓存
