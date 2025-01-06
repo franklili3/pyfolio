@@ -53,7 +53,7 @@ plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
 plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
 
 # 如果你使用的是 Jupyter Notebook，可以使用以下命令来更新字体缓存
-matplotlib.font_manager._rebuild()
+#matplotlib.font_manager._rebuild()
 def customize(func):
     """
     Decorator to set plotting context and axes style during function call.
