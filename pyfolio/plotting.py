@@ -450,11 +450,11 @@ def plot_drawdown_periods(returns, top=10, ax=None, machine_id=None, **kwargs):
 
     cum_rets = ep.cum_returns(returns, starting_value=1.0)
     df_cum_rets1 = pd.DataFrame(cum_rets)
-    df_cum_rets1 = df_cum_rets1.reset_index()
-    df_cum_rets1['time_stamp'] = df_cum_rets1['date'].apply(lambda x: x.timestamp())# * 1000)
-    df_cum_rets1 = df_cum_rets1.drop('date', axis = 1)
-    df_cum_rets1 = df_cum_rets1.set_index('time_stamp')
     df_cum_rets1  = df_cum_rets1.rename(columns={'returns': '累计收益率'})
+    df_cum_rets2 = df_cum_rets1.reset_index()
+    df_cum_rets2['time_stamp'] = df_cum_rets2['date'].apply(lambda x: x.timestamp())# * 1000)
+    df_cum_rets2 = df_cum_rets2.drop('date', axis = 1)
+    df_cum_rets2 = df_cum_rets2.set_index('time_stamp')
 
     df_drawdowns = timeseries.gen_drawdown_table(returns, top=top)
     #df_drawdowns['Peak_datetime'] = df_drawdowns['Peak date'].apply(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'))
@@ -468,7 +468,7 @@ def plot_drawdown_periods(returns, top=10, ax=None, machine_id=None, **kwargs):
         file_name = 'drawdowns_period_' + str(machine_id) + '.csv'
         df_drawdowns.to_csv(file_name)
         file_name2 = 'cum_returns_all_' + str(machine_id) + '.csv'
-        df_cum_rets1.to_csv(file_name2)
+        df_cum_rets2.to_csv(file_name2)
         if ax is None:
             return
     if ax is None:
