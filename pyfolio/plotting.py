@@ -846,7 +846,9 @@ def plot_rolling_returns(returns,
         #if machine_id is not None:
             #file_name = 'cum_factor_returns_' + str(machine_id) + '.csv'
             #cum_factor_returns1.to_csv(file_name)
-
+    else:
+        # 如果 factor_returns 是 None，初始化一个空的 DataFrame
+        cum_factor_returns1 = pd.DataFrame()
     if live_start_date is not None:
         live_start_date = ep.utils.get_utc_timestamp(live_start_date)
         is_cum_returns = cum_rets.loc[cum_rets.index < live_start_date]
@@ -867,7 +869,12 @@ def plot_rolling_returns(returns,
     oos_cum_returns1 = oos_cum_returns1.drop(oos_cum_returns1.columns[0], axis=1)  # 删除原来的索引列
     oos_cum_returns1 = oos_cum_returns1.set_index('time_stamp')
     oos_cum_returns1.columns = ['实盘累计收益率']
-    cum_returns_all = pd.merge(is_cum_returns1, cum_factor_returns1, how='outer', left_index=True, right_index=True)
+    # 合并数据时检查 cum_factor_returns1 是否为空
+    if not cum_factor_returns1.empty:
+        cum_returns_all = pd.merge(is_cum_returns1, cum_factor_returns1, how='outer', left_index=True, right_index=True)
+    else:
+        cum_returns_all = is_cum_returns1
+
     cum_returns_all1 = pd.merge(cum_returns_all, oos_cum_returns1, how='outer', left_index=True, right_index=True)
 
     if machine_id is not None:
