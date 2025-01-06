@@ -48,7 +48,12 @@ else:
     #os.chdir('E:\MyProjects\Python-for-Finance1') # Windows path
     #os.chdir('/home/ubuntu/Python-for-Finance1') # Linux path
 '''
+# 设置字体为 SimHei（黑体），你可以根据系统安装的字体进行调整
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
 
+# 如果你使用的是 Jupyter Notebook，可以使用以下命令来更新字体缓存
+matplotlib.font_manager._rebuild()
 def customize(func):
     """
     Decorator to set plotting context and axes style during function call.
@@ -471,7 +476,7 @@ def plot_drawdown_periods(returns, top=10, ax=None, machine_id=None, **kwargs):
 
     y_axis_formatter = FuncFormatter(utils.two_dec_places)
     ax.yaxis.set_major_formatter(FuncFormatter(y_axis_formatter))
-    df_cum_rets.plot(ax=ax, **kwargs)
+    df_cum_rets1.plot(ax=ax, **kwargs)  # 确保 df_cum_rets 已定义
 
     lim = ax.get_ylim()
     colors = sns.cubehelix_palette(len(df_drawdowns))[::-1]
@@ -694,7 +699,7 @@ def show_perf_stats(returns, factor_returns=None, positions=None,
             date_rows['Total months'] = int(len(returns) /
                                             APPROX_BDAYS_PER_MONTH)
         perf_stats = pd.DataFrame(perf_stats_all, columns=['Backtest'])
-
+        perf_stats.loc[stat, column] = f"{np.round(value * 100, 3):.3f}%"
     for column in perf_stats.columns:
         for stat, value in perf_stats[column].items():
             if stat in STAT_FUNCS_PCT:

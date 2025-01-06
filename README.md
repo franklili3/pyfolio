@@ -41,6 +41,13 @@ mkvirtualenv pyfolio
 Next, clone this git repository and run `python setup.py develop`
 and edit the library files directly.
 
+Next, update version, run
+`pip install versioneer
+versioneer install
+git add .
+git commit -m "Update version"
+python setup.py -V`
+
 #### Matplotlib on OSX
 
 If you are on OSX and using a non-framework build of Python, you may need to set your backend:
