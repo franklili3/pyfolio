@@ -702,7 +702,7 @@ def show_perf_stats(returns, factor_returns=None, positions=None,
     for column in perf_stats.columns:
         for stat, value in perf_stats[column].items():
             if stat in STAT_FUNCS_PCT:
-                perf_stats.loc[stat, column] = f"{np.round(value * 100, 2)}%"
+                perf_stats.loc[stat, column] = f"{np.round(float(value) * 100, 2):.2f}%"
             else:
                 perf_stats.loc[stat, column] = value
     if header_rows is None:
