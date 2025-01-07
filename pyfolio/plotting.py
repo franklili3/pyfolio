@@ -898,7 +898,7 @@ def plot_rolling_returns(returns,
             return
     if ax is None:
         ax = plt.gca()
-      # 设置X轴格式为日期
+    # 确保X轴格式为年份
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
     ax.xaxis.set_major_locator(mdates.YearLocator())  # 每年一个刻度
     plt.setp(ax.get_xticklabels(), rotation=45, ha="right")  # 旋转年份标签
