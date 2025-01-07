@@ -1517,6 +1517,10 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, machine_id=Non
     if ax is None:
         ax = plt.gca()
     data = [is_returns, is_weekly, is_monthly]#
+     # 打印数据集以检查内容
+    print("is_returns:", is_returns.head())
+    print("is_weekly:", is_weekly.head())
+    print("is_monthly:", is_monthly.head())
     # 使用 Seaborn 的调色板，确保颜色数量与数据集数量匹配
     palette = sns.color_palette("husl", len(data))
     sns.boxplot(data=data, palette=palette, ax=ax, **kwargs)
