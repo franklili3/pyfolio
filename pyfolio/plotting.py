@@ -1516,19 +1516,21 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, machine_id=Non
                 return
     if ax is None:
         ax = plt.gca()
-        
-    # 重置索引以确保数据集为单级索引
-    is_weekly = is_weekly.reset_index(drop=True)
-    is_monthly = is_monthly.reset_index(drop=True)
-    data = [is_returns, is_weekly, is_monthly]#
-    
-    # 打印数据集以检查内容
-    print("is_returns:", is_returns.head())
-    print("is_weekly:", is_weekly.head())
-    print("is_monthly:", is_monthly.head())
-    # 使用 Seaborn 的调色板，确保颜色数量与数据集数量匹配
-    palette = sns.color_palette("husl", len(data))
-    sns.boxplot(data=data, palette=palette, ax=ax, **kwargs)
+
+    # 创建一个 DataFrame 来组合所有数据集
+    combined_data = pd.DataFrame({
+        'returns': pd.concat([is_returns, is_weekly, is_monthly], ignore_index=True),
+        'category': ['日'] * len(is_returns) + ['周'] * len(is_weekly) + ['月'] * len(is_monthly)
+    })
+
+    # 打印组合数据以检查内容
+    print(combined_data.head())
+
+    # 使用 Seaborn 的调色板，确保颜色数量与类别数量匹配
+    palette = sns.color_palette("husl", 3)
+    # 绘制箱线图，使用 hue 参数区分类别
+    sns.boxplot(x='category', y='returns', data=combined_data, palette=palette, ax=ax, **kwargs)
+
     if live_start_date is not None:
         sns.swarmplot(data=[oos_returns, oos_weekly, oos_monthly], ax=ax,
                       color="red",
