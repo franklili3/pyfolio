@@ -1516,8 +1516,13 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, machine_id=Non
                 return
     if ax is None:
         ax = plt.gca()
+        
+    # 重置索引以确保数据集为单级索引
+    is_weekly = is_weekly.reset_index(drop=True)
+    is_monthly = is_monthly.reset_index(drop=True)
     data = [is_returns, is_weekly, is_monthly]#
-     # 打印数据集以检查内容
+    
+    # 打印数据集以检查内容
     print("is_returns:", is_returns.head())
     print("is_weekly:", is_weekly.head())
     print("is_monthly:", is_monthly.head())
