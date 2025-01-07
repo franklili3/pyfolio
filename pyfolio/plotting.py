@@ -1516,12 +1516,10 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, machine_id=Non
                 return
     if ax is None:
         ax = plt.gca()
-    data = [is_returns, is_weekly, is_monthly]
+    data = [is_weekly, is_monthly]#is_returns, 
     # 使用 Seaborn 的调色板，确保颜色数量与数据集数量匹配
     palette = sns.color_palette("husl")#, len(data))
-    sns.boxplot(data=data,
-                palette=palette,
-                ax=ax, **kwargs)
+    sns.boxplot(data=data, palette=palette, ax=ax, **kwargs)
     if live_start_date is not None:
         sns.swarmplot(data=[oos_returns, oos_weekly, oos_monthly], ax=ax,
                       color="red",
@@ -1532,7 +1530,7 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, machine_id=Non
         ax.legend(handles=[red_dots], frameon=True, framealpha=0.5)
     ax.set_xticks([0, 1, 2])
     ax.set_xticklabels(['日', '周', '月'])#Daily', 'Weekly', 'Monthly'])
-    ax.set_ylabel(['收益率'])#Daily', 'Weekly', 'Monthly'])
+    ax.set_ylabel('收益率')#Daily', 'Weekly', 'Monthly'])
     ax.set_title('收益率四分位')#Return quantiles')
 
     return ax
