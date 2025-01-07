@@ -839,7 +839,7 @@ def plot_rolling_returns(returns,
         returns = (returns / returns.std()) * bmark_vol
 
     cum_rets = ep.cum_returns(returns, 1.0)
-    print('cum_rets.head(): ', cum_rets.head())
+    #print('cum_rets.head(): ', cum_rets.head())
 
     if factor_returns is not None:
         cum_factor_returns = ep.cum_returns(
