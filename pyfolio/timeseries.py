@@ -1015,27 +1015,27 @@ def gen_drawdown_table(returns, top=10):
 
     for i, (peak, valley, recovery) in enumerate(drawdown_periods):
         if pd.isnull(recovery):
-            df_drawdowns.loc[i, 'Duration'] = np.nan
+            df_drawdowns.loc[i, '期间长度'] = np.nan
         else:
-            df_drawdowns.loc[i, 'Duration'] = len(pd.date_range(peak,
+            df_drawdowns.loc[i, '期间长度'] = len(pd.date_range(peak,
                                                                 recovery,
                                                                 freq='B'))
-        df_drawdowns.loc[i, 'Peak date'] = (peak.to_pydatetime()
+        df_drawdowns.loc[i, '高点日期'] = (peak.to_pydatetime()
                                             .strftime('%Y-%m-%d'))
-        df_drawdowns.loc[i, 'Valley date'] = (valley.to_pydatetime()
+        df_drawdowns.loc[i, '低点日期'] = (valley.to_pydatetime()
                                               .strftime('%Y-%m-%d'))
         if isinstance(recovery, float):
-            df_drawdowns.loc[i, 'Recovery date'] = recovery
+            df_drawdowns.loc[i, '恢复日期'] = recovery
         else:
-            df_drawdowns.loc[i, 'Recovery date'] = (recovery.to_pydatetime()
+            df_drawdowns.loc[i, '恢复日期'] = (recovery.to_pydatetime()
                                                     .strftime('%Y-%m-%d'))
-        df_drawdowns.loc[i, 'Net drawdown in %'] = (
+        df_drawdowns.loc[i, '净回撤比率%'] = (
             (df_cum.loc[peak] - df_cum.loc[valley]) / df_cum.loc[peak]) * 100
 
-    df_drawdowns['Peak date'] = pd.to_datetime(df_drawdowns['Peak date'])
-    df_drawdowns['Valley date'] = pd.to_datetime(df_drawdowns['Valley date'])
-    df_drawdowns['Recovery date'] = pd.to_datetime(
-        df_drawdowns['Recovery date'])
+    df_drawdowns['高点日期'] = pd.to_datetime(df_drawdowns['Peak date'])
+    df_drawdowns['低点日期'] = pd.to_datetime(df_drawdowns['Valley date'])
+    df_drawdowns['恢复日期'] = pd.to_datetime(
+        df_drawdowns['恢复日期'])
 
     return df_drawdowns
 
