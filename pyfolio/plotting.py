@@ -43,7 +43,7 @@ import os
 # 根据不同平台设定工作目录
 if sys.platform == 'linux': 
     os.chdir('/home/noroot') # Linux path
-elif sys.platform == 'dawin': 
+elif sys.platform == 'darwin': 
     os.chdir('/Users/linda/myprojects/github/MoneyDoubleSignal') # Mac path
 else:
     os.chdir('C:\\myprojects\\github\\MoneyDoubleSignal') # Windows path
