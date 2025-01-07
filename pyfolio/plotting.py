@@ -1516,9 +1516,9 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, machine_id=Non
                 return
     if ax is None:
         ax = plt.gca()
-    data = [is_weekly, is_monthly]#is_returns, 
+    data = [is_returns, is_weekly, is_monthly]#
     # 使用 Seaborn 的调色板，确保颜色数量与数据集数量匹配
-    palette = sns.color_palette("husl")#, len(data))
+    palette = sns.color_palette("husl", len(data))
     sns.boxplot(data=data, palette=palette, ax=ax, **kwargs)
     if live_start_date is not None:
         sns.swarmplot(data=[oos_returns, oos_weekly, oos_monthly], ax=ax,
