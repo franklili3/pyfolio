@@ -458,11 +458,11 @@ def plot_drawdown_periods(returns, top=10, ax=None, machine_id=None, **kwargs):
 
     df_drawdowns = timeseries.gen_drawdown_table(returns, top=top)
     #df_drawdowns['Peak_datetime'] = df_drawdowns['Peak date'].apply(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'))
-    df_drawdowns['Peak_timestamp'] = df_drawdowns['Peak date'].apply(lambda x: x.timestamp())# * 1000)
+    df_drawdowns['Peak_timestamp'] = df_drawdowns['高点日期'].apply(lambda x: x.timestamp())# * 1000)
     #df_drawdowns['Valley_datetime'] = df_drawdowns['Valley date'].apply(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'))
-    df_drawdowns['Valley_timestamp'] = df_drawdowns['Valley date'].apply(lambda x: x.timestamp())# * 1000)
+    df_drawdowns['Valley_timestamp'] = df_drawdowns['低点日期'].apply(lambda x: x.timestamp())# * 1000)
     #df_drawdowns['Recovery_datetime'] = df_drawdowns['Recovery date'].apply(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'))
-    df_drawdowns['Recovery_timestamp'] = df_drawdowns['Recovery date'].apply(lambda x: x.timestamp())# * 1000)
+    df_drawdowns['Recovery_timestamp'] = df_drawdowns['恢复日期'].apply(lambda x: x.timestamp())# * 1000)
     #df_drawdowns = df_drawdowns.drop(['Peak date', 'Valley date', 'Recovery date'], axis=1)
     if machine_id is not None:
         file_name = 'drawdowns_period_' + str(machine_id) + '.csv'
@@ -481,7 +481,7 @@ def plot_drawdown_periods(returns, top=10, ax=None, machine_id=None, **kwargs):
     lim = ax.get_ylim()
     colors = sns.cubehelix_palette(len(df_drawdowns))[::-1]
     for i, (peak, recovery) in df_drawdowns[
-            ['Peak date', 'Recovery date']].iterrows():
+            ['高点日期', '恢复日期']].iterrows():
         if pd.isnull(recovery):
             recovery = returns.index[-1]
         ax.fill_between((peak, recovery),
@@ -490,7 +490,7 @@ def plot_drawdown_periods(returns, top=10, ax=None, machine_id=None, **kwargs):
                         alpha=.4,
                         color=colors[i])
     ax.set_ylim(lim)
-    ax.set_title('最大 %i 回撤期间' % top)
+    ax.set_title('最大 %i 个回撤期间' % top)
     ax.set_ylabel('累计收益率')#Cumulative returns')
     ax.legend(['投资组合'], loc='upper left',
               frameon=True, framealpha=0.5)
