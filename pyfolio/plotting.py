@@ -844,11 +844,11 @@ def plot_rolling_returns(returns,
         cum_factor_returns = ep.cum_returns(
             factor_returns[cum_rets.index], 1.0)
         cum_factor_returns_df = pd.DataFrame(cum_factor_returns)
-        cum_factor_returns1 = cum_factor_returns_df.reset_index()
+        #cum_factor_returns1 = cum_factor_returns_df.reset_index()
         #print('columns of cum_factor_returns1: ', cum_factor_returns1.columns.values.tolist())
-        cum_factor_returns1['time_stamp'] = cum_factor_returns1['date'].apply(lambda x: x.timestamp())# * 1000)
-        cum_factor_returns1 = cum_factor_returns1.drop('date', axis = 1)
-        cum_factor_returns1 = cum_factor_returns1.set_index('time_stamp')
+        #cum_factor_returns1['time_stamp'] = cum_factor_returns1['date'].apply(lambda x: x.timestamp())# * 1000)
+        #cum_factor_returns1 = cum_factor_returns1.drop('date', axis = 1)
+        #cum_factor_returns1 = cum_factor_returns1.set_index('time_stamp')
         cum_factor_returns1.columns = ['中证800指数累计收益率']
         #if machine_id is not None:
             #file_name = 'cum_factor_returns_' + str(machine_id) + '.csv'
@@ -864,15 +864,15 @@ def plot_rolling_returns(returns,
         is_cum_returns = cum_rets
         oos_cum_returns = pd.Series([])
     is_cum_returns1 = pd.DataFrame(is_cum_returns)
-    is_cum_returns1 = is_cum_returns1.reset_index()
-    is_cum_returns1['time_stamp'] = is_cum_returns1['date'].apply(lambda x: x.timestamp())# * 1000)
+    #is_cum_returns1 = is_cum_returns1.reset_index()
+    #is_cum_returns1['time_stamp'] = is_cum_returns1['date'].apply(lambda x: x.timestamp())# * 1000)
     #is_cum_returns1 = is_cum_returns1.drop('date', axis = 1)
-    is_cum_returns1 = is_cum_returns1.set_index('date')
+    #is_cum_returns1 = is_cum_returns1.set_index('date')
     is_cum_returns1.columns = ['策略回测累计收益率']
 
     oos_cum_returns1 = pd.DataFrame(oos_cum_returns)
     #oos_cum_returns1 = oos_cum_returns1.reset_index()
-    oos_cum_returns1['time_stamp'] = oos_cum_returns1.index.map(lambda x: x.timestamp())# * 1000)
+    #oos_cum_returns1['time_stamp'] = oos_cum_returns1.index.map(lambda x: x.timestamp())# * 1000)
     #oos_cum_returns1 = oos_cum_returns1.drop(oos_cum_returns1.columns[0], axis=1)  # 删除原来的索引列
     #oos_cum_returns1 = oos_cum_returns1.set_index('time_stamp')
     oos_cum_returns1.columns = ['实盘累计收益率']
