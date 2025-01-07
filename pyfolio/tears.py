@@ -532,7 +532,7 @@ def create_returns_tear_sheet(returns,
         cone_std=cone_std,
         ax=ax_rolling_returns)
     ax_rolling_returns.set_title(
-        'Cumulative returns')
+        '累计收益率')
 
     plotting.plot_rolling_returns(
         returns,
@@ -543,7 +543,7 @@ def create_returns_tear_sheet(returns,
         legend_loc=None,
         ax=ax_rolling_returns_vol_match)
     ax_rolling_returns_vol_match.set_title(
-        'Cumulative returns volatility matched to benchmark')
+        '与基准匹配的累计收益率的波动性')
 
     plotting.plot_rolling_returns(
         returns,
@@ -553,7 +553,7 @@ def create_returns_tear_sheet(returns,
         cone_std=cone_std,
         ax=ax_rolling_returns_log)
     ax_rolling_returns_log.set_title(
-        'Cumulative returns on logarithmic scale')
+        '累计收益率对数')
 
     plotting.plot_returns(
         returns,
@@ -561,7 +561,7 @@ def create_returns_tear_sheet(returns,
         ax=ax_returns,
     )
     ax_returns.set_title(
-        'Returns')
+        '收益率')
 
     if benchmark_rets is not None:
         plotting.plot_rolling_beta(
