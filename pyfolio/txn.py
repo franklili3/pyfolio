@@ -101,8 +101,11 @@ def get_txn_vol(transactions):
     txn_norm = transactions.copy()
     txn_norm.index = txn_norm.index.normalize()
     amounts = txn_norm.amount.abs()
+    print('amounts: ', amounts.head())
     prices = txn_norm.price
+    print('prices: ', prices.head())
     values = amounts * prices
+    print('values: ', values.head()
     daily_amounts = amounts.groupby(amounts.index).sum()
     daily_values = values.groupby(values.index).sum()
     daily_amounts.name = "txn_shares"
