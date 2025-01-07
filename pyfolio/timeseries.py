@@ -676,24 +676,24 @@ FACTOR_STAT_FUNCS = [
 # ]
 
 STAT_FUNC_NAMES = {
-    'annual_return': 'Annual return',
-    'annual_volatility': 'Annual volatility',
-    'sharpe_ratio': 'Sharpe ratio',
-    'calmar_ratio': 'Calmar ratio',
-    'omega_ratio': 'Omega ratio',
-    'sortino_ratio': 'Sortino ratio',
-    'alpha': 'Alpha',
+    'annual_return': '年化收益率',
+    'annual_volatility': '年化波动率',
+    'sharpe_ratio': '夏普比率',
+    'calmar_ratio': 'Calmar 比率',
+    'omega_ratio': 'Omega 比率',
+    'sortino_ratio': 'Sortino 比率',
+    'alpha': '阿尔法',
 }
 
 STAT_FUNC_NAMES1 = {
-    'cum_returns_final': 'Cumulative returns',
-    'stability_of_timeseries': 'Stability',
-    'max_drawdown': 'Max drawdown',
+    'cum_returns_final': '累计收益率',
+    'stability_of_timeseries': '稳定性',
+    'max_drawdown': '最大回撤率',
     'skew': 'Skew',
     'kurtosis': 'Kurtosis',
-    'tail_ratio': 'Tail ratio',
-    'common_sense_ratio': 'Common sense ratio',
-    'value_at_risk': 'Daily value at risk',
+    'tail_ratio': 'Tail 比率',
+    'common_sense_ratio': '常识比率',
+    'value_at_risk': '日风险值',
 }
 def perf_stats(returns, factor_returns=None, positions=None,
                transactions=None, turnover_denom='AGB'):
@@ -1007,11 +1007,11 @@ def gen_drawdown_table(returns, top=10):
     df_cum = ep.cum_returns(returns, 1.0)
     drawdown_periods = get_top_drawdowns(returns, top=top)
     df_drawdowns = pd.DataFrame(index=list(range(top)),
-                                columns=['Net drawdown in %',
-                                         'Peak date',
-                                         'Valley date',
-                                         'Recovery date',
-                                         'Duration'])
+                                columns=['净回撤比率%',
+                                         '高点日期',
+                                         '低点日期',
+                                         '恢复日期',
+                                         '期间长度'])
 
     for i, (peak, valley, recovery) in enumerate(drawdown_periods):
         if pd.isnull(recovery):

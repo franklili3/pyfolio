@@ -583,12 +583,12 @@ def plot_perf_stats(returns, factor_returns, ax=None):
 
 
 STAT_FUNCS_PCT = [
-    'Annual return',
-    'Cumulative returns',
-    'Annual volatility',
-    'Max drawdown',
-    'Daily value at risk',
-    'Daily turnover'
+    '年化收益率',
+    '累计收益率',
+    '年化波动率',
+    '最大回撤率',
+    '日风险值',
+    '日换手率'
 ]
 
 
@@ -1879,8 +1879,8 @@ def show_worst_drawdown_periods(returns, top=5):
 
     drawdown_df = timeseries.gen_drawdown_table(returns, top=top)
     utils.print_table(
-        drawdown_df.sort_values('Net drawdown in %', ascending=False),
-        name='Worst drawdown periods',
+        drawdown_df.sort_values('净回撤比率%', ascending=False),
+        name='最差回撤期间',
         float_format='{0:.2f}'.format,
     )
 
