@@ -107,6 +107,8 @@ def get_txn_vol(transactions):
     daily_values = values.groupby(values.index).sum()
     daily_amounts.name = "txn_shares"
     daily_values.name = "txn_volume"
+    print('daily_values: ', daily_values)
+    print('daily_amounts: ', daily_amounts)
     return pd.concat([daily_values, daily_amounts], axis=1)
 
 
