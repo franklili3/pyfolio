@@ -1032,8 +1032,8 @@ def gen_drawdown_table(returns, top=10):
         df_drawdowns.loc[i, '净回撤比率%'] = (
             (df_cum.loc[peak] - df_cum.loc[valley]) / df_cum.loc[peak]) * 100
 
-    df_drawdowns['高点日期'] = pd.to_datetime(df_drawdowns['Peak date'])
-    df_drawdowns['低点日期'] = pd.to_datetime(df_drawdowns['Valley date'])
+    df_drawdowns['高点日期'] = pd.to_datetime(df_drawdowns['高点日期'])
+    df_drawdowns['低点日期'] = pd.to_datetime(df_drawdowns['低点日期'])
     df_drawdowns['恢复日期'] = pd.to_datetime(
         df_drawdowns['恢复日期'])
 
