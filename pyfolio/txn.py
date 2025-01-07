@@ -138,7 +138,9 @@ def adjust_returns_for_slippage(returns, positions, transactions,
     slippage = 0.0001 * slippage_bps
     portfolio_value = positions.sum(axis=1)
     pnl = portfolio_value * returns
-    traded_value = get_txn_vol(transactions).txn_volume
+    traded_txn = get_txn_vol(transactions)
+    print('traded_txn: ', traded_txn.head())
+    traded_value = traded_txn.txn_volume
     slippage_dollars = traded_value * slippage
     adjusted_pnl = pnl.add(-slippage_dollars, fill_value=0)
     adjusted_returns = returns * adjusted_pnl / pnl
@@ -180,6 +182,7 @@ def get_turnover(positions, transactions, denominator='AGB'):
     """
 
     txn_vol = get_txn_vol(transactions)
+    print(txn_vol.head())  # Check the structure of the DataFrame
     traded_value = txn_vol.txn_volume
 
     if denominator == 'AGB':
