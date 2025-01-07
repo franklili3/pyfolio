@@ -667,9 +667,9 @@ SIMPLE_STAT_FUNCS1 = [
     value_at_risk
 ]
 
-# FACTOR_STAT_FUNCS = [
-#     ep.alpha
-# ]
+FACTOR_STAT_FUNCS = [
+     ep.alpha
+]
 
 # FACTOR_STAT_FUNCS1 = [
 #     ep.beta
