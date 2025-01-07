@@ -1529,7 +1529,7 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, machine_id=Non
     # 使用 Seaborn 的调色板，确保颜色数量与类别数量匹配
     palette = sns.color_palette("husl", 3)
     # 绘制箱线图，使用 hue 参数区分类别
-    sns.boxplot(x='category', y='returns', data=combined_data, palette=palette, ax=ax, **kwargs)
+    sns.boxplot(x='category', y='returns',  hue='category', legend=False, data=combined_data, palette=palette, ax=ax, **kwargs)
 
     if live_start_date is not None:
         sns.swarmplot(data=[oos_returns, oos_weekly, oos_monthly], ax=ax,
