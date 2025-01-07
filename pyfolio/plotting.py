@@ -39,16 +39,18 @@ from . import utils
 from .utils import APPROX_BDAYS_PER_MONTH, APPROX_BDAYS_PER_YEAR, MM_DISPLAY_UNIT
 import sys
 import os
-'''
+
 # 根据不同平台设定工作目录
 if sys.platform == 'linux': 
     os.chdir('/home/noroot') # Linux path
+elif sys.platform == 'dawin': 
+    os.chdir('/Users/linda/myprojects/github/MoneyDoubleSignal') # Mac path
 else:
-    os.chdir('G:\\zwrk\\strategy_returns') # Windows path
+    os.chdir('C:\\myprojects\\github\\MoneyDoubleSignal') # Windows path
     #os.chdir('E:\MyProjects\Python-for-Finance1') # Windows path
     #os.chdir('/home/ubuntu/Python-for-Finance1') # Linux path
-'''
-# 设置字体为 SimHei（黑体），你可以根据系统安装的字体进行调整
+
+# 设置字体为 Songti（宋体），你可以根据系统安装的字体进行调整
 plt.rcParams['font.sans-serif'] = ['Songti SC']  # 用来正常显示中文标签
 plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
 
@@ -1514,8 +1516,11 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, machine_id=Non
                 return
     if ax is None:
         ax = plt.gca()
-    sns.boxplot(data=[is_returns, is_weekly, is_monthly],
-                palette=["#4c72B0", "#55A868", "#CCB974"],
+    data = [is_returns, is_weekly, is_monthly]
+    # 使用 Seaborn 的调色板，确保颜色数量与数据集数量匹配
+    palette = sns.color_palette("husl", len(data))
+    sns.boxplot(data=data,
+                palette=palette,
                 ax=ax, **kwargs)
     if live_start_date is not None:
         sns.swarmplot(data=[oos_returns, oos_weekly, oos_monthly], ax=ax,
