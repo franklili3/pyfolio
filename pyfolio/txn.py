@@ -101,17 +101,23 @@ def get_txn_vol(transactions):
     txn_norm = transactions.copy()
     txn_norm.index = txn_norm.index.normalize()
     amounts = txn_norm.amount.abs()
-    print('amounts: ', amounts)
+    # 检查是否为 Series
+    if isinstance(amounts, pd.Series):
+        print("amounts是一个 Series")
+    # 检查是否为 DataFrame
+    elif isinstance(obj, pd.DataFrame):
+        print("amounts是一个 DataFrame")    
+    #print('amounts: ', amounts)
     prices = txn_norm.price
-    print('prices: ', prices)
+    #print('prices: ', prices)
     values = amounts.amount * prices.price
-    print('values: ', values)
+    #print('values: ', values)
     daily_amounts = amounts.groupby(amounts.index).sum()
     daily_values = values.groupby(values.index).sum()
     daily_amounts.name = "txn_shares"
     daily_values.name = "txn_volume"
-    print('daily_values: ', daily_values)
-    print('daily_amounts: ', daily_amounts)
+    #print('daily_values: ', daily_values)
+    #print('daily_amounts: ', daily_amounts)
     return pd.concat([daily_values, daily_amounts], axis=1)
 
 
