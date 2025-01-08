@@ -942,16 +942,16 @@ def create_interesting_times_tear_sheet(returns, benchmark_rets=None,
 
         if benchmark_rets is not None:
             ep.cum_returns(bmark_interesting[name]).plot(
-                ax=ax, color='gray', label='benchmark', alpha=0.6)
-            ax.legend(['Algo',
-                       'benchmark'],
+                ax=ax, color='gray', label='基准', alpha=0.6)
+            ax.legend(['算法',
+                       '基准'],
                       loc=legend_loc, frameon=True, framealpha=0.5)
         else:
-            ax.legend(['Algo'],
+            ax.legend(['算法'],
                       loc=legend_loc, frameon=True, framealpha=0.5)
 
         ax.set_title(name)
-        ax.set_ylabel('Returns')
+        ax.set_ylabel('收益率')
         ax.set_xlabel('')
 
     if return_fig:
