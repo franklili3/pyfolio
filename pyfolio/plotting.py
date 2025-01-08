@@ -702,7 +702,7 @@ def show_perf_stats(returns, factor_returns=None, positions=None,
             date_rows['总月数'] = int(len(returns) /
                                             APPROX_BDAYS_PER_MONTH)
         perf_stats = pd.DataFrame(perf_stats_all, columns=['回测'])
-        print('perf_stats: ', perf_stats.head())
+        #print('perf_stats: ', perf_stats.head())
     for column in perf_stats.columns:
         for stat, value in perf_stats[column].items():
             if stat in STAT_FUNCS_PCT:

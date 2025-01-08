@@ -219,7 +219,7 @@ def get_turnover(positions, transactions, denominator='AGB'):
     """
 
     txn_vol = get_txn_vol(transactions)
-    print(txn_vol.head())  # Check the structure of the DataFrame
+    #print(txn_vol.head())  # Check the structure of the DataFrame
     traded_value = txn_vol.txn_volume
 
     if denominator == 'AGB':
