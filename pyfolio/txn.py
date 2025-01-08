@@ -173,7 +173,7 @@ def adjust_returns_for_slippage(returns, positions, transactions,
     else:
         slippage_dollars = slippage_dollars_df
     #slippage_dollars = slippage_dollars_df['txn_volume']
-    print('slippage_dollars: ', slippage_dollars.head())
+    #print('slippage_dollars: ', slippage_dollars.head())
     assert isinstance(slippage_dollars, pd.Series), 'slippage_dollars must be a pd.Series'
     # 调试输出
     #print('pnl: ', pnl.head())
