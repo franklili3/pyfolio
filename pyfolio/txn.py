@@ -105,7 +105,7 @@ def get_txn_vol(transactions):
     if isinstance(amounts, pd.Series):
         print("amounts是一个 Series")
     # 检查是否为 DataFrame
-    elif isinstance(obj, pd.DataFrame):
+    elif isinstance(amounts, pd.DataFrame):
         print("amounts是一个 DataFrame")    
     #print('amounts: ', amounts)
     prices = txn_norm.price
