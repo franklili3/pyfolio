@@ -1337,7 +1337,7 @@ def show_and_plot_top_positions(returns, positions_alloc,
             ax = plt.gca()
 
         positions_alloc[df_top_abs.index].plot(
-            title='Portfolio allocation over time, only top 10 holdings',
+            title='前10大仓位的资产配置',
             alpha=0.5, ax=ax, **kwargs)
 
         # Place legend below plot, shrink plot by 20%

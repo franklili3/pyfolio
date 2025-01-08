@@ -105,10 +105,10 @@ def get_max_median_position_concentration(positions):
     shorts = expos.where(expos.map(lambda x: x < 0))
 
     alloc_summary = pd.DataFrame()
-    alloc_summary['max_long'] = longs.max(axis=1)
-    alloc_summary['median_long'] = longs.median(axis=1)
-    alloc_summary['median_short'] = shorts.median(axis=1)
-    alloc_summary['max_short'] = shorts.min(axis=1)
+    alloc_summary['做多最大'] = longs.max(axis=1)
+    alloc_summary['做多中值'] = longs.median(axis=1)
+    alloc_summary['做空中值'] = shorts.median(axis=1)
+    alloc_summary['做空最大'] = shorts.min(axis=1)
 
     return alloc_summary
 
