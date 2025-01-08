@@ -102,6 +102,7 @@ def get_txn_vol(transactions):
     txn_norm.index = txn_norm.index.normalize()
     txn_norm['abs_amount'] = txn_norm['amount'].apply(lambda x: abs(x))
     amounts = txn_norm['abs_amount']
+    print('amounts: ', amounts)
     # 检查是否为 Series
     if isinstance(amounts, pd.Series):
         print("amounts是一个 Series")
