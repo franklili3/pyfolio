@@ -100,6 +100,9 @@ def get_txn_vol(transactions):
 
     txn_norm = transactions.copy()
     txn_norm.index = txn_norm.index.normalize()
+        # 确保 'amount' 列存在
+    if 'amount' not in txn_norm.columns:
+        raise ValueError("transactions中缺少'amount'列")
     txn_norm['abs_amount'] = txn_norm['amount'].apply(lambda x: abs(x))
     amounts = txn_norm['abs_amount']
     print('amounts: ', amounts)
