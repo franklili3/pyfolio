@@ -101,28 +101,32 @@ def get_txn_vol(transactions):
     txn_norm = transactions.copy()
     txn_norm.index = txn_norm.index.normalize()
         # 确保 'amount' 列存在
-    if 'amount' not in txn_norm.columns:
-        raise ValueError("transactions中缺少'amount'列")
+    #if 'amount' not in txn_norm.columns:
+    #    raise ValueError("transactions中缺少'amount'列")
     txn_norm['abs_amount'] = txn_norm['amount'].apply(lambda x: abs(x))
-    amounts = txn_norm['abs_amount']
-    print('amounts: ', amounts)
+    #amounts = txn_norm['abs_amount']
+    #print('amounts: ', amounts)
     # 检查是否为 Series
-    assert isinstance(amounts, pd.Series), "amounts不是一个Series"
+    #assert isinstance(amounts, pd.Series), "amounts不是一个Series"
     # 检查是否为 DataFrame
     #elif isinstance(amounts, pd.DataFrame):
     #    print("amounts是一个 DataFrame")    
     #print('amounts: ', amounts)
-    prices = txn_norm['price']
-    print('prices: ', prices)
-    values = amounts * prices
-    print('values: ', values)
-    daily_amounts = amounts.groupby(amounts.index).sum()
-    daily_values = values.groupby(values.index).sum()
-    daily_amounts.name = "txn_shares"
-    daily_values.name = "txn_volume"
-    print('daily_values: ', daily_values)
-    print('daily_amounts: ', daily_amounts)
-    return pd.concat([daily_values, daily_amounts], axis=1)
+    #prices = txn_norm['price']
+    #print('prices: ', prices)
+    txn_norm['values'] = txn_norm['abs_amount'] * txn_norm['prices']
+    #print('values: ', values)
+    amounts_values = txn_norm[['abs_amount', 'values']]
+    daily_amounts_values = amounts_values.groupby(amounts_values.index).sum()
+    daily_amounts_values = daily_amounts_values.rename(columns={'abs_amount': 'txn_shares', 'values': 'txn_volume'})
+    #daily_amounts = amounts.groupby(amounts.index).sum()
+    #daily_values = values.groupby(values.index).sum()
+    #daily_amounts.name = "txn_shares"
+    #daily_values.name = "txn_volume"
+    print('daily_amounts_values: ', daily_amounts_values.head())
+    #print('daily_amounts: ', daily_amounts)
+    #return pd.concat([daily_values, daily_amounts], axis=1)
+    return daily_amounts_values
 
 
 def adjust_returns_for_slippage(returns, positions, transactions,
