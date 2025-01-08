@@ -99,7 +99,7 @@ def get_txn_vol(transactions):
     """
 
     txn_norm = transactions.copy()
-    print('txn_norm: ', txn_norm.head())
+    #print('txn_norm: ', txn_norm.head())
     txn_norm.index = txn_norm.index.normalize()
         # 确保 'amount' 列存在
     if 'amount' not in txn_norm.columns:
@@ -128,7 +128,7 @@ def get_txn_vol(transactions):
     #daily_values = values.groupby(values.index).sum()
     #daily_amounts.name = "txn_shares"
     #daily_values.name = "txn_volume"
-    print('daily_amounts_values: ', daily_amounts_values.head())
+    #print('daily_amounts_values: ', daily_amounts_values.head())
     #print('daily_amounts: ', daily_amounts)
     #return pd.concat([daily_values, daily_amounts], axis=1)
     return daily_amounts_values
@@ -163,9 +163,15 @@ def adjust_returns_for_slippage(returns, positions, transactions,
     portfolio_value = positions.sum(axis=1)
     pnl = portfolio_value * returns
     traded_txn = get_txn_vol(transactions)
-    print('traded_txn: ', traded_txn.head())
+    #print('traded_txn: ', traded_txn.head())
     traded_value = traded_txn.txn_volume
-    slippage_dollars = traded_value * slippage
+    # 确保索引对齐
+    slippage_dollars = traded_value.reindex(pnl.index, fill_value=0) * slippage
+
+    # 调试输出
+    print('pnl index:', pnl.index)
+    print('slippage_dollars index:', slippage_dollars.index)
+    #slippage_dollars = traded_value * slippage
     adjusted_pnl = pnl.add(-slippage_dollars, fill_value=0)
     adjusted_returns = returns * adjusted_pnl / pnl
 
