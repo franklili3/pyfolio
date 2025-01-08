@@ -114,7 +114,7 @@ def get_txn_vol(transactions):
     #print('amounts: ', amounts)
     #prices = txn_norm['price']
     #print('prices: ', prices)
-    txn_norm['values'] = txn_norm['abs_amount'] * txn_norm['prices']
+    txn_norm['values'] = txn_norm['abs_amount'] * txn_norm['price']
     #print('values: ', values)
     amounts_values = txn_norm[['abs_amount', 'values']]
     daily_amounts_values = amounts_values.groupby(amounts_values.index).sum()
