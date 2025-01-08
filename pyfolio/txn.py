@@ -167,10 +167,10 @@ def adjust_returns_for_slippage(returns, positions, transactions,
     traded_value = traded_txn.txn_volume
     # 确保索引对齐
     slippage_dollars = traded_value.reindex(pnl.index, fill_value=0) * slippage
+    print('slippage_dollars: ', slippage_dollars.head())
     assert isinstance(slippage_dollars, pd.Series), 'slippage_dollars must be a pd.Series'
     # 调试输出
     #print('pnl: ', pnl.head())
-    #print('slippage_dollars: ', slippage_dollars.head())
     #slippage_dollars = traded_value * slippage
     #adjusted_pnl = pnl.add(-slippage_dollars, fill_value=0)
     adjusted_pnl = pnl - slippage_dollars
