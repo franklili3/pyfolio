@@ -167,7 +167,12 @@ def adjust_returns_for_slippage(returns, positions, transactions,
     traded_value = traded_txn.txn_volume
     # 确保索引对齐
     slippage_dollars_df = traded_value.reindex(pnl.index, fill_value=0) * slippage
-    slippage_dollars = slippage_dollars_df['txn_volume']
+    # 确保 slippage_dollars 是 Series
+    if isinstance(slippage_dollars_df, pd.DataFrame):
+        slippage_dollars = slippage_dollars_df.squeeze()  # 将 DataFrame 转换为 Series
+    else:
+        slippage_dollars = slippage_dollars_df
+    #slippage_dollars = slippage_dollars_df['txn_volume']
     print('slippage_dollars: ', slippage_dollars.head())
     assert isinstance(slippage_dollars, pd.Series), 'slippage_dollars must be a pd.Series'
     # 调试输出
