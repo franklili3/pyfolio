@@ -1271,8 +1271,8 @@ def plot_exposures(returns, positions, ax=None, **kwargs):
             label='Net', color='black', linestyle='dotted')
 
     ax.set_xlim((returns.index[0], returns.index[-1]))
-    ax.set_title("Exposure")
-    ax.set_ylabel('Exposure')
+    ax.set_title("敞口")
+    ax.set_ylabel('敞口')
     ax.legend(loc='lower left', frameon=True, framealpha=0.5)
     ax.set_xlabel('')
     return ax
@@ -1353,7 +1353,7 @@ def show_and_plot_top_positions(returns, positions_alloc,
             ax.legend(loc=legend_loc)
 
         ax.set_xlim((returns.index[0], returns.index[-1]))
-        ax.set_ylabel('Exposure by holding')
+        ax.set_ylabel('持仓敞口')
 
         if hide_positions:
             ax.legend_.remove()
@@ -1387,7 +1387,7 @@ def plot_max_median_position_concentration(positions, ax=None, **kwargs):
     alloc_summary.plot(linewidth=1, color=colors, alpha=0.6, ax=ax)
 
     ax.legend(loc='center left', frameon=True, framealpha=0.5)
-    ax.set_ylabel('Exposure')
+    ax.set_ylabel('敞口')
     ax.set_title('做多/做空最大和中值持仓比例')
 
     return ax

@@ -229,8 +229,8 @@ def get_long_short_pos(positions):
     shorts = pos_wo_cash[pos_wo_cash < 0].sum(axis=1).fillna(0)
     cash = positions.cash
     net_liquidation = longs + shorts + cash
-    df_pos = pd.DataFrame({'long': longs.divide(net_liquidation, axis='index'),
-                           'short': shorts.divide(net_liquidation,
+    df_pos = pd.DataFrame({'做多': longs.divide(net_liquidation, axis='index'),
+                           '做空': shorts.divide(net_liquidation,
                                                   axis='index')})
-    df_pos['net exposure'] = df_pos['long'] + df_pos['short']
+    df_pos['净敞口'] = df_pos['做多'] + df_pos['做空']
     return df_pos
