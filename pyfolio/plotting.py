@@ -343,7 +343,7 @@ def plot_holdings(returns, positions, legend_loc='best', ax=None, **kwargs):
 
     positions = positions.copy().drop('cash', axis='columns')
     df_holdings = positions.replace(0, np.nan).count(axis=1)
-    df_holdings_by_month = df_holdings.resample('1M').mean()
+    df_holdings_by_month = df_holdings.resample('ME').mean()
     df_holdings.plot(color='steelblue', alpha=0.6, lw=0.5, ax=ax, **kwargs)
     df_holdings_by_month.plot(
         color='orangered',
@@ -1930,7 +1930,7 @@ def plot_monthly_returns_timeseries(returns, ax=None, machine_id=None, **kwargs)
         return ep.cum_returns(x)[-1]
 
 
-    monthly_rets = returns.resample('EM').apply(lambda x: cumulate_returns(x))
+    monthly_rets = returns.resample('ME').apply(lambda x: cumulate_returns(x))
     monthly_rets = monthly_rets.to_period()
     if machine_id is not None:
         file_name1 = 'monthly_returns_timeseries_' + str(machine_id) + '.csv'
