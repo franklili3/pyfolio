@@ -112,16 +112,16 @@ def get_txn_vol(transactions):
     #elif isinstance(amounts, pd.DataFrame):
     #    print("amounts是一个 DataFrame")    
     #print('amounts: ', amounts)
-    prices = txn_norm.price
-    #print('prices: ', prices)
-    values = amounts.amount * prices.price
-    #print('values: ', values)
+    prices = txn_norm['price']
+    print('prices: ', prices)
+    values = amounts * prices
+    print('values: ', values)
     daily_amounts = amounts.groupby(amounts.index).sum()
     daily_values = values.groupby(values.index).sum()
     daily_amounts.name = "txn_shares"
     daily_values.name = "txn_volume"
-    #print('daily_values: ', daily_values)
-    #print('daily_amounts: ', daily_amounts)
+    print('daily_values: ', daily_values)
+    print('daily_amounts: ', daily_amounts)
     return pd.concat([daily_values, daily_amounts], axis=1)
 
 
