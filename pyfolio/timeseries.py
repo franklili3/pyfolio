@@ -734,14 +734,14 @@ def perf_stats(returns, factor_returns=None, positions=None,
         stats[STAT_FUNC_NAMES1[stat_func.__name__]] = stat_func(returns)
 
     if positions is not None:
-        stats['Gross leverage'] = gross_lev(positions).mean()
+        stats['总杠杆率'] = gross_lev(positions).mean()
         if transactions is not None:
-            stats['Daily turnover'] = get_turnover(positions,
+            stats['日换手率'] = get_turnover(positions,
                                                    transactions,
                                                    turnover_denom).mean()
     if factor_returns is not None:
-        stats['Alpha'] = ep.alpha(returns, factor_returns, annualization=APPROX_BDAYS_PER_YEAR)
-        stats['Beta'] = ep.beta(returns, factor_returns)
+        stats['阿尔法'] = ep.alpha(returns, factor_returns, annualization=APPROX_BDAYS_PER_YEAR)
+        stats['贝塔'] = ep.beta(returns, factor_returns)
        # for stat_func in FACTOR_STAT_FUNCS:
         #     res = stat_func(returns, factor_returns, annualization=APPROX_BDAYS_PER_YEAR)
         #     stats[STAT_FUNC_NAMES[stat_func.__name__]] = res
