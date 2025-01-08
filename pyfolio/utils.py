@@ -263,8 +263,7 @@ def detect_intraday(positions, transactions, threshold=0.25):
     daily_txn.index = daily_txn.index.date
     txn_count = daily_txn.groupby(level=0).symbol.nunique().sum()
     daily_pos = positions.drop('cash', axis=1).replace(0, np.nan)
-    return daily_pos.count(axis=1).sum() / txn_count < threshold
-
+    return (daily_pos.count(axis=1).sum() / txn_count) < threshold
 
 def check_intraday(estimate, returns, positions, transactions):
     """
