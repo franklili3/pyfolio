@@ -413,17 +413,17 @@ def plot_long_short_holdings(returns, positions,
 
     bf = patches.Rectangle([0, 0], 1, 1, color='darkgoldenrod')
     leg = ax.legend([lf, sf, bf],
-                    ['Long (max: %s, min: %s)' % (df_longs.max(),
+                    ['做多 (最大: %s, 最小: %s)' % (df_longs.max(),
                                                   df_longs.min()),
-                     'Short (max: %s, min: %s)' % (df_shorts.max(),
+                     '做空 (最大: %s, 最小: %s)' % (df_shorts.max(),
                                                    df_shorts.min()),
-                     'Overlap'], loc=legend_loc, frameon=True,
+                     '重叠'], loc=legend_loc, frameon=True,
                     framealpha=0.5)
     leg.get_frame().set_edgecolor('black')
 
     ax.set_xlim((returns.index[0], returns.index[-1]))
-    ax.set_title('Long and short holdings')
-    ax.set_ylabel('Holdings')
+    ax.set_title('做多和做空持仓')
+    ax.set_ylabel('持仓')
     ax.set_xlabel('')
     return ax
 
@@ -1319,17 +1319,17 @@ def show_and_plot_top_positions(returns, positions_alloc,
         positions_alloc)
 
     if show_and_plot == 1 or show_and_plot == 2:
-        utils.print_table(pd.DataFrame(df_top_long * 100, columns=['max']),
+        utils.print_table(pd.DataFrame(df_top_long * 100, columns=['最大']),
                           float_format='{0:.2f}%'.format,
-                          name='Top 10 long positions of all time')
+                          name='做多前10大仓位')
 
-        utils.print_table(pd.DataFrame(df_top_short * 100, columns=['max']),
+        utils.print_table(pd.DataFrame(df_top_short * 100, columns=['最大']),
                           float_format='{0:.2f}%'.format,
-                          name='Top 10 short positions of all time')
+                          name='做空前10大仓位')
 
-        utils.print_table(pd.DataFrame(df_top_abs * 100, columns=['max']),
+        utils.print_table(pd.DataFrame(df_top_abs * 100, columns=['最大']),
                           float_format='{0:.2f}%'.format,
-                          name='Top 10 positions of all time')
+                          name='前10大仓位')
 
     if show_and_plot == 0 or show_and_plot == 2:
 
@@ -1388,7 +1388,7 @@ def plot_max_median_position_concentration(positions, ax=None, **kwargs):
 
     ax.legend(loc='center left', frameon=True, framealpha=0.5)
     ax.set_ylabel('Exposure')
-    ax.set_title('Long/short max and median position concentration')
+    ax.set_title('做多/做空最大和中值持仓比例')
 
     return ax
 
