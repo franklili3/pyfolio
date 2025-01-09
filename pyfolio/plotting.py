@@ -1783,7 +1783,7 @@ def plot_daily_turnover_hist(transactions, positions, turnover_denom='AGB',
     if ax is None:
         ax = plt.gca()
     turnover = txn.get_turnover(positions, transactions, turnover_denom)
-    sns.displot(turnover, ax=ax, **kwargs)
+    sns.histplot(turnover, ax=ax, **kwargs)
     ax.set_title('日换手率分布')
     ax.set_xlabel('换手率')
     return ax
@@ -1865,7 +1865,7 @@ def plot_txn_time_hist(transactions, bin_minutes=5, tz='America/New_York',
     # 然后转换为目标时区
     txn_time.index = txn_time.index.tz_convert(pytz.timezone(tz))
     txn_time.index = txn_time.index.map(lambda x: x.hour * 60 + x.minute)
-    txn_time['trade_value'] = (txn_time.amount * txn_time.price).abs()
+    txn_time['trade_value'] = txn_time.apply(lambda row: abs(row['amount']) * row['price'], axis=1)
     txn_time = txn_time.groupby(level=0).sum().reindex(index=range(570, 961))
     txn_time.index = (txn_time.index / bin_minutes).astype(int) * bin_minutes
     txn_time = txn_time.groupby(level=0).sum()
