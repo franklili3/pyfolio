@@ -917,7 +917,7 @@ def create_interesting_times_tear_sheet(returns, benchmark_rets=None,
 
     utils.print_table(pd.DataFrame(rets_interesting)
                       .describe().transpose()
-                      .loc[:, ['均值', '最小值', '最大值']] * 100,
+                      .loc[:, ['mean', 'min', 'max']] * 100,
                       name='压力测试',
                       float_format='{0:.2f}%'.format)
 
