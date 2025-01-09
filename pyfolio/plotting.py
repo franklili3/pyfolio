@@ -1860,7 +1860,9 @@ def plot_txn_time_hist(transactions, bin_minutes=5, tz='America/New_York',
         ax = plt.gca()
 
     txn_time = transactions.copy()
-
+    # 首先本地化时间戳为 UTC
+    txn_time.index = txn_time.index.tz_localize('UTC')
+    # 然后转换为目标时区
     txn_time.index = txn_time.index.tz_convert(pytz.timezone(tz))
     txn_time.index = txn_time.index.map(lambda x: x.hour * 60 + x.minute)
     txn_time['trade_value'] = (txn_time.amount * txn_time.price).abs()
