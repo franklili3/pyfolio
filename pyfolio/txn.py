@@ -185,7 +185,7 @@ def adjust_returns_for_slippage(returns, positions, transactions,
     return adjusted_returns
 
 
-def get_turnover(positions, transactions, denominator='AGB'):
+def get_turnover(positions, transactions, denominator='portfolio_value'):
     """
      - Value of purchases and sales divided
     by either the actual gross book or the portfolio value
