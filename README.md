@@ -57,15 +57,18 @@ pip install pyfolio
 mkvirtualenv pyfolio
 ```
 
-下一步, 克隆此库，并且运行 `python setup.py develop`
+下一步, 克隆此库，并且运行 
+```python setup.py develop
+```
 ，然后直接编辑库文件。
 
 下一步，更新版本，请运行
-`pip install versioneer
+```pip install versioneer
 versioneer install
 git add .
 git commit -m "Update version"
-python setup.py -V`
+python setup.py -V
+```
 
 #### 在 OSX 上的 Matplotlib 
 
