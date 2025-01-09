@@ -1818,7 +1818,7 @@ def plot_daily_volume(returns, transactions, ax=None, **kwargs):
         ax = plt.gca()
     daily_txn = txn.get_txn_vol(transactions)
     daily_txn.txn_shares.plot(alpha=1.0, lw=0.5, ax=ax, **kwargs)
-    daily_txn_txn_shares_mean = daily_txn.txn_shares.mean.iloc[0]
+    daily_txn_txn_shares_mean = daily_txn.txn_shares.mean().iloc[0]
     ax.axhline(daily_txn_txn_shares_mean, color='steelblue',
                linestyle='--', lw=3, alpha=1.0)
     ax.set_title('日交易金额')
