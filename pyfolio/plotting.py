@@ -158,7 +158,7 @@ def axes_style(style='darkgrid', rc=None):
     return sns.axes_style(style=style, rc=rc)
 
 
-def plot_monthly_returns_heatmap(returns, ax=None, machine_id=None, **kwargs):
+def plot_monthly_returns_heatmap(returns, ax=None, upload_path=None, **kwargs):
     """
     Plots a heatmap of returns by month.
 
@@ -182,11 +182,8 @@ def plot_monthly_returns_heatmap(returns, ax=None, machine_id=None, **kwargs):
     monthly_ret_table = ep.aggregate_returns(returns, 'monthly')
     monthly_ret_table = monthly_ret_table.unstack().round(3)
     monthly_ret_table1 = monthly_ret_table.fillna(0) * 100.0
-    if machine_id is not None:
-        file_name = 'monthly_returns_' + str(machine_id) + '.csv'
-        monthly_ret_table1.to_csv(file_name)
-        if ax is None:
-            return 
+    file_name = upload_path + 'monthly_returns.csv'
+    monthly_ret_table1.to_csv(file_name)
     if ax is None:
         ax = plt.gca()
     sns.heatmap(
@@ -205,7 +202,7 @@ def plot_monthly_returns_heatmap(returns, ax=None, machine_id=None, **kwargs):
     return ax
 
 
-def plot_annual_returns(returns, ax=None, machine_id=None, **kwargs):
+def plot_annual_returns(returns, ax=None, upload_path=None, **kwargs):
     """
     Plots a bar graph of returns by year.
 
@@ -231,12 +228,9 @@ def plot_annual_returns(returns, ax=None, machine_id=None, **kwargs):
             returns,
             'yearly'))
     ann_ret_df1 = 100 * ann_ret_df.sort_index()
-    if machine_id is not None:
-        file_name = 'annual_returns_' + str(machine_id) + '.csv'
-        ann_ret_df1.columns = ['年收益率（%）']
-        ann_ret_df1.to_csv(file_name)
-        if ax is None:
-            return
+    file_name = upload_path + 'annual_returns.csv'
+    ann_ret_df1.columns = ['年收益率（%）']
+    ann_ret_df1.to_csv(file_name)
     if ax is None:
         ax = plt.gca()
 
@@ -261,7 +255,7 @@ def plot_annual_returns(returns, ax=None, machine_id=None, **kwargs):
     return ax
 
 
-def plot_monthly_returns_dist(returns, ax=None, **kwargs):
+def plot_monthly_returns_dist(returns, ax=None, upload_path=None, **kwargs):
     """
     Plots a distribution of monthly returns.
 
@@ -283,7 +277,8 @@ def plot_monthly_returns_dist(returns, ax=None, **kwargs):
 
 
     monthly_ret_table = ep.aggregate_returns(returns, 'monthly')
-
+    filename = upload_path + 'monthly_return_table.csv'
+    monthly_ret_table.to_csv(filename)
     if ax is None:
         ax = plt.gca()
 
@@ -429,7 +424,7 @@ def plot_long_short_holdings(returns, positions,
     return ax
 
 
-def plot_drawdown_periods(returns, top=10, ax=None, machine_id=None, **kwargs):
+def plot_drawdown_periods(returns, top=10, ax=None, upload_path=None, **kwargs):
     """
     Plots cumulative returns highlighting top drawdown periods.
 
@@ -502,7 +497,7 @@ def plot_drawdown_periods(returns, top=10, ax=None, machine_id=None, **kwargs):
     return ax
 
 
-def plot_drawdown_underwater(returns, ax=None, machine_id=None, **kwargs):
+def plot_drawdown_underwater(returns, ax=None, upload_path=None, **kwargs):
     """
     Plots how far underwaterr returns are over time, or plots current
     drawdown vs. date.
@@ -779,7 +774,7 @@ def plot_rolling_returns(returns,
                          volatility_match=False,
                          cone_function=timeseries.forecast_cone_bootstrap,
                          ax=None,
-                         machine_id=None, **kwargs):
+                         upload_path=None, **kwargs):
     """
     Plots cumulative rolling returns versus some benchmarks'.
 
@@ -887,17 +882,14 @@ def plot_rolling_returns(returns,
 
     cum_returns_all1 = pd.merge(cum_returns_all, oos_cum_returns1, how='outer', left_index=True, right_index=True)
 
-    if machine_id is not None:
-        if volatility_match and factor_returns is not None:
-            file_name1 = 'cum_returns_volatility_match_' + str(machine_id) + '.csv'
-            #file_name2 = 'live_cum_returns_volatility_match_' + str(machine_id) + '.csv'
-        else:
-            file_name1 = 'cum_returns_' + str(machine_id) + '.csv'
-            #file_name2 = 'live_cum_returns_' + str(machine_id) + '.csv'
-        cum_returns_all1.to_csv(file_name1)
-        #oos_cum_returns1.to_csv(file_name2)
-        if ax is None:
-            return
+    if volatility_match and factor_returns is not None:
+        file_name1 = upload_path + 'cum_returns_volatility_match.csv'
+        #file_name2 = 'live_cum_returns_volatility_match_' + str(machine_id) + '.csv'
+    else:
+        file_name1 = upload_path + 'cum_returns.csv'
+        #file_name2 = 'live_cum_returns_' + str(machine_id) + '.csv'
+    cum_returns_all1.to_csv(file_name1)
+    #oos_cum_returns1.to_csv(file_name2)
     if ax is None:
         ax = plt.gca()
     # 确保X轴格式为年份
@@ -947,7 +939,7 @@ def plot_rolling_returns(returns,
 
 
 def plot_rolling_beta(returns, factor_returns, legend_loc='best',
-                      ax=None, machine_id=None, **kwargs):
+                      ax=None, upload_path=None, **kwargs):
     """
     Plots the rolling 6-month and 12-month beta versus date.
 
@@ -1018,7 +1010,7 @@ def plot_rolling_beta(returns, factor_returns, legend_loc='best',
 
 def plot_rolling_volatility(returns, factor_returns=None,
                             rolling_window=APPROX_BDAYS_PER_MONTH * 6,
-                            legend_loc='best', ax=None, machine_id=None, **kwargs):
+                            legend_loc='best', ax=None, upload_path=None, **kwargs):
     """
     Plots the rolling volatility versus date.
 
@@ -1105,7 +1097,7 @@ def plot_rolling_volatility(returns, factor_returns=None,
 
 def plot_rolling_sharpe(returns, factor_returns=None,
                         rolling_window=APPROX_BDAYS_PER_MONTH * 6,
-                        legend_loc='best', ax=None, machine_id=None, **kwargs):
+                        legend_loc='best', ax=None, upload_path=None, **kwargs):
     """
     Plots the rolling Sharpe ratio versus date.
 
@@ -1437,7 +1429,7 @@ def plot_sector_allocations(returns, sector_alloc, ax=None, **kwargs):
     return ax
 
 
-def plot_return_quantiles(returns, live_start_date=None, ax=None, machine_id=None, **kwargs):
+def plot_return_quantiles(returns, live_start_date=None, ax=None, upload_path=None, **kwargs):
     """
     Creates a box plot of daily, weekly, and monthly return
     distributions.
@@ -1504,23 +1496,17 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, machine_id=Non
     quartile_dict['q3'].append(quartile_3_monthly_return)
     quartile_dict['high'].append(upper_monthly)
     quartile_df = pd.DataFrame(quartile_dict)
-    if machine_id is not None:
-        file_name1 = 'returns_quartiles_' + str(machine_id) + '.csv'
-        quartile_df.to_csv(file_name1)
-        if ax is None:
-            return
+    file_name1 = upload_path + 'returns_quartiles.csv'
+    quartile_df.to_csv(file_name1)
 
     if live_start_date is not None:
         oos_returns = returns.loc[returns.index >= live_start_date]
         oos_weekly = ep.aggregate_returns(oos_returns, 'weekly')
         oos_monthly = ep.aggregate_returns(oos_returns, 'monthly')
-        if machine_id is not None:
-            file_name3 = 'live_weekly_returns_' + str(machine_id) + '.csv'
-            file_name4 = 'live_monthly_returns_' + str(machine_id) + '.csv'
-            oos_weekly.to_csv(file_name3)
-            oos_monthly.to_csv(file_name4)
-            if ax is None:
-                return
+        file_name3 = upload_path + 'live_weekly_returns.csv'
+        file_name4 = upload_path + 'live_monthly_returns.csv'
+        oos_weekly.to_csv(file_name3)
+        oos_monthly.to_csv(file_name4)
     if ax is None:
         ax = plt.gca()
 
