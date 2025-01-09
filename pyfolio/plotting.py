@@ -1598,10 +1598,10 @@ def plot_turnover(returns, transactions, positions, turnover_denom='AGB',
     ax.yaxis.set_major_formatter(FuncFormatter(y_axis_formatter))
 
     df_turnover = txn.get_turnover(positions, transactions, turnover_denom)
-    print('df_turnover: ', df_turnover.head())
+    #print('df_turnover: ', df_turnover.head())
     df_turnover_by_month = df_turnover.resample("ME").mean()
     df_turnover_mean = df_turnover.mean().iloc[0]
-    print('df_turnover_mean: ', df_turnover_mean)
+    #print('df_turnover_mean: ', df_turnover_mean)
     df_turnover.plot(color='steelblue', alpha=1.0, lw=0.5, ax=ax, **kwargs)
     df_turnover_by_month.plot(
         color='orangered',
@@ -1818,11 +1818,12 @@ def plot_daily_volume(returns, transactions, ax=None, **kwargs):
         ax = plt.gca()
     daily_txn = txn.get_txn_vol(transactions)
     daily_txn.txn_shares.plot(alpha=1.0, lw=0.5, ax=ax, **kwargs)
-    ax.axhline(daily_txn.txn_shares.mean(), color='steelblue',
+    daily_txn_txn_shares_mean = daily_txn.txn_shares.mean.iloc[0]
+    ax.axhline(daily_txn_txn_shares_mean, color='steelblue',
                linestyle='--', lw=3, alpha=1.0)
-    ax.set_title('Daily trading volume')
+    ax.set_title('日交易金额')
     ax.set_xlim((returns.index[0], returns.index[-1]))
-    ax.set_ylabel('Amount of shares traded')
+    ax.set_ylabel('交易的股份数量')
     ax.set_xlabel('')
     return ax
 

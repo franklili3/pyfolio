@@ -221,13 +221,13 @@ def get_turnover(positions, transactions, denominator='AGB'):
     txn_vol = get_txn_vol(transactions)
     #print(txn_vol.head())  # Check the structure of the DataFrame
     traded_value = txn_vol.txn_volume
-    print('traded_value: ', traded_value.head())
+    #print('traded_value: ', traded_value.head())
     if denominator == 'AGB':
         # Actual gross book is the same thing as the algo's GMV
         # We want our denom to be avg(AGB previous, AGB current)
         AGB = positions.drop('cash', axis=1).abs().sum(axis=1)
         denom = AGB.rolling(2).mean()
-        print('denom: ', denom.head())
+        #print('denom: ', denom.head())
         # Since the first value of pd.rolling returns NaN, we
         # set our "day 0" AGB to 0.
         denom.iloc[0] = AGB.iloc[0] / 2
