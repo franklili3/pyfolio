@@ -1600,6 +1600,8 @@ def plot_turnover(returns, transactions, positions, turnover_denom='AGB',
     df_turnover = txn.get_turnover(positions, transactions, turnover_denom)
     print('df_turnover: ', df_turnover.head())
     df_turnover_by_month = df_turnover.resample("ME").mean()
+    df_turnover_mean = df_turnover.mean()
+    print('df_turnover_mean: ', df_turnover_mean)
     df_turnover.plot(color='steelblue', alpha=1.0, lw=0.5, ax=ax, **kwargs)
     df_turnover_by_month.plot(
         color='orangered',
@@ -1608,15 +1610,15 @@ def plot_turnover(returns, transactions, positions, turnover_denom='AGB',
         ax=ax,
         **kwargs)
     ax.axhline(
-        df_turnover.mean(), color='steelblue', linestyle='--', lw=3, alpha=1.0)
-    ax.legend(['Daily turnover',
-               'Average daily turnover, by month',
-               'Average daily turnover, net'],
+        df_turnover_mean, color='steelblue', linestyle='--', lw=3, alpha=1.0)
+    ax.legend(['日换手率',
+               '各月平均日换手率',
+               '净平均日换手率'],
               loc=legend_loc, frameon=True, framealpha=0.5)
-    ax.set_title('Daily turnover')
+    ax.set_title('日换手率')
     ax.set_xlim((returns.index[0], returns.index[-1]))
     ax.set_ylim((0, 2))
-    ax.set_ylabel('Turnover')
+    ax.set_ylabel('换手率')
     ax.set_xlabel('')
     return ax
 
