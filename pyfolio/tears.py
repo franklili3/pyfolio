@@ -561,7 +561,7 @@ def create_returns_tear_sheet(returns,
         ax=ax_returns,
     )
     ax_returns.set_title(
-        '收益率')
+        '日收益率')
 
     if benchmark_rets is not None:
         plotting.plot_rolling_beta(
