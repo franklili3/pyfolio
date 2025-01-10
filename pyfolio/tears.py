@@ -172,8 +172,10 @@ def create_full_tear_sheet(returns,
     if (unadjusted_returns is None) and (slippage is not None) and\
        (transactions is not None):
         unadjusted_returns = returns.copy()
+        print('unadjusted_returns: ', unadjusted_returns.head())
         returns = txn.adjust_returns_for_slippage(returns, positions,
                                                   transactions, slippage)
+        print('adjusted_returns: ', returns.head())
 
     positions = utils.check_intraday(estimate_intraday, returns,
                                      positions, transactions)
