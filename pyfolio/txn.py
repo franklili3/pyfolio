@@ -186,6 +186,7 @@ def adjust_returns_for_slippage(returns, positions, transactions,
     adjusted_pnl = pnl - slippage_dollars
     #print('adjusted_pnl: ', adjusted_pnl.head())
     adjusted_returns = returns * adjusted_pnl / pnl
+    adjusted_returns = adjusted_returns.fillna(0)
     #print('adjusted_returns: ', adjusted_returns.head())
 
     return adjusted_returns
