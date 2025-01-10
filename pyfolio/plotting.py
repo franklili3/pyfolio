@@ -1860,31 +1860,34 @@ def plot_txn_time_hist(transactions, bin_minutes=5, tz='America/New_York',
         ax = plt.gca()
 
     txn_time = transactions.copy()
+    print('txn_time: ', txn_time.head())
+
     # 首先本地化时间戳为 UTC
     txn_time.index = txn_time.index.tz_localize('UTC')
     # 然后转换为目标时区
     txn_time.index = txn_time.index.tz_convert(pytz.timezone(tz))
     txn_time.index = txn_time.index.map(lambda x: x.hour * 60 + x.minute)
-    txn_time['trade_value'] = txn_time.apply(lambda row: abs(row['amount']) * row['price'], axis=1)
-    txn_time = txn_time.groupby(level=0).sum().reindex(index=range(570, 961))
     txn_time.index = (txn_time.index / bin_minutes).astype(int) * bin_minutes
-    txn_time = txn_time.groupby(level=0).sum()
+    txn_time['trade_value'] = txn_time.apply(lambda row: abs(row['amount']) * row['price'], axis=1)
+    print('txn_time.trade_value: ', txn_time.trade_value.head())
+    txn_value_sum = txn_time.trade_value.groupby(level=0).sum().reindex(index=range(570, 961))
+    #txn_value_sum.index = (txn_value_sum.index / bin_minutes).astype(int) * bin_minutes
+    #txn_time = txn_time.groupby(level=0).sum()
 
     txn_time['time_str'] = txn_time.index.map(lambda x:
                                               str(datetime.time(int(x / 60),
                                                                 x % 60))[:-3])
-    print('txn_time.trade_value: ', txn_time.trade_value.head())
 
-    trade_value_sum = txn_time.trade_value.sum()
-    print('trade_value_sum: ', trade_value_sum)
-    txn_time.trade_value = txn_time.trade_value.fillna(0) / trade_value_sum
+    #trade_value_sum = txn_time.trade_value.sum()
+    print('txn_value_sum: ', txn_value_sum)
+    txn_time['trade_value_perportion'] = txn_time.trade_value.fillna(0) / txn_value_sum.iloc[0]
     # 确保 bin_minutes 是一个标量
     #if isinstance(bin_minutes, (list, np.ndarray)):
     #    bin_minutes = bin_minutes[0]  # 取第一个元素
     print('txn_time.index.to_list(): ', txn_time.index.to_list())
-    print('txn_time.trade_value.values: ', txn_time.trade_value.values)
+    print('txn_time.trade_value_perportion.values: ', txn_time.trade_value_perportion.values)
     print('bin_minutes: ', bin_minutes)
-    ax.bar(txn_time.index.to_list(), txn_time.trade_value.values, width=5, **kwargs)#bin_minutes
+    ax.bar(txn_time.index.to_list(), txn_time.trade_value_perportion.values, width=5, **kwargs)#bin_minutes
 
     ax.set_xlim(570, 960)
     ax.set_xticks(txn_time.index[::int(30 / bin_minutes)])
