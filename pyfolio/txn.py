@@ -160,13 +160,17 @@ def adjust_returns_for_slippage(returns, positions, transactions,
     """
 
     slippage = 0.0001 * slippage_bps
+    print('positions: ', positions.head())
     portfolio_value = positions.sum(axis=1)
+    print('portfolio_value: ', portfolio_value.head())
+
     pnl = portfolio_value * returns
     traded_txn = get_txn_vol(transactions)
     #print('traded_txn: ', traded_txn.head())
     traded_value = traded_txn.txn_volume
     # 确保索引对齐
     slippage_dollars_df = traded_value.reindex(pnl.index, fill_value=0) * slippage
+    print('slippage_dollars_df: ', slippage_dollars_df.head())
     # 确保 slippage_dollars 是 Series
     if isinstance(slippage_dollars_df, pd.DataFrame):
         slippage_dollars = slippage_dollars_df.squeeze()  # 将 DataFrame 转换为 Series
@@ -180,7 +184,9 @@ def adjust_returns_for_slippage(returns, positions, transactions,
     #slippage_dollars = traded_value * slippage
     #adjusted_pnl = pnl.add(-slippage_dollars, fill_value=0)
     adjusted_pnl = pnl - slippage_dollars
+    print('adjusted_pnl: ', adjusted_pnl.head())
     adjusted_returns = returns * adjusted_pnl / pnl
+    print('adjusted_returns: ', adjusted_returns.head())
 
     return adjusted_returns
 
