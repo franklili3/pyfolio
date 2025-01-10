@@ -358,15 +358,15 @@ def plot_holdings(returns, positions, legend_loc='best', ax=None, **kwargs):
 
     ax.set_xlim((returns.index[0], returns.index[-1]))
 
-    leg = ax.legend(['Daily holdings',
-                     'Average daily holdings, by month',
-                     'Average daily holdings, overall'],
+    leg = ax.legend(['日持仓',
+                     '月均日持仓',
+                     '总平均日持仓'],
                     loc=legend_loc, frameon=True,
                     framealpha=0.5)
     leg.get_frame().set_edgecolor('black')
 
-    ax.set_title('Total holdings')
-    ax.set_ylabel('Holdings')
+    ax.set_title('总持仓')
+    ax.set_ylabel('持仓')
     ax.set_xlabel('')
     return ax
 
@@ -1222,8 +1222,8 @@ def plot_gross_leverage(returns, positions, ax=None, **kwargs):
 
     ax.axhline(gl.mean(), color='g', linestyle='--', lw=3)
 
-    ax.set_title('Gross leverage')
-    ax.set_ylabel('Gross leverage')
+    ax.set_title('总杠杆率')
+    ax.set_ylabel('总杠杆率')
     ax.set_xlabel('')
     return ax
 
@@ -1821,9 +1821,9 @@ def plot_daily_volume(returns, transactions, ax=None, **kwargs):
     daily_txn_txn_shares_mean = daily_txn.txn_shares.mean().iloc[0]
     ax.axhline(daily_txn_txn_shares_mean, color='steelblue',
                linestyle='--', lw=3, alpha=1.0)
-    ax.set_title('日交易金额')
+    ax.set_title('日交易量')
     ax.set_xlim((returns.index[0], returns.index[-1]))
-    ax.set_ylabel('交易的股份数量')
+    ax.set_ylabel('交易的股数')
     ax.set_xlabel('')
     return ax
 

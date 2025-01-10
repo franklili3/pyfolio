@@ -250,4 +250,5 @@ def get_turnover(positions, transactions, denominator='portfolio_value'):
     denom.index = denom.index.normalize()
     turnover = traded_value.div(denom, axis='index')
     turnover = turnover.fillna(0)
+    turnover.name = '换手率'
     return turnover
