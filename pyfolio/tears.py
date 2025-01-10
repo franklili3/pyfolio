@@ -561,7 +561,7 @@ def create_returns_tear_sheet(returns,
         ax=ax_returns,
     )
     ax_returns.set_title(
-        '收益率')
+        '日收益率')
 
     if benchmark_rets is not None:
         plotting.plot_rolling_beta(
@@ -569,19 +569,25 @@ def create_returns_tear_sheet(returns,
 
     plotting.plot_rolling_volatility(
         returns, factor_returns=benchmark_rets, ax=ax_rolling_volatility)
+    ax_rolling_volatility.set_title(
+        '6个月滚动波动率')
 
     plotting.plot_rolling_sharpe(
         returns, ax=ax_rolling_sharpe)
-
+    ax_rolling_sharpe.set_title(
+        '6个月滚动夏普比率')
     # Drawdowns
     plotting.plot_drawdown_periods(
         returns, top=5, ax=ax_drawdown)
 
     plotting.plot_drawdown_underwater(
         returns=returns, ax=ax_underwater)
-
+    ax_underwater.set_title(
+        '回撤比率')
     plotting.plot_monthly_returns_heatmap(returns, ax=ax_monthly_heatmap)
     plotting.plot_annual_returns(returns, ax=ax_annual_returns)
+    ax_annual_returns.set_title(
+        '年收益率')    
     plotting.plot_monthly_returns_dist(returns, ax=ax_monthly_dist)
 
     plotting.plot_return_quantiles(
