@@ -1886,8 +1886,8 @@ def plot_txn_time_hist(transactions, bin_minutes=5, tz='America/New_York',
     ax.set_xlim(570, 960)
     ax.set_xticks(txn_time.index[::int(30 / bin_minutes)])
     ax.set_xticklabels(txn_time.time_str[::int(30 / bin_minutes)])
-    ax.set_title('Transaction time distribution')
-    ax.set_ylabel('Proportion')
+    ax.set_title('交易的时间分布')
+    ax.set_ylabel('百分比')
     ax.set_xlabel('')
     return ax
 
