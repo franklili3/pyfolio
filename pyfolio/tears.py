@@ -762,7 +762,7 @@ def create_txn_tear_sheet(returns, positions, transactions,
     except ValueError:
         warnings.warn('Unable to generate turnover plot.', UserWarning)
 
-    plotting.plot_txn_time_hist(transactions, ax=ax_txn_timings)
+    #plotting.plot_txn_time_hist(transactions, ax=ax_txn_timings)
 
     if unadjusted_returns is not None:
         ax_slippage_sweep = plt.subplot(gs[4, :])
