@@ -45,14 +45,15 @@ import os
 if sys.platform == 'linux': 
     os.chdir('/home/noroot') # Linux path
 elif sys.platform == 'darwin': 
+    plt.rcParams['font.sans-serif'] = ['Songti SC']  # 用来正常显示中文标签
     os.chdir('/Users/linda/myprojects/github/MoneyDoubleSignal') # Mac path
 else:
     os.chdir('C:\\myprojects\\github\\MoneyDoubleSignal') # Windows path
+    plt.rcParams['font.sans-serif'] = ['SIMSUN']  # 用来正常显示中文标签
     #os.chdir('E:\MyProjects\Python-for-Finance1') # Windows path
     #os.chdir('/home/ubuntu/Python-for-Finance1') # Linux path
 
 # 设置字体为 Songti（宋体），你可以根据系统安装的字体进行调整
-plt.rcParams['font.sans-serif'] = ['Songti SC']  # 用来正常显示中文标签
 plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
 
 # 如果你使用的是 Jupyter Notebook，可以使用以下命令来更新字体缓存
