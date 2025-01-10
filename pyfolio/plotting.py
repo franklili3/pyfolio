@@ -1881,7 +1881,7 @@ def plot_txn_time_hist(transactions, bin_minutes=5, tz='America/New_York',
     #    bin_minutes = bin_minutes[0]  # 取第一个元素
     print('txn_time.index: ', txn_time.index)
     print('txn_time.trade_value: ', txn_time.trade_value)
-    ax.bar(txn_time.index, txn_time.trade_value, width=bin_minutes, **kwargs)
+    ax.bar(txn_time.index.to_list(), txn_time.trade_value.to_list(), width=bin_minutes, **kwargs)
 
     ax.set_xlim(570, 960)
     ax.set_xticks(txn_time.index[::int(30 / bin_minutes)])
