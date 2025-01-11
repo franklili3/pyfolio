@@ -882,7 +882,7 @@ def plot_rolling_returns(returns,
 
     cum_returns_all1 = pd.merge(cum_returns_all, oos_cum_returns1, how='outer', left_index=True, right_index=True)
 
-    if volatility_match and factor_returns is not None:
+    if volatility_match and factor_returns and upload_path is not None:
         file_name1 = upload_path + 'cum_returns_volatility_match.csv'
         #file_name2 = 'live_cum_returns_volatility_match_' + str(machine_id) + '.csv'
     else:
