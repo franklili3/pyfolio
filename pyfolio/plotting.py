@@ -354,15 +354,15 @@ def plot_holdings(returns, positions, legend_loc='best', ax=None, **kwargs):
 
     ax.set_xlim((returns.index[0], returns.index[-1]))
 
-    leg = ax.legend(['Daily holdings',
-                     'Average daily holdings, by month',
-                     'Average daily holdings, overall'],
+    leg = ax.legend(['日持仓',
+                     '月均日持仓',
+                     '总平均日持仓'],
                     loc=legend_loc, frameon=True,
                     framealpha=0.5)
     leg.get_frame().set_edgecolor('black')
 
-    ax.set_title('Total holdings')
-    ax.set_ylabel('Holdings')
+    ax.set_title('总持仓')
+    ax.set_ylabel('持仓')
     ax.set_xlabel('')
     return ax
 
@@ -1215,8 +1215,8 @@ def plot_gross_leverage(returns, positions, ax=None, **kwargs):
 
     ax.axhline(gl.mean(), color='g', linestyle='--', lw=3)
 
-    ax.set_title('Gross leverage')
-    ax.set_ylabel('Gross leverage')
+    ax.set_title('总杠杆率')
+    ax.set_ylabel('总杠杆率')
     ax.set_xlabel('')
     return ax
 
@@ -1808,9 +1808,9 @@ def plot_daily_volume(returns, transactions, ax=None, **kwargs):
     daily_txn_txn_shares_mean = daily_txn.txn_shares.mean().iloc[0]
     ax.axhline(daily_txn_txn_shares_mean, color='steelblue',
                linestyle='--', lw=3, alpha=1.0)
-    ax.set_title('日交易金额')
+    ax.set_title('日交易量')
     ax.set_xlim((returns.index[0], returns.index[-1]))
-    ax.set_ylabel('交易的股份数量')
+    ax.set_ylabel('交易的股数')
     ax.set_xlabel('')
     return ax
 
@@ -1847,32 +1847,40 @@ def plot_txn_time_hist(transactions, bin_minutes=5, tz='America/New_York',
         ax = plt.gca()
 
     txn_time = transactions.copy()
+    #print('txn_time: ', txn_time.head())
+
     # 首先本地化时间戳为 UTC
     txn_time.index = txn_time.index.tz_localize('UTC')
     # 然后转换为目标时区
     txn_time.index = txn_time.index.tz_convert(pytz.timezone(tz))
     txn_time.index = txn_time.index.map(lambda x: x.hour * 60 + x.minute)
-    txn_time['trade_value'] = txn_time.apply(lambda row: abs(row['amount']) * row['price'], axis=1)
-    txn_time = txn_time.groupby(level=0).sum().reindex(index=range(570, 961))
     txn_time.index = (txn_time.index / bin_minutes).astype(int) * bin_minutes
-    txn_time = txn_time.groupby(level=0).sum()
+    txn_time['trade_value'] = txn_time.apply(lambda row: abs(row['amount']) * row['price'], axis=1)
+    #print('txn_time.trade_value: ', txn_time.trade_value.head())
+    txn_value_sum = txn_time.trade_value.groupby(level=0).sum().reindex(index=range(570, 961))
+    #txn_value_sum.index = (txn_value_sum.index / bin_minutes).astype(int) * bin_minutes
+    #txn_time = txn_time.groupby(level=0).sum()
 
     txn_time['time_str'] = txn_time.index.map(lambda x:
                                               str(datetime.time(int(x / 60),
                                                                 x % 60))[:-3])
 
-    trade_value_sum = txn_time.trade_value.sum()
-    txn_time.trade_value = txn_time.trade_value.fillna(0) / trade_value_sum
+    #trade_value_sum = txn_time.trade_value.sum()
+    #print('txn_value_sum: ', txn_value_sum)
+    txn_time['trade_value_perportion'] = txn_time.trade_value.fillna(0) / txn_value_sum.iloc[0]
     # 确保 bin_minutes 是一个标量
-    if isinstance(bin_minutes, (list, np.ndarray)):
-        bin_minutes = bin_minutes[0]  # 取第一个元素
-    ax.bar(txn_time.index, txn_time.trade_value, width=bin_minutes, **kwargs)
+    #if isinstance(bin_minutes, (list, np.ndarray)):
+    #    bin_minutes = bin_minutes[0]  # 取第一个元素
+    #print('txn_time.index.to_list(): ', txn_time.index.to_list())
+    #print('txn_time.trade_value_perportion.values: ', txn_time.trade_value_perportion.values)
+    #print('bin_minutes: ', bin_minutes)
+    ax.bar(txn_time.index.to_list(), txn_time.trade_value_perportion.values, width=5, **kwargs)#bin_minutes
 
     ax.set_xlim(570, 960)
     ax.set_xticks(txn_time.index[::int(30 / bin_minutes)])
     ax.set_xticklabels(txn_time.time_str[::int(30 / bin_minutes)])
-    ax.set_title('Transaction time distribution')
-    ax.set_ylabel('Proportion')
+    ax.set_title('交易的时间分布')
+    ax.set_ylabel('百分比')
     ax.set_xlabel('')
     return ax
 

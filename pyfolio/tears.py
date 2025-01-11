@@ -172,8 +172,10 @@ def create_full_tear_sheet(returns,
     if (unadjusted_returns is None) and (slippage is not None) and\
        (transactions is not None):
         unadjusted_returns = returns.copy()
+        print('unadjusted_returns: ', unadjusted_returns.head())
         returns = txn.adjust_returns_for_slippage(returns, positions,
                                                   transactions, slippage)
+        print('adjusted_returns: ', returns.head())
 
     positions = utils.check_intraday(estimate_intraday, returns,
                                      positions, transactions)
@@ -569,19 +571,25 @@ def create_returns_tear_sheet(returns,
 
     plotting.plot_rolling_volatility(
         returns, factor_returns=benchmark_rets, ax=ax_rolling_volatility)
+    ax_rolling_volatility.set_title(
+        '6个月滚动波动率')
 
     plotting.plot_rolling_sharpe(
         returns, ax=ax_rolling_sharpe)
-
+    ax_rolling_sharpe.set_title(
+        '6个月滚动夏普比率')
     # Drawdowns
     plotting.plot_drawdown_periods(
         returns, top=5, ax=ax_drawdown)
 
     plotting.plot_drawdown_underwater(
         returns=returns, ax=ax_underwater)
-
+    ax_underwater.set_title(
+        '回撤比率')
     plotting.plot_monthly_returns_heatmap(returns, ax=ax_monthly_heatmap)
     plotting.plot_annual_returns(returns, ax=ax_annual_returns)
+    ax_annual_returns.set_title(
+        '年收益率')    
     plotting.plot_monthly_returns_dist(returns, ax=ax_monthly_dist)
 
     plotting.plot_return_quantiles(
@@ -762,7 +770,7 @@ def create_txn_tear_sheet(returns, positions, transactions,
     except ValueError:
         warnings.warn('Unable to generate turnover plot.', UserWarning)
 
-    plotting.plot_txn_time_hist(transactions, ax=ax_txn_timings)
+    #plotting.plot_txn_time_hist(transactions, ax=ax_txn_timings)
 
     if unadjusted_returns is not None:
         ax_slippage_sweep = plt.subplot(gs[4, :])
