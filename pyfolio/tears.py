@@ -532,7 +532,7 @@ def create_returns_tear_sheet(returns,
         cone_std=cone_std,
         ax=ax_rolling_returns)
     ax_rolling_returns.set_title(
-        'Cumulative returns')
+        '累计收益率')
 
     plotting.plot_rolling_returns(
         returns,
@@ -543,7 +543,7 @@ def create_returns_tear_sheet(returns,
         legend_loc=None,
         ax=ax_rolling_returns_vol_match)
     ax_rolling_returns_vol_match.set_title(
-        'Cumulative returns volatility matched to benchmark')
+        '与基准匹配的累计收益率的波动性')
 
     plotting.plot_rolling_returns(
         returns,
@@ -553,7 +553,7 @@ def create_returns_tear_sheet(returns,
         cone_std=cone_std,
         ax=ax_rolling_returns_log)
     ax_rolling_returns_log.set_title(
-        'Cumulative returns on logarithmic scale')
+        '累计收益率对数')
 
     plotting.plot_returns(
         returns,
@@ -561,7 +561,7 @@ def create_returns_tear_sheet(returns,
         ax=ax_returns,
     )
     ax_returns.set_title(
-        'Returns')
+        '收益率')
 
     if benchmark_rets is not None:
         plotting.plot_rolling_beta(
@@ -917,8 +917,8 @@ def create_interesting_times_tear_sheet(returns, benchmark_rets=None,
 
     utils.print_table(pd.DataFrame(rets_interesting)
                       .describe().transpose()
-                      .loc[:, ['mean', 'min', 'max']] * 100,
-                      name='Stress Events',
+                      .loc[:, ['均值', '最小值', '最大值']] * 100,
+                      name='压力测试',
                       float_format='{0:.2f}%'.format)
 
     if benchmark_rets is not None:
@@ -942,16 +942,16 @@ def create_interesting_times_tear_sheet(returns, benchmark_rets=None,
 
         if benchmark_rets is not None:
             ep.cum_returns(bmark_interesting[name]).plot(
-                ax=ax, color='gray', label='benchmark', alpha=0.6)
-            ax.legend(['Algo',
-                       'benchmark'],
+                ax=ax, color='gray', label='基准', alpha=0.6)
+            ax.legend(['算法',
+                       '基准'],
                       loc=legend_loc, frameon=True, framealpha=0.5)
         else:
-            ax.legend(['Algo'],
+            ax.legend(['算法'],
                       loc=legend_loc, frameon=True, framealpha=0.5)
 
         ax.set_title(name)
-        ax.set_ylabel('Returns')
+        ax.set_ylabel('收益率')
         ax.set_xlabel('')
 
     if return_fig:

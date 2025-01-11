@@ -667,33 +667,33 @@ SIMPLE_STAT_FUNCS1 = [
     value_at_risk
 ]
 
-# FACTOR_STAT_FUNCS = [
-#     ep.alpha
-# ]
+FACTOR_STAT_FUNCS = [
+     ep.alpha
+]
 
 # FACTOR_STAT_FUNCS1 = [
 #     ep.beta
 # ]
 
 STAT_FUNC_NAMES = {
-    'annual_return': 'Annual return',
-    'annual_volatility': 'Annual volatility',
-    'sharpe_ratio': 'Sharpe ratio',
-    'calmar_ratio': 'Calmar ratio',
-    'omega_ratio': 'Omega ratio',
-    'sortino_ratio': 'Sortino ratio',
-    'alpha': 'Alpha',
+    'annual_return': '年化收益率',
+    'annual_volatility': '年化波动率',
+    'sharpe_ratio': '夏普比率',
+    'calmar_ratio': 'Calmar 比率',
+    'omega_ratio': 'Omega 比率',
+    'sortino_ratio': 'Sortino 比率',
+    'alpha': '阿尔法',
 }
 
 STAT_FUNC_NAMES1 = {
-    'cum_returns_final': 'Cumulative returns',
-    'stability_of_timeseries': 'Stability',
-    'max_drawdown': 'Max drawdown',
+    'cum_returns_final': '累计收益率',
+    'stability_of_timeseries': '稳定性',
+    'max_drawdown': '最大回撤率',
     'skew': 'Skew',
     'kurtosis': 'Kurtosis',
-    'tail_ratio': 'Tail ratio',
-    'common_sense_ratio': 'Common sense ratio',
-    'value_at_risk': 'Daily value at risk',
+    'tail_ratio': 'Tail 比率',
+    'common_sense_ratio': '常识比率',
+    'value_at_risk': '日风险值',
 }
 def perf_stats(returns, factor_returns=None, positions=None,
                transactions=None, turnover_denom='AGB'):
@@ -734,14 +734,14 @@ def perf_stats(returns, factor_returns=None, positions=None,
         stats[STAT_FUNC_NAMES1[stat_func.__name__]] = stat_func(returns)
 
     if positions is not None:
-        stats['Gross leverage'] = gross_lev(positions).mean()
+        stats['总杠杆率'] = gross_lev(positions).mean()
         if transactions is not None:
-            stats['Daily turnover'] = get_turnover(positions,
+            stats['日换手率'] = get_turnover(positions,
                                                    transactions,
                                                    turnover_denom).mean()
     if factor_returns is not None:
-        stats['Alpha'] = ep.alpha(returns, factor_returns, annualization=APPROX_BDAYS_PER_YEAR)
-        stats['Beta'] = ep.beta(returns, factor_returns)
+        stats['阿尔法'] = ep.alpha(returns, factor_returns, annualization=APPROX_BDAYS_PER_YEAR)
+        stats['贝塔'] = ep.beta(returns, factor_returns)
        # for stat_func in FACTOR_STAT_FUNCS:
         #     res = stat_func(returns, factor_returns, annualization=APPROX_BDAYS_PER_YEAR)
         #     stats[STAT_FUNC_NAMES[stat_func.__name__]] = res
@@ -1007,35 +1007,35 @@ def gen_drawdown_table(returns, top=10):
     df_cum = ep.cum_returns(returns, 1.0)
     drawdown_periods = get_top_drawdowns(returns, top=top)
     df_drawdowns = pd.DataFrame(index=list(range(top)),
-                                columns=['Net drawdown in %',
-                                         'Peak date',
-                                         'Valley date',
-                                         'Recovery date',
-                                         'Duration'])
+                                columns=['净回撤比率%',
+                                         '高点日期',
+                                         '低点日期',
+                                         '恢复日期',
+                                         '期间长度'])
 
     for i, (peak, valley, recovery) in enumerate(drawdown_periods):
         if pd.isnull(recovery):
-            df_drawdowns.loc[i, 'Duration'] = np.nan
+            df_drawdowns.loc[i, '期间长度'] = np.nan
         else:
-            df_drawdowns.loc[i, 'Duration'] = len(pd.date_range(peak,
+            df_drawdowns.loc[i, '期间长度'] = len(pd.date_range(peak,
                                                                 recovery,
                                                                 freq='B'))
-        df_drawdowns.loc[i, 'Peak date'] = (peak.to_pydatetime()
+        df_drawdowns.loc[i, '高点日期'] = (peak.to_pydatetime()
                                             .strftime('%Y-%m-%d'))
-        df_drawdowns.loc[i, 'Valley date'] = (valley.to_pydatetime()
+        df_drawdowns.loc[i, '低点日期'] = (valley.to_pydatetime()
                                               .strftime('%Y-%m-%d'))
         if isinstance(recovery, float):
-            df_drawdowns.loc[i, 'Recovery date'] = recovery
+            df_drawdowns.loc[i, '恢复日期'] = recovery
         else:
-            df_drawdowns.loc[i, 'Recovery date'] = (recovery.to_pydatetime()
+            df_drawdowns.loc[i, '恢复日期'] = (recovery.to_pydatetime()
                                                     .strftime('%Y-%m-%d'))
-        df_drawdowns.loc[i, 'Net drawdown in %'] = (
+        df_drawdowns.loc[i, '净回撤比率%'] = (
             (df_cum.loc[peak] - df_cum.loc[valley]) / df_cum.loc[peak]) * 100
 
-    df_drawdowns['Peak date'] = pd.to_datetime(df_drawdowns['Peak date'])
-    df_drawdowns['Valley date'] = pd.to_datetime(df_drawdowns['Valley date'])
-    df_drawdowns['Recovery date'] = pd.to_datetime(
-        df_drawdowns['Recovery date'])
+    df_drawdowns['高点日期'] = pd.to_datetime(df_drawdowns['高点日期'])
+    df_drawdowns['低点日期'] = pd.to_datetime(df_drawdowns['低点日期'])
+    df_drawdowns['恢复日期'] = pd.to_datetime(
+        df_drawdowns['恢复日期'])
 
     return df_drawdowns
 

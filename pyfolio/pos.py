@@ -101,14 +101,14 @@ def get_max_median_position_concentration(positions):
     expos = get_percent_alloc(positions)
     expos = expos.drop('cash', axis=1)
 
-    longs = expos.where(expos.applymap(lambda x: x > 0))
-    shorts = expos.where(expos.applymap(lambda x: x < 0))
+    longs = expos.where(expos.map(lambda x: x > 0))
+    shorts = expos.where(expos.map(lambda x: x < 0))
 
     alloc_summary = pd.DataFrame()
-    alloc_summary['max_long'] = longs.max(axis=1)
-    alloc_summary['median_long'] = longs.median(axis=1)
-    alloc_summary['median_short'] = shorts.median(axis=1)
-    alloc_summary['max_short'] = shorts.min(axis=1)
+    alloc_summary['做多最大'] = longs.max(axis=1)
+    alloc_summary['做多中值'] = longs.median(axis=1)
+    alloc_summary['做空中值'] = shorts.median(axis=1)
+    alloc_summary['做空最大'] = shorts.min(axis=1)
 
     return alloc_summary
 
@@ -229,8 +229,8 @@ def get_long_short_pos(positions):
     shorts = pos_wo_cash[pos_wo_cash < 0].sum(axis=1).fillna(0)
     cash = positions.cash
     net_liquidation = longs + shorts + cash
-    df_pos = pd.DataFrame({'long': longs.divide(net_liquidation, axis='index'),
-                           'short': shorts.divide(net_liquidation,
+    df_pos = pd.DataFrame({'做多': longs.divide(net_liquidation, axis='index'),
+                           '做空': shorts.divide(net_liquidation,
                                                   axis='index')})
-    df_pos['net exposure'] = df_pos['long'] + df_pos['short']
+    df_pos['净敞口'] = df_pos['做多'] + df_pos['做空']
     return df_pos

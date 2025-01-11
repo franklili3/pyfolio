@@ -29,6 +29,7 @@ import scipy as sp
 from matplotlib import figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.ticker import FuncFormatter
+import matplotlib.dates as mdates
 
 from . import _seaborn as sns
 from . import capacity
@@ -39,16 +40,23 @@ from . import utils
 from .utils import APPROX_BDAYS_PER_MONTH, APPROX_BDAYS_PER_YEAR, MM_DISPLAY_UNIT
 import sys
 import os
-'''
+
 # 根据不同平台设定工作目录
-#if sys.platform == 'linux': 
-#    os.chdir('/home/noroot') # Linux path
-#else:
-#    os.chdir('G:\\zwrk\\strategy_returns') # Windows path
+if sys.platform == 'linux': 
+    os.chdir('/home/noroot') # Linux path
+elif sys.platform == 'darwin': 
+    os.chdir('/Users/linda/myprojects/github/MoneyDoubleSignal') # Mac path
+else:
+    os.chdir('C:\\myprojects\\github\\MoneyDoubleSignal') # Windows path
     #os.chdir('E:\MyProjects\Python-for-Finance1') # Windows path
     #os.chdir('/home/ubuntu/Python-for-Finance1') # Linux path
-'''
 
+# 设置字体为 Songti（宋体），你可以根据系统安装的字体进行调整
+plt.rcParams['font.sans-serif'] = ['Songti SC']  # 用来正常显示中文标签
+plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+
+# 如果你使用的是 Jupyter Notebook，可以使用以下命令来更新字体缓存
+#matplotlib.font_manager._rebuild()
 def customize(func):
     """
     Decorator to set plotting context and axes style during function call.
@@ -330,7 +338,7 @@ def plot_holdings(returns, positions, legend_loc='best', ax=None, **kwargs):
 
     positions = positions.copy().drop('cash', axis='columns')
     df_holdings = positions.replace(0, np.nan).count(axis=1)
-    df_holdings_by_month = df_holdings.resample('1M').mean()
+    df_holdings_by_month = df_holdings.resample('ME').mean()
     df_holdings.plot(color='steelblue', alpha=0.6, lw=0.5, ax=ax, **kwargs)
     df_holdings_by_month.plot(
         color='orangered',
@@ -400,17 +408,17 @@ def plot_long_short_holdings(returns, positions,
 
     bf = patches.Rectangle([0, 0], 1, 1, color='darkgoldenrod')
     leg = ax.legend([lf, sf, bf],
-                    ['Long (max: %s, min: %s)' % (df_longs.max(),
+                    ['做多 (最大: %s, 最小: %s)' % (df_longs.max(),
                                                   df_longs.min()),
-                     'Short (max: %s, min: %s)' % (df_shorts.max(),
+                     '做空 (最大: %s, 最小: %s)' % (df_shorts.max(),
                                                    df_shorts.min()),
-                     'Overlap'], loc=legend_loc, frameon=True,
+                     '重叠'], loc=legend_loc, frameon=True,
                     framealpha=0.5)
     leg.get_frame().set_edgecolor('black')
 
     ax.set_xlim((returns.index[0], returns.index[-1]))
-    ax.set_title('Long and short holdings')
-    ax.set_ylabel('Holdings')
+    ax.set_title('做多和做空持仓')
+    ax.set_ylabel('持仓')
     ax.set_xlabel('')
     return ax
 
@@ -440,35 +448,38 @@ def plot_drawdown_periods(returns, top=10, ax=None, upload_path=None, **kwargs):
 
     cum_rets = ep.cum_returns(returns, starting_value=1.0)
     df_cum_rets1 = pd.DataFrame(cum_rets)
-    #df_cum_rets1 = df_cum_rets1.reset_index()
-    #df_cum_rets1['time_stamp'] = df_cum_rets1['date'].apply(lambda x: x.timestamp() * 1000)
-    #df_cum_rets1 = df_cum_rets1.drop('date', axis = 1)
-    #df_cum_rets1 = df_cum_rets1.set_index('time_stamp')
     df_cum_rets1  = df_cum_rets1.rename(columns={'returns': '累计收益率'})
+    df_cum_rets2 = df_cum_rets1.reset_index()
+    df_cum_rets2['time_stamp'] = df_cum_rets2['date'].apply(lambda x: x.timestamp())# * 1000)
+    df_cum_rets2 = df_cum_rets2.drop('date', axis = 1)
+    df_cum_rets2 = df_cum_rets2.set_index('time_stamp')
 
     df_drawdowns = timeseries.gen_drawdown_table(returns, top=top)
     #df_drawdowns['Peak_datetime'] = df_drawdowns['Peak date'].apply(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'))
-    df_drawdowns['Peak_timestamp'] = df_drawdowns['Peak date'].apply(lambda x: x.timestamp() * 1000)
+    df_drawdowns['Peak_timestamp'] = df_drawdowns['高点日期'].apply(lambda x: x.timestamp())# * 1000)
     #df_drawdowns['Valley_datetime'] = df_drawdowns['Valley date'].apply(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'))
-    df_drawdowns['Valley_timestamp'] = df_drawdowns['Valley date'].apply(lambda x: x.timestamp() * 1000)
+    df_drawdowns['Valley_timestamp'] = df_drawdowns['低点日期'].apply(lambda x: x.timestamp())# * 1000)
     #df_drawdowns['Recovery_datetime'] = df_drawdowns['Recovery date'].apply(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'))
-    df_drawdowns['Recovery_timestamp'] = df_drawdowns['Recovery date'].apply(lambda x: x.timestamp() * 1000)
+    df_drawdowns['Recovery_timestamp'] = df_drawdowns['恢复日期'].apply(lambda x: x.timestamp())# * 1000)
     #df_drawdowns = df_drawdowns.drop(['Peak date', 'Valley date', 'Recovery date'], axis=1)
-    file_name = upload_path + 'drawdowns_period.csv'
-    df_drawdowns.to_csv(file_name)
-    file_name2 = upload_path + 'cum_returns_all.csv'
-    df_cum_rets1.to_csv(file_name2)
+    if machine_id is not None:
+        file_name = 'drawdowns_period_' + str(machine_id) + '.csv'
+        df_drawdowns.to_csv(file_name)
+        file_name2 = 'cum_returns_all_' + str(machine_id) + '.csv'
+        df_cum_rets2.to_csv(file_name2)
+        if ax is None:
+            return
     if ax is None:
         ax = plt.gca()
 
     y_axis_formatter = FuncFormatter(utils.two_dec_places)
     ax.yaxis.set_major_formatter(FuncFormatter(y_axis_formatter))
-    df_cum_rets1.plot(ax=ax, **kwargs)
+    df_cum_rets1.plot(ax=ax, **kwargs)  # 确保 df_cum_rets 已定义
 
     lim = ax.get_ylim()
     colors = sns.cubehelix_palette(len(df_drawdowns))[::-1]
     for i, (peak, recovery) in df_drawdowns[
-            ['Peak date', 'Recovery date']].iterrows():
+            ['高点日期', '恢复日期']].iterrows():
         if pd.isnull(recovery):
             recovery = returns.index[-1]
         ax.fill_between((peak, recovery),
@@ -477,7 +488,7 @@ def plot_drawdown_periods(returns, top=10, ax=None, upload_path=None, **kwargs):
                         alpha=.4,
                         color=colors[i])
     ax.set_ylim(lim)
-    ax.set_title('最大 %i 回撤期间' % top)
+    ax.set_title('最大 %i 个回撤期间' % top)
     ax.set_ylabel('累计收益率')#Cumulative returns')
     ax.legend(['投资组合'], loc='upper left',
               frameon=True, framealpha=0.5)
@@ -510,15 +521,17 @@ def plot_drawdown_underwater(returns, ax=None, upload_path=None, **kwargs):
     df_cum_rets = ep.cum_returns(returns, starting_value=1.0)
     running_max = np.maximum.accumulate(df_cum_rets)
     underwater = -100 * ((running_max - df_cum_rets) / running_max)
-    
-    file_name = upload_path + 'underwater.csv'
-    underwater1 = pd.DataFrame(underwater)
-    #nderwater1 = underwater1.reset_index()
-    #underwater1['time_stamp'] = underwater1['date'].apply(lambda x: x.timestamp() * 1000)
-    #underwater1 = underwater1.drop('date', axis = 1)
-    #underwater1 = underwater1.set_index('time_stamp')
-    underwater1.columns = ['回撤比率%']
-    underwater1.to_csv(file_name)
+    if machine_id is not None:
+        file_name = 'underwater_' + str(machine_id) + '.csv'
+        underwater1 = pd.DataFrame(underwater)
+        underwater1 = underwater1.reset_index()
+        underwater1['time_stamp'] = underwater1['date'].apply(lambda x: x.timestamp())# * 1000)
+        underwater1 = underwater1.drop('date', axis = 1)
+        underwater1 = underwater1.set_index('time_stamp')
+        underwater1.columns = ['回撤比率%']
+        underwater1.to_csv(file_name)
+        if ax is None:
+            return
     if ax is None:
         ax = plt.gca()
 
@@ -568,12 +581,12 @@ def plot_perf_stats(returns, factor_returns, ax=None):
 
 
 STAT_FUNCS_PCT = [
-    'Annual return',
-    'Cumulative returns',
-    'Annual volatility',
-    'Max drawdown',
-    'Daily value at risk',
-    'Daily turnover'
+    '年化收益率',
+    '累计收益率',
+    '年化波动率',
+    '最大回撤率',
+    '日风险值',
+    '日换手率'
 ]
 
 
@@ -633,8 +646,8 @@ def show_perf_stats(returns, factor_returns=None, positions=None,
 
     date_rows = OrderedDict()
     if len(returns.index) > 0:
-        date_rows['Start date'] = returns.index[0].strftime('%Y-%m-%d')
-        date_rows['End date'] = returns.index[-1].strftime('%Y-%m-%d')
+        date_rows['开始日期'] = returns.index[0].strftime('%Y-%m-%d')
+        date_rows['结束日期'] = returns.index[-1].strftime('%Y-%m-%d')
 
     if live_start_date is not None:
         live_start_date = ep.utils.get_utc_timestamp(live_start_date)
@@ -660,14 +673,14 @@ def show_perf_stats(returns, factor_returns=None, positions=None,
             factor_returns=factor_returns,
             positions=positions_is,
             transactions=transactions_is,
-            turnover_denom=turnover_denom, annualization=annualization)
+            turnover_denom=turnover_denom)#, annualization=annualization)
 
         perf_stats_oos = perf_func(
             returns_oos,
             factor_returns=factor_returns,
             positions=positions_oos,
             transactions=transactions_oos,
-            turnover_denom=turnover_denom, annualization=annualization)
+            turnover_denom=turnover_denom)#, annualization=annualization)
         if len(returns.index) > 0:
             date_rows['In-sample months'] = int(len(returns_is) /
                                                 APPROX_BDAYS_PER_MONTH)
@@ -681,15 +694,16 @@ def show_perf_stats(returns, factor_returns=None, positions=None,
         ]), axis=1)
     else:
         if len(returns.index) > 0:
-            date_rows['Total months'] = int(len(returns) /
+            date_rows['总月数'] = int(len(returns) /
                                             APPROX_BDAYS_PER_MONTH)
-        perf_stats = pd.DataFrame(perf_stats_all, columns=['Backtest'])
-
+        perf_stats = pd.DataFrame(perf_stats_all, columns=['回测'])
+        #print('perf_stats: ', perf_stats.head())
     for column in perf_stats.columns:
         for stat, value in perf_stats[column].items():
             if stat in STAT_FUNCS_PCT:
-                perf_stats.loc[stat, column] = str(np.round(value * 100,
-                                                            3)) + '%'
+                perf_stats.loc[stat, column] = f"{np.round(float(value) * 100, 2):.2f}%"
+            else:
+                perf_stats.loc[stat, column] = value
     if header_rows is None:
         header_rows = date_rows
     else:
@@ -821,7 +835,7 @@ def plot_rolling_returns(returns,
         returns = (returns / returns.std()) * bmark_vol
 
     cum_rets = ep.cum_returns(returns, 1.0)
-
+    #print('cum_rets.head(): ', cum_rets.head())
 
     if factor_returns is not None:
         cum_factor_returns = ep.cum_returns(
@@ -829,14 +843,16 @@ def plot_rolling_returns(returns,
         cum_factor_returns_df = pd.DataFrame(cum_factor_returns)
         #cum_factor_returns1 = cum_factor_returns_df.reset_index()
         #print('columns of cum_factor_returns1: ', cum_factor_returns1.columns.values.tolist())
-        #cum_factor_returns1['time_stamp'] = cum_factor_returns1['date'].apply(lambda x: x.timestamp() * 1000)
+        #cum_factor_returns1['time_stamp'] = cum_factor_returns1['date'].apply(lambda x: x.timestamp())# * 1000)
         #cum_factor_returns1 = cum_factor_returns1.drop('date', axis = 1)
-        #cum_factor_returns1 = cum_factor_returns1.set_index('date')
-        cum_factor_returns_df.columns = ['中证800指数累计收益率']
+        #cum_factor_returns1 = cum_factor_returns1.set_index('time_stamp')
+        cum_factor_returns1.columns = ['中证800指数累计收益率']
         #if machine_id is not None:
             #file_name = 'cum_factor_returns_' + str(machine_id) + '.csv'
             #cum_factor_returns1.to_csv(file_name)
-
+    else:
+        # 如果 factor_returns 是 None，初始化一个空的 DataFrame
+        cum_factor_returns1 = pd.DataFrame()
     if live_start_date is not None:
         live_start_date = ep.utils.get_utc_timestamp(live_start_date)
         is_cum_returns = cum_rets.loc[cum_rets.index < live_start_date]
@@ -846,18 +862,23 @@ def plot_rolling_returns(returns,
         oos_cum_returns = pd.Series([])
     is_cum_returns1 = pd.DataFrame(is_cum_returns)
     #is_cum_returns1 = is_cum_returns1.reset_index()
-    #is_cum_returns1['time_stamp'] = is_cum_returns1['date'].apply(lambda x: x.timestamp() * 1000)
+    #is_cum_returns1['time_stamp'] = is_cum_returns1['date'].apply(lambda x: x.timestamp())# * 1000)
     #is_cum_returns1 = is_cum_returns1.drop('date', axis = 1)
-    #is_cum_returns1 = is_cum_returns1.set_index('time_stamp')
+    #is_cum_returns1 = is_cum_returns1.set_index('date')
     is_cum_returns1.columns = ['策略回测累计收益率']
 
     oos_cum_returns1 = pd.DataFrame(oos_cum_returns)
     #oos_cum_returns1 = oos_cum_returns1.reset_index()
-    #oos_cum_returns1['time_stamp'] = oos_cum_returns1['date'].apply(lambda x: x.timestamp() * 1000)
-    #oos_cum_returns1 = oos_cum_returns1.drop('date', axis = 1)
+    #oos_cum_returns1['time_stamp'] = oos_cum_returns1.index.map(lambda x: x.timestamp())# * 1000)
+    #oos_cum_returns1 = oos_cum_returns1.drop(oos_cum_returns1.columns[0], axis=1)  # 删除原来的索引列
     #oos_cum_returns1 = oos_cum_returns1.set_index('time_stamp')
     oos_cum_returns1.columns = ['实盘累计收益率']
-    cum_returns_all = pd.merge(is_cum_returns1, cum_factor_returns_df, how='outer', left_index=True, right_index=True)
+    # 合并数据时检查 cum_factor_returns1 是否为空
+    if not cum_factor_returns1.empty:
+        cum_returns_all = pd.merge(is_cum_returns1, cum_factor_returns1, how='outer', left_index=True, right_index=True)
+    else:
+        cum_returns_all = is_cum_returns1
+
     cum_returns_all1 = pd.merge(cum_returns_all, oos_cum_returns1, how='outer', left_index=True, right_index=True)
 
     if volatility_match and factor_returns is not None:
@@ -870,6 +891,10 @@ def plot_rolling_returns(returns,
     #oos_cum_returns1.to_csv(file_name2)
     if ax is None:
         ax = plt.gca()
+    # 确保X轴格式为年份
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+    ax.xaxis.set_major_locator(mdates.YearLocator())  # 每年一个刻度
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right")  # 旋转年份标签
     if factor_returns is not None:
         cum_factor_returns.plot(lw=2, color='gray',
                                 label=factor_returns.name, alpha=0.60,
@@ -943,21 +968,24 @@ def plot_rolling_beta(returns, factor_returns, legend_loc='best',
         returns, factor_returns, rolling_window=APPROX_BDAYS_PER_MONTH * 6)
     rb_2 = timeseries.rolling_beta(
         returns, factor_returns, rolling_window=APPROX_BDAYS_PER_MONTH * 12)
-    file_name2 = upload_path +'rolling_beta.csv'
-    rb_1_1 = pd.DataFrame(rb_1)
-    #rb_1_1 = rb_1_1.reset_index()
-    #rb_1_1['time_stamp'] = rb_1_1['date'].apply(lambda x: x.timestamp() * 1000)
-    #rb_1_1 = rb_1_1.drop('date', axis = 1)
-    #rb_1_1 = rb_1_1.set_index('time_stamp')
-    rb_1_1.columns = ['策略相对中证800指数6个月滚动贝塔值']
-    rb_2_1 = pd.DataFrame(rb_2)
-    #rb_2_1 = rb_2_1.reset_index()
-    #rb_2_1['time_stamp'] = rb_2_1['date'].apply(lambda x: x.timestamp() * 1000)
-    #rb_2_1 = rb_2_1.drop('date', axis = 1)
-    #rb_2_1 = rb_2_1.set_index('time_stamp')
-    rb_2_1.columns = ['策略相对中证800指数12个月滚动贝塔值']
-    rb_1_2 = pd.merge(rb_1_1, rb_2_1, how='outer', left_index=True, right_index=True)
-    rb_1_2.to_csv(file_name2)
+    if machine_id is not None:
+        file_name2 = 'rolling_beta_' + str(machine_id) + '.csv'
+        rb_1_1 = pd.DataFrame(rb_1)
+        rb_1_1 = rb_1_1.reset_index()
+        rb_1_1['time_stamp'] = rb_1_1['date'].apply(lambda x: x.timestamp())# * 1000)
+        rb_1_1 = rb_1_1.drop('date', axis = 1)
+        rb_1_1 = rb_1_1.set_index('time_stamp')
+        rb_1_1.columns = ['策略相对中证800指数6个月滚动贝塔值']
+        rb_2_1 = pd.DataFrame(rb_2)
+        rb_2_1 = rb_2_1.reset_index()
+        rb_2_1['time_stamp'] = rb_2_1['date'].apply(lambda x: x.timestamp())# * 1000)
+        rb_2_1 = rb_2_1.drop('date', axis = 1)
+        rb_2_1 = rb_2_1.set_index('time_stamp')
+        rb_2_1.columns = ['策略相对中证800指数12个月滚动贝塔值']
+        rb_1_2 = pd.merge(rb_1_1, rb_2_1, how='outer', left_index=True, right_index=True)
+        rb_1_2.to_csv(file_name2)
+        if ax is None:
+            return
     if ax is None:
         ax = plt.gca()
 
@@ -1013,24 +1041,28 @@ def plot_rolling_volatility(returns, factor_returns=None,
 
     rolling_vol_ts = timeseries.rolling_volatility(
         returns, rolling_window)
-    rolling_vol_ts1 = pd.DataFrame(rolling_vol_ts)
-    #rolling_vol_ts1 = rolling_vol_ts1.reset_index()
-    #rolling_vol_ts1['time_stamp'] = rolling_vol_ts1['date'].apply(lambda x: x.timestamp() * 1000)
-    #rolling_vol_ts1 = rolling_vol_ts1.drop('date', axis = 1)
-    #rolling_vol_ts1 = rolling_vol_ts1.set_index('time_stamp')
-    rolling_vol_ts1.columns = ['策略6个月滚动波动率']
+    if machine_id is not None:
+        rolling_vol_ts1 = pd.DataFrame(rolling_vol_ts)
+        rolling_vol_ts1 = rolling_vol_ts1.reset_index()
+        rolling_vol_ts1['time_stamp'] = rolling_vol_ts1['date'].apply(lambda x: x.timestamp())# * 1000)
+        rolling_vol_ts1 = rolling_vol_ts1.drop('date', axis = 1)
+        rolling_vol_ts1 = rolling_vol_ts1.set_index('time_stamp')
+        rolling_vol_ts1.columns = ['策略6个月滚动波动率']
     if factor_returns is not None:
         rolling_vol_ts_factor = timeseries.rolling_volatility(
             factor_returns, rolling_window)
-        file_name2 = upload_path + 'rolling_volatility.csv'
-        rolling_vol_ts_factor1 = pd.DataFrame(rolling_vol_ts_factor)
-        #rolling_vol_ts_factor1 = rolling_vol_ts_factor1.reset_index()
-        #rolling_vol_ts_factor1['time_stamp'] = rolling_vol_ts_factor1['date'].apply(lambda x: x.timestamp() * 1000)
-        #rolling_vol_ts_factor1 = rolling_vol_ts_factor1.drop('date', axis = 1)
-        #rolling_vol_ts_factor1 = rolling_vol_ts_factor1.set_index('time_stamp')
-        rolling_vol_ts_factor1.columns = ['中证800指数6个月滚动波动率']
-        rolling_vol = pd.merge(rolling_vol_ts1, rolling_vol_ts_factor1, how='outer', left_index=True, right_index=True)
-        rolling_vol.to_csv(file_name2)
+        if machine_id is not None:
+            file_name2 = 'rolling_volatility_' + str(machine_id) + '.csv'
+            rolling_vol_ts_factor1 = pd.DataFrame(rolling_vol_ts_factor)
+            rolling_vol_ts_factor1 = rolling_vol_ts_factor1.reset_index()
+            rolling_vol_ts_factor1['time_stamp'] = rolling_vol_ts_factor1['date'].apply(lambda x: x.timestamp())# * 1000)
+            rolling_vol_ts_factor1 = rolling_vol_ts_factor1.drop('date', axis = 1)
+            rolling_vol_ts_factor1 = rolling_vol_ts_factor1.set_index('time_stamp')
+            rolling_vol_ts_factor1.columns = ['中证800指数6个月滚动波动率']
+            rolling_vol = pd.merge(rolling_vol_ts1, rolling_vol_ts_factor1, how='outer', left_index=True, right_index=True)
+            rolling_vol.to_csv(file_name2)
+            if ax is None:
+                return
     if ax is None:
         ax = plt.gca()
 
@@ -1096,27 +1128,29 @@ def plot_rolling_sharpe(returns, factor_returns=None,
 
     rolling_sharpe_ts = timeseries.rolling_sharpe(
         returns, rolling_window)
-    
-    rolling_sharpe_ts1 = pd.DataFrame(rolling_sharpe_ts)
-    #rolling_sharpe_ts1 = rolling_sharpe_ts1.reset_index()
-    #rolling_sharpe_ts1['time_stamp'] = rolling_sharpe_ts1['date'].apply(lambda x: x.timestamp() * 1000)
-    #rolling_sharpe_ts1 = rolling_sharpe_ts1.drop('date', axis = 1)
-    #rolling_sharpe_ts1 = rolling_sharpe_ts1.set_index('time_stamp')
-    rolling_sharpe_ts1.columns = ['策略6个月滚动夏普比率']
+    if machine_id is not None:
+        rolling_sharpe_ts1 = pd.DataFrame(rolling_sharpe_ts)
+        rolling_sharpe_ts1 = rolling_sharpe_ts1.reset_index()
+        rolling_sharpe_ts1['time_stamp'] = rolling_sharpe_ts1['date'].apply(lambda x: x.timestamp())# * 1000)
+        rolling_sharpe_ts1 = rolling_sharpe_ts1.drop('date', axis = 1)
+        rolling_sharpe_ts1 = rolling_sharpe_ts1.set_index('time_stamp')
+        rolling_sharpe_ts1.columns = ['策略6个月滚动夏普比率']
 
     if factor_returns is not None:
         rolling_sharpe_ts_factor = timeseries.rolling_sharpe(
             factor_returns, rolling_window)
-        
-        file_name2 = upload_path + 'rolling_sharpe.csv'
-        rolling_sharpe_ts_factor1 = pd.DataFrame(rolling_sharpe_ts_factor)
-        #rolling_sharpe_ts_factor1 = rolling_sharpe_ts_factor1.reset_index()
-        #rolling_sharpe_ts_factor1['time_stamp'] = rolling_sharpe_ts_factor1['date'].apply(lambda x: x.timestamp() * 1000)
-        #rolling_sharpe_ts_factor1 = rolling_sharpe_ts_factor1.drop('date', axis = 1)
-        #rolling_sharpe_ts_factor1 = rolling_sharpe_ts_factor1.set_index('time_stamp')
-        rolling_sharpe_ts_factor1.columns = ['中证800指数6个月滚动夏普比率']
-        rolling_sharpe = pd.merge(rolling_sharpe_ts1, rolling_sharpe_ts_factor1, how='outer', left_index=True, right_index=True)
-        rolling_sharpe.to_csv(file_name2)
+        if machine_id is not None:
+            file_name2 = 'rolling_sharpe_' + str(machine_id) + '.csv'
+            rolling_sharpe_ts_factor1 = pd.DataFrame(rolling_sharpe_ts_factor)
+            rolling_sharpe_ts_factor1 = rolling_sharpe_ts_factor1.reset_index()
+            rolling_sharpe_ts_factor1['time_stamp'] = rolling_sharpe_ts_factor1['date'].apply(lambda x: x.timestamp())# * 1000)
+            rolling_sharpe_ts_factor1 = rolling_sharpe_ts_factor1.drop('date', axis = 1)
+            rolling_sharpe_ts_factor1 = rolling_sharpe_ts_factor1.set_index('time_stamp')
+            rolling_sharpe_ts_factor1.columns = ['中证800指数6个月滚动夏普比率']
+            rolling_sharpe = pd.merge(rolling_sharpe_ts1, rolling_sharpe_ts_factor1, how='outer', left_index=True, right_index=True)
+            rolling_sharpe.to_csv(file_name2)
+            if ax is None:
+                return
     if ax is None:
         ax = plt.gca()
 
@@ -1229,8 +1263,8 @@ def plot_exposures(returns, positions, ax=None, **kwargs):
             label='Net', color='black', linestyle='dotted')
 
     ax.set_xlim((returns.index[0], returns.index[-1]))
-    ax.set_title("Exposure")
-    ax.set_ylabel('Exposure')
+    ax.set_title("敞口")
+    ax.set_ylabel('敞口')
     ax.legend(loc='lower left', frameon=True, framealpha=0.5)
     ax.set_xlabel('')
     return ax
@@ -1277,17 +1311,17 @@ def show_and_plot_top_positions(returns, positions_alloc,
         positions_alloc)
 
     if show_and_plot == 1 or show_and_plot == 2:
-        utils.print_table(pd.DataFrame(df_top_long * 100, columns=['max']),
+        utils.print_table(pd.DataFrame(df_top_long * 100, columns=['最大']),
                           float_format='{0:.2f}%'.format,
-                          name='Top 10 long positions of all time')
+                          name='做多前10大仓位')
 
-        utils.print_table(pd.DataFrame(df_top_short * 100, columns=['max']),
+        utils.print_table(pd.DataFrame(df_top_short * 100, columns=['最大']),
                           float_format='{0:.2f}%'.format,
-                          name='Top 10 short positions of all time')
+                          name='做空前10大仓位')
 
-        utils.print_table(pd.DataFrame(df_top_abs * 100, columns=['max']),
+        utils.print_table(pd.DataFrame(df_top_abs * 100, columns=['最大']),
                           float_format='{0:.2f}%'.format,
-                          name='Top 10 positions of all time')
+                          name='前10大仓位')
 
     if show_and_plot == 0 or show_and_plot == 2:
 
@@ -1295,7 +1329,7 @@ def show_and_plot_top_positions(returns, positions_alloc,
             ax = plt.gca()
 
         positions_alloc[df_top_abs.index].plot(
-            title='Portfolio allocation over time, only top 10 holdings',
+            title='前10大仓位的资产配置',
             alpha=0.5, ax=ax, **kwargs)
 
         # Place legend below plot, shrink plot by 20%
@@ -1311,7 +1345,7 @@ def show_and_plot_top_positions(returns, positions_alloc,
             ax.legend(loc=legend_loc)
 
         ax.set_xlim((returns.index[0], returns.index[-1]))
-        ax.set_ylabel('Exposure by holding')
+        ax.set_ylabel('持仓敞口')
 
         if hide_positions:
             ax.legend_.remove()
@@ -1345,8 +1379,8 @@ def plot_max_median_position_concentration(positions, ax=None, **kwargs):
     alloc_summary.plot(linewidth=1, color=colors, alpha=0.6, ax=ax)
 
     ax.legend(loc='center left', frameon=True, framealpha=0.5)
-    ax.set_ylabel('Exposure')
-    ax.set_title('Long/short max and median position concentration')
+    ax.set_ylabel('敞口')
+    ax.set_title('做多/做空最大和中值持仓比例')
 
     return ax
 
@@ -1474,9 +1508,21 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, upload_path=No
         oos_monthly.to_csv(file_name4)
     if ax is None:
         ax = plt.gca()
-    sns.boxplot(data=[is_returns, is_weekly, is_monthly],
-                palette=["#4c72B0", "#55A868", "#CCB974"],
-                ax=ax, **kwargs)
+
+    # 创建一个 DataFrame 来组合所有数据集
+    combined_data = pd.DataFrame({
+        'returns': pd.concat([is_returns, is_weekly, is_monthly], ignore_index=True),
+        'category': ['日'] * len(is_returns) + ['周'] * len(is_weekly) + ['月'] * len(is_monthly)
+    })
+
+    # 打印组合数据以检查内容
+    #print(combined_data.head())
+
+    # 使用 Seaborn 的调色板，确保颜色数量与类别数量匹配
+    palette = sns.color_palette("husl", 3)
+    # 绘制箱线图，使用 hue 参数区分类别
+    sns.boxplot(x='category', y='returns',  hue='category', legend=False, data=combined_data, palette=palette, ax=ax, **kwargs)
+
     if live_start_date is not None:
         sns.swarmplot(data=[oos_returns, oos_weekly, oos_monthly], ax=ax,
                       color="red",
@@ -1485,8 +1531,9 @@ def plot_return_quantiles(returns, live_start_date=None, ax=None, upload_path=No
                                            label="实盘数据",#Out-of-sample data",
                                            linestyle='')
         ax.legend(handles=[red_dots], frameon=True, framealpha=0.5)
+    ax.set_xticks([0, 1, 2])
     ax.set_xticklabels(['日', '周', '月'])#Daily', 'Weekly', 'Monthly'])
-    ax.set_ylabel(['收益率'])#Daily', 'Weekly', 'Monthly'])
+    ax.set_ylabel('收益率')#Daily', 'Weekly', 'Monthly'])
     ax.set_title('收益率四分位')#Return quantiles')
 
     return ax
@@ -1537,6 +1584,7 @@ def plot_turnover(returns, transactions, positions, turnover_denom='AGB',
     ax.yaxis.set_major_formatter(FuncFormatter(y_axis_formatter))
 
     df_turnover = txn.get_turnover(positions, transactions, turnover_denom)
+    print('df_turnover: ', df_turnover.head())
     df_turnover_by_month = df_turnover.resample("M").mean()
     df_turnover.plot(color='steelblue', alpha=1.0, lw=0.5, ax=ax, **kwargs)
     df_turnover_by_month.plot(
@@ -1839,8 +1887,8 @@ def show_worst_drawdown_periods(returns, top=5):
 
     drawdown_df = timeseries.gen_drawdown_table(returns, top=top)
     utils.print_table(
-        drawdown_df.sort_values('Net drawdown in %', ascending=False),
-        name='Worst drawdown periods',
+        drawdown_df.sort_values('净回撤比率%', ascending=False),
+        name='最差回撤期间',
         float_format='{0:.2f}'.format,
     )
 
@@ -1869,7 +1917,7 @@ def plot_monthly_returns_timeseries(returns, ax=None, machine_id=None, **kwargs)
         return ep.cum_returns(x)[-1]
 
 
-    monthly_rets = returns.resample('M').apply(lambda x: cumulate_returns(x))
+    monthly_rets = returns.resample('ME').apply(lambda x: cumulate_returns(x))
     monthly_rets = monthly_rets.to_period()
     if machine_id is not None:
         file_name1 = 'monthly_returns_timeseries_' + str(machine_id) + '.csv'

@@ -99,15 +99,39 @@ def get_txn_vol(transactions):
     """
 
     txn_norm = transactions.copy()
+    #print('txn_norm: ', txn_norm.head())
     txn_norm.index = txn_norm.index.normalize()
-    amounts = txn_norm.amount.abs()
-    prices = txn_norm.price
-    values = amounts * prices
-    daily_amounts = amounts.groupby(amounts.index).sum()
-    daily_values = values.groupby(values.index).sum()
-    daily_amounts.name = "txn_shares"
-    daily_values.name = "txn_volume"
-    return pd.concat([daily_values, daily_amounts], axis=1)
+        # 确保 'amount' 列存在
+    if 'amount' not in txn_norm.columns:
+        raise ValueError("transactions中缺少'amount'列")
+    txn_norm['abs_amount'] = txn_norm['amount'].apply(lambda x: abs(x))
+    #amounts = txn_norm['abs_amount']
+    #print('amounts: ', amounts)
+    # 检查是否为 Series
+    #assert isinstance(amounts, pd.Series), "amounts不是一个Series"
+    # 检查是否为 DataFrame
+    #elif isinstance(amounts, pd.DataFrame):
+    #    print("amounts是一个 DataFrame")    
+    #print('amounts: ', amounts)
+    #prices = txn_norm['price']
+    #print('prices: ', prices)
+    txn_norm.loc[:, 'values'] = txn_norm.apply(lambda row: row['abs_amount'] * row['price'], axis=1)
+    #print('values: ', values)
+    #txn_norm.loc[:, 'values'] = txn_norm['abs_amount'] * txn_norm['price']
+    #print('values: ', values)
+    amounts_values = txn_norm[['abs_amount', 'values']]
+    #print('values: ', values)
+    amounts_values = txn_norm[['abs_amount', 'values']]
+    daily_amounts_values = amounts_values.groupby(amounts_values.index).sum()
+    daily_amounts_values = daily_amounts_values.rename(columns={'abs_amount': 'txn_shares', 'values': 'txn_volume'})
+    #daily_amounts = amounts.groupby(amounts.index).sum()
+    #daily_values = values.groupby(values.index).sum()
+    #daily_amounts.name = "txn_shares"
+    #daily_values.name = "txn_volume"
+    #print('daily_amounts_values: ', daily_amounts_values.head())
+    #print('daily_amounts: ', daily_amounts)
+    #return pd.concat([daily_values, daily_amounts], axis=1)
+    return daily_amounts_values
 
 
 def adjust_returns_for_slippage(returns, positions, transactions,
@@ -138,9 +162,24 @@ def adjust_returns_for_slippage(returns, positions, transactions,
     slippage = 0.0001 * slippage_bps
     portfolio_value = positions.sum(axis=1)
     pnl = portfolio_value * returns
-    traded_value = get_txn_vol(transactions).txn_volume
-    slippage_dollars = traded_value * slippage
-    adjusted_pnl = pnl.add(-slippage_dollars, fill_value=0)
+    traded_txn = get_txn_vol(transactions)
+    #print('traded_txn: ', traded_txn.head())
+    traded_value = traded_txn.txn_volume
+    # 确保索引对齐
+    slippage_dollars_df = traded_value.reindex(pnl.index, fill_value=0) * slippage
+    # 确保 slippage_dollars 是 Series
+    if isinstance(slippage_dollars_df, pd.DataFrame):
+        slippage_dollars = slippage_dollars_df.squeeze()  # 将 DataFrame 转换为 Series
+    else:
+        slippage_dollars = slippage_dollars_df
+    #slippage_dollars = slippage_dollars_df['txn_volume']
+    #print('slippage_dollars: ', slippage_dollars.head())
+    assert isinstance(slippage_dollars, pd.Series), 'slippage_dollars must be a pd.Series'
+    # 调试输出
+    #print('pnl: ', pnl.head())
+    #slippage_dollars = traded_value * slippage
+    #adjusted_pnl = pnl.add(-slippage_dollars, fill_value=0)
+    adjusted_pnl = pnl - slippage_dollars
     adjusted_returns = returns * adjusted_pnl / pnl
 
     return adjusted_returns
@@ -180,6 +219,7 @@ def get_turnover(positions, transactions, denominator='AGB'):
     """
 
     txn_vol = get_txn_vol(transactions)
+    #print(txn_vol.head())  # Check the structure of the DataFrame
     traded_value = txn_vol.txn_volume
 
     if denominator == 'AGB':

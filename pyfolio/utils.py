@@ -152,7 +152,7 @@ def extract_rets_pos_txn_from_zipline(backtest):
         backtest.index = backtest.index.tz_localize('UTC')
     returns = backtest.returns
     raw_positions = []
-    for dt, pos_row in backtest.positions.iteritems():
+    for dt, pos_row in backtest.positions.items():
         df = pd.DataFrame(pos_row)
         df.index = [dt] * len(df)
         raw_positions.append(df)
@@ -263,8 +263,9 @@ def detect_intraday(positions, transactions, threshold=0.25):
     daily_txn.index = daily_txn.index.date
     txn_count = daily_txn.groupby(level=0).symbol.nunique().sum()
     daily_pos = positions.drop('cash', axis=1).replace(0, np.nan)
-    return daily_pos.count(axis=1).sum() / txn_count < threshold
-
+    average_txn_count = daily_pos.count(axis=1).sum() / txn_count
+    #print('Average transaction count: %s', average_txn_count.iloc[0])
+    return average_txn_count.iloc[0] < threshold
 
 def check_intraday(estimate, returns, positions, transactions):
     """
