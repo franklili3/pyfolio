@@ -318,15 +318,13 @@ def add_closing_transactions(positions, transactions):
     end_dt = open_pos.name + pd.Timedelta(seconds=1)
     #print('end_dt type: ', type(end_dt))
     end_dt = pd.Timestamp(end_dt)
-    for dt, columns in open_pos.items():
-        print('dt: ', dt)
-        print('columns: ', columns)
-
-        sym = columns[0]
-        ending_val = columns[1]
+    for sym_array, ending_val in open_pos.items():
+        sym = sym_array[0]
         print('sym: ', sym)
-        txn_sym = transactions[transactions.symbol == sym]
+        print('ending_val: ', ending_val)
 
+        txn_sym = transactions[transactions.symbol == sym]
+        print('txn_sym: ', txn_sym)
         ending_amount = txn_sym.amount.sum()
         print('ending_amount: ', ending_amount)
 
