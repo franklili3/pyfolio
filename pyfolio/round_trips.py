@@ -300,20 +300,25 @@ def add_closing_transactions(positions, transactions):
     # Add closing round_trips one second after the close to be sure
     # they don't conflict with other round_trips executed at that time.
     end_dt = open_pos.name + pd.Timedelta(seconds=1)
-    print('end_dt: ', end_dt)
+    print('end_dt type: ', type(end_dt))
+    end_dt = pd.Timestamp(end_dt)
     for sym, ending_val in open_pos.items():
         txn_sym = transactions[transactions.symbol == sym]
 
         ending_amount = txn_sym.amount.sum()
 
         ending_price = ending_val / ending_amount
-        closing_txn = OrderedDict([
-            ('amount', -ending_amount),
-            ('price', ending_price),
-            ('symbol', sym),
-        ])
-
-        closing_txn = pd.DataFrame(closing_txn, index=[end_dt])
+        #closing_txn = OrderedDict([
+        #    ('amount', -ending_amount),
+        #    ('price', ending_price),
+        #    ('symbol', sym),
+        #])
+        closing_txn = pd.DataFrame({
+            'amount': [-ending_amount],
+            'price': [ending_price],
+            'symbol': [sym]
+        }, index=[end_dt])
+        #closing_txn = pd.DataFrame(closing_txn, index=[end_dt])
         closed_txns = closed_txns.append(closing_txn)
 
     closed_txns = closed_txns[closed_txns.amount != 0]
