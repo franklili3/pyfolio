@@ -213,6 +213,8 @@ def extract_round_trips(transactions,
                 continue
 
             indiv_prices = [t.signed_price] * t.abs_amount
+            print('indiv_prices: ', indiv_prices)
+
             if (len(price_stack) == 0) or \
                (copysign(1, price_stack[-1]) == copysign(1, t.amount)):
                 price_stack.extend(indiv_prices)
