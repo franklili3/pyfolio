@@ -881,15 +881,15 @@ def plot_rolling_returns(returns,
         cum_returns_all = is_cum_returns1
 
     cum_returns_all1 = pd.merge(cum_returns_all, oos_cum_returns1, how='outer', left_index=True, right_index=True)
-
-    if volatility_match and factor_returns and upload_path is not None:
-        file_name1 = upload_path + 'cum_returns_volatility_match.csv'
-        #file_name2 = 'live_cum_returns_volatility_match_' + str(machine_id) + '.csv'
-    else:
-        file_name1 = upload_path + 'cum_returns.csv'
-        #file_name2 = 'live_cum_returns_' + str(machine_id) + '.csv'
-    cum_returns_all1.to_csv(file_name1)
-    #oos_cum_returns1.to_csv(file_name2)
+    if upload_path is not None:
+        if volatility_match and factor_returns:
+            file_name1 = upload_path + 'cum_returns_volatility_match.csv'
+            #file_name2 = 'live_cum_returns_volatility_match_' + str(machine_id) + '.csv'
+        else:
+            file_name1 = upload_path + 'cum_returns.csv'
+            #file_name2 = 'live_cum_returns_' + str(machine_id) + '.csv'
+        cum_returns_all1.to_csv(file_name1)
+        #oos_cum_returns1.to_csv(file_name2)
     if ax is None:
         ax = plt.gca()
     # 确保X轴格式为年份
