@@ -198,14 +198,19 @@ def extract_round_trips(transactions,
 
     transactions = _groupby_consecutive(transactions)
     roundtrips = []
+    print('transactions: ', transactions.head())
+    transactions_symbol = transactions.groupby('symbol')
+    print('transactions_symbol: ', transactions_symbol.head())
 
-    for sym, trans_sym in transactions.groupby('symbol'):
+    for sym, trans_sym in transactions_symbol:
         trans_sym = trans_sym.sort_index()
         price_stack = deque()
         dt_stack = deque()
         trans_sym['signed_price'] = trans_sym.price * \
             np.sign(trans_sym.amount)
         trans_sym['abs_amount'] = trans_sym.amount.abs().astype(int)
+        print('trans_sym: ', trans_sym.head())
+
         for dt, t in trans_sym.iterrows():
             if t.price < 0:
                 warnings.warn('Negative price detected, ignoring for'
@@ -213,7 +218,6 @@ def extract_round_trips(transactions,
                 continue
 
             indiv_prices = [t.signed_price] * t.abs_amount
-            print('indiv_prices: ', indiv_prices)
 
             if (len(price_stack) == 0) or \
                (copysign(1, price_stack[-1]) == copysign(1, t.amount)):
