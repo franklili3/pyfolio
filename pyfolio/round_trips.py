@@ -239,6 +239,8 @@ def extract_round_trips(transactions,
                         # Push additional stock-prices onto stack
                         price_stack.append(price)
                         dt_stack.append(dt)
+                print('pnl: ', pnl)
+                print('open_dt: ', cur_open_dts[0])
 
                 roundtrips.append({'pnl': pnl,
                                    'open_dt': cur_open_dts[0],
