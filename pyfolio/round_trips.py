@@ -118,6 +118,7 @@ def _groupby_consecutive(txn, max_delta=pd.Timedelta('8h')):
             transaction.amount.sum()
 
     out = []
+    print('txn: ', txn)
     for _, t in txn.groupby('symbol'):
         t = t.sort_index()
         t.index.name = 'dt'
@@ -140,10 +141,12 @@ def _groupby_consecutive(txn, max_delta=pd.Timedelta('8h')):
         grouped = grouped_rest.join(grouped_price)
 
         out.append(grouped)
+    print('out: ', out)
 
-    out = pd.concat(out)
-    out = out.set_index('dt')
-    return out
+    out1 = pd.concat(out)
+    print('out1: ', out1)
+    out2 = out1.set_index('dt')
+    return out2
 
 
 def extract_round_trips(transactions,
