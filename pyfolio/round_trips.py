@@ -318,7 +318,9 @@ def add_closing_transactions(positions, transactions):
     end_dt = open_pos.name + pd.Timedelta(seconds=1)
     #print('end_dt type: ', type(end_dt))
     end_dt = pd.Timestamp(end_dt)
-    for sym, ending_val in open_pos.items():
+    for dt, columns in open_pos.items():
+        sym = columns[0]
+        ending_val = columns[1]
         print('sym: ', sym)
         txn_sym = transactions[transactions.symbol == sym]
 
