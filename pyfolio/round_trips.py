@@ -308,7 +308,10 @@ def add_closing_transactions(positions, transactions):
     closed_txns = transactions[['symbol', 'amount', 'price']]
 
     pos_at_end = positions.drop('cash', axis=1).iloc[-1]
+    print('pos_at_end: ', pos_at_end.head())
+
     open_pos = pos_at_end.replace(0, np.nan).dropna()
+    print('open_pos: ', open_pos.head())
     # Add closing round_trips one second after the close to be sure
     # they don't conflict with other round_trips executed at that time.
     end_dt = open_pos.name + pd.Timedelta(seconds=1)
@@ -332,6 +335,7 @@ def add_closing_transactions(positions, transactions):
         }, index=[end_dt])
         #closing_txn = pd.DataFrame(closing_txn, index=[end_dt])
         closed_txns = pd.concat([closed_txns, closing_txn])
+    print('closed_txns: ', closed_txns.head())
 
     #closed_txns = closed_txns[closed_txns.amount != 0]
     # Check if closed_txns is empty before filtering
@@ -339,6 +343,8 @@ def add_closing_transactions(positions, transactions):
         # Ensure amount is numeric and filter
         closed_txns['amount'] = pd.to_numeric(closed_txns['amount'], errors='coerce')
         closed_txns = closed_txns[closed_txns['amount'] != 0]
+    print('closed_txns: ', closed_txns.head())
+
     return closed_txns
 
 
