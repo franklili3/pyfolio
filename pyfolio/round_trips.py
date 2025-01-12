@@ -319,11 +319,14 @@ def add_closing_transactions(positions, transactions):
     #print('end_dt type: ', type(end_dt))
     end_dt = pd.Timestamp(end_dt)
     for sym, ending_val in open_pos.items():
+        print('sym: ', sym)
         txn_sym = transactions[transactions.symbol == sym]
 
         ending_amount = txn_sym.amount.sum()
+        print('ending_amount: ', ending_amount)
 
         ending_price = ending_val / ending_amount
+        print('ending_price: ', ending_price)
         #closing_txn = OrderedDict([
         #    ('amount', -ending_amount),
         #    ('price', ending_price),
@@ -334,10 +337,10 @@ def add_closing_transactions(positions, transactions):
             'price': [ending_price],
             'symbol': [sym]
         }, index=[end_dt])
-        print('closing_txn: ', closing_txn.head())
+        print('closing_txn: ', closing_txn)
         #closing_txn = pd.DataFrame(closing_txn, index=[end_dt])
         closed_txns1 = pd.concat([closed_txns, closing_txn])
-    print('closed_txns1: ', closed_txns1.head())
+    print('closed_txns1: ', closed_txns1.tail())
 
     #closed_txns = closed_txns[closed_txns.amount != 0]
     # Check if closed_txns is empty before filtering
