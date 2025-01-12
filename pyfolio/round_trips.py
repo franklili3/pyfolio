@@ -306,6 +306,7 @@ def add_closing_transactions(positions, transactions):
     """
 
     closed_txns = transactions[['symbol', 'amount', 'price']]
+    print('closed_txns: ', closed_txns.head())
 
     pos_at_end = positions.drop('cash', axis=1).iloc[-1]
     print('pos_at_end: ', pos_at_end.head())
@@ -333,19 +334,20 @@ def add_closing_transactions(positions, transactions):
             'price': [ending_price],
             'symbol': [sym]
         }, index=[end_dt])
+        print('closing_txn: ', closing_txn.head())
         #closing_txn = pd.DataFrame(closing_txn, index=[end_dt])
-        closed_txns = pd.concat([closed_txns, closing_txn])
-    print('closed_txns: ', closed_txns.head())
+        closed_txns1 = pd.concat([closed_txns, closing_txn])
+    print('closed_txns1: ', closed_txns1.head())
 
     #closed_txns = closed_txns[closed_txns.amount != 0]
     # Check if closed_txns is empty before filtering
     if not closed_txns.empty:
         # Ensure amount is numeric and filter
-        closed_txns['amount'] = pd.to_numeric(closed_txns['amount'], errors='coerce')
-        closed_txns = closed_txns[closed_txns['amount'] != 0]
-    print('closed_txns: ', closed_txns.head())
+        closed_txns1['amount'] = pd.to_numeric(closed_txns1['amount'], errors='coerce')
+        closed_txns2 = closed_txns1[closed_txns1['amount'] != 0]
+    print('closed_txns2: ', closed_txns2.head())
 
-    return closed_txns
+    return closed_txns1
 
 
 def apply_sector_mappings_to_round_trips(round_trips, sector_mappings):
