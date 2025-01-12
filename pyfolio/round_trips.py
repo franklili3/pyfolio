@@ -196,10 +196,10 @@ def extract_round_trips(transactions,
         into that partiulcar round-trip.
     """
 
-    transactions = _groupby_consecutive(transactions)
+    transactions_consecutive = _groupby_consecutive(transactions)
     roundtrips = []
-    print('transactions: ', transactions.head())
-    transactions_symbol = transactions.groupby('symbol')
+    print('transactions_consecutive: ', transactions_consecutive.head())
+    transactions_symbol = transactions_consecutive.groupby('symbol')
     print('transactions_symbol: ', transactions_symbol.head())
 
     for sym, trans_sym in transactions_symbol:
