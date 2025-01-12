@@ -118,7 +118,7 @@ def _groupby_consecutive(txn, max_delta=pd.Timedelta('8h')):
             transaction.amount.sum()
 
     out = []
-    print('txn: ', txn)
+    print('txn: ', txn.head())
     for _, t in txn.groupby('symbol'):
         t = t.sort_index()
         t.index.name = 'dt'
@@ -198,6 +198,7 @@ def extract_round_trips(transactions,
         rt_returns are the returns in regards to the invested capital
         into that partiulcar round-trip.
     """
+    print('transactions: ', transactions.head())
 
     transactions_consecutive = _groupby_consecutive(transactions)
     roundtrips = []
