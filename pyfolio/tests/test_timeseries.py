@@ -2,14 +2,14 @@ from __future__ import division
 
 import os
 from unittest import TestCase
-from nose_parameterized import parameterized
+from parameterized import parameterized
 from numpy.testing import assert_allclose, assert_almost_equal
-from pandas.util.testing import assert_series_equal
+from pandas.testing import assert_series_equal
 
 import numpy as np
 import pandas as pd
 
-from .. import timeseries
+from pyfolio import timeseries
 from pyfolio.utils import to_utc, to_series
 import gzip
 
@@ -248,7 +248,7 @@ class TestStats(TestCase):
         pd.date_range(
             '2000-1-31',
             periods=500,
-            freq='M'))
+            freq='ME'))
 
     simple_benchmark = pd.Series(
         [0.03] * 4 + [0] * 496,

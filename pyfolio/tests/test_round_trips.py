@@ -1,4 +1,4 @@
-from nose_parameterized import parameterized
+from parameterized import parameterized
 
 from unittest import TestCase
 
@@ -10,7 +10,7 @@ from pandas import (
     Timedelta,
     read_csv
 )
-from pandas.util.testing import (assert_frame_equal)
+from pandas.testing import assert_frame_equal
 
 import os
 import gzip
@@ -24,7 +24,7 @@ from pyfolio.round_trips import (extract_round_trips,
 class RoundTripTestCase(TestCase):
     dates = date_range(start='2015-01-01', freq='D', periods=20)
     dates_intraday = date_range(start='2015-01-01',
-                                freq='2BH', periods=8)
+                                freq='2bh', periods=8)
 
     @parameterized.expand([
         (DataFrame(data=[[2, 10., 'A'],
