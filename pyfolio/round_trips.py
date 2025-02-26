@@ -77,7 +77,7 @@ def agg_all_long_short(round_trips, col, stats_dict):
     stats_all = (round_trips
                  .assign(ones=1)
                  .groupby('ones')[col]
-                 .agg(stats_dict)
+                 .agg(list(stats_dict.values()))
                  .T
                  .rename(columns={1.0: 'All trades'}))
     stats_long_short = (round_trips
