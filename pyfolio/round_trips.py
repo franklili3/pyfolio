@@ -123,7 +123,7 @@ def _groupby_consecutive(txn, max_delta=pd.Timedelta('8h')):
             transaction.amount.sum()
 
     out = []
-    print('txn: ', txn.head())
+    # print('txn: ', txn.head())
     for _, t in txn.groupby('symbol'):
         t = t.sort_index()
         t.index.name = 'dt'
@@ -146,10 +146,10 @@ def _groupby_consecutive(txn, max_delta=pd.Timedelta('8h')):
         grouped = grouped_rest.join(grouped_price)
 
         out.append(grouped)
-    print('out: ', out)
+    # print('out: ', out)
 
     out1 = pd.concat(out)
-    print('out1: ', out1)
+    # print('out1: ', out1)
     out2 = out1.set_index('dt')
     return out2
 
@@ -203,13 +203,13 @@ def extract_round_trips(transactions,
         rt_returns are the returns in regards to the invested capital
         into that partiulcar round-trip.
     """
-    print('transactions: ', transactions.head())
+    # print('transactions: ', transactions.head())
 
     transactions_consecutive = _groupby_consecutive(transactions)
     roundtrips = []
-    print('transactions_consecutive: ', transactions_consecutive.head())
+    # print('transactions_consecutive: ', transactions_consecutive.head())
     transactions_symbol = transactions_consecutive.groupby('symbol')
-    print('transactions_symbol: ', transactions_symbol.head())
+    # print('transactions_symbol: ', transactions_symbol.head())
 
     for sym, trans_sym in transactions_symbol:
         trans_sym = trans_sym.sort_index()
@@ -218,7 +218,7 @@ def extract_round_trips(transactions,
         trans_sym['signed_price'] = trans_sym.price * \
             np.sign(trans_sym.amount)
         trans_sym['abs_amount'] = trans_sym.amount.abs().astype(int)
-        print('trans_sym: ', trans_sym.head())
+        # print('trans_sym: ', trans_sym.head())
 
         for dt, t in trans_sym.iterrows():
             if t.price < 0:
@@ -254,8 +254,8 @@ def extract_round_trips(transactions,
                         # Push additional stock-prices onto stack
                         price_stack.append(price)
                         dt_stack.append(dt)
-                print('pnl: ', pnl)
-                print('open_dt: ', cur_open_dts[0])
+                # print('pnl: ', pnl)
+                # print('open_dt: ', cur_open_dts[0])
 
                 roundtrips.append({'pnl': pnl,
                                    'open_dt': cur_open_dts[0],
@@ -266,7 +266,7 @@ def extract_round_trips(transactions,
                                    })
 
     roundtrips = pd.DataFrame(roundtrips)
-    print('roundtrips: ', roundtrips.head())
+    # print('roundtrips: ', roundtrips.head())
     roundtrips['duration'] = roundtrips['close_dt'].sub(roundtrips['open_dt'])
 
     if portfolio_value is not None:
@@ -311,30 +311,30 @@ def add_closing_transactions(positions, transactions):
     """
 
     closed_txns = transactions[['symbol', 'amount', 'price']]
-    print('closed_txns: ', closed_txns.head())
+    # print('closed_txns: ', closed_txns.head())
 
     pos_at_end = positions.drop('cash', axis=1).iloc[-1]
-    print('pos_at_end: ', pos_at_end.head())
+    # print('pos_at_end: ', pos_at_end.head())
 
     open_pos = pos_at_end.replace(0, np.nan).dropna()
-    print('open_pos: ', open_pos.head())
+    # print('open_pos: ', open_pos.head())
     # Add closing round_trips one second after the close to be sure
     # they don't conflict with other round_trips executed at that time.
     end_dt = open_pos.name + pd.Timedelta(seconds=1)
-    #print('end_dt type: ', type(end_dt))
+    # print('end_dt type: ', type(end_dt))
     end_dt = pd.Timestamp(end_dt)
     for sym_array, ending_val in open_pos.items():
         sym = sym_array[0]
-        print('sym: ', sym)
-        print('ending_val: ', ending_val)
+        # print('sym: ', sym)
+        # print('ending_val: ', ending_val)
 
         txn_sym = transactions[transactions.symbol == sym]
-        print('txn_sym: ', txn_sym)
+        # print('txn_sym: ', txn_sym)
         ending_amount = txn_sym.amount.sum()
-        print('ending_amount: ', ending_amount)
+        # print('ending_amount: ', ending_amount)
 
         ending_price = ending_val / ending_amount
-        print('ending_price: ', ending_price)
+        # print('ending_price: ', ending_price)
         #closing_txn = OrderedDict([
         #    ('amount', -ending_amount),
         #    ('price', ending_price),
@@ -345,10 +345,10 @@ def add_closing_transactions(positions, transactions):
             'price': [ending_price],
             'symbol': [sym]
         }, index=[end_dt])
-        print('closing_txn: ', closing_txn)
-        #closing_txn = pd.DataFrame(closing_txn, index=[end_dt])
+        # print('closing_txn: ', closing_txn)
+        # closing_txn = pd.DataFrame(closing_txn, index=[end_dt])
         closed_txns1 = pd.concat([closed_txns, closing_txn])
-    print('closed_txns1: ', closed_txns1.tail())
+    # print('closed_txns1: ', closed_txns1.tail())
 
     #closed_txns = closed_txns[closed_txns.amount != 0]
     # Check if closed_txns is empty before filtering
@@ -356,7 +356,7 @@ def add_closing_transactions(positions, transactions):
         # Ensure amount is numeric and filter
         closed_txns1['amount'] = pd.to_numeric(closed_txns1['amount'], errors='coerce')
         closed_txns2 = closed_txns1[closed_txns1['amount'] != 0]
-    print('closed_txns2: ', closed_txns2.head())
+    # print('closed_txns2: ', closed_txns2.head())
 
     return closed_txns1
 
