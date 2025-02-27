@@ -23,52 +23,52 @@ import numpy as np
 from .utils import print_table, format_asset
 
 PNL_STATS = OrderedDict(
-    [('Total profit', lambda x: x.sum()),
-     ('Gross profit', lambda x: x[x > 0].sum()),
-     ('Gross loss', lambda x: x[x < 0].sum()),
-     ('Profit factor', lambda x: x[x > 0].sum() / x[x < 0].abs().sum()
+    [('总净利润', lambda x: x.sum()),
+     ('总盈利', lambda x: x[x > 0].sum()),
+     ('总亏损', lambda x: x[x < 0].sum()),
+     ('利润因子', lambda x: x[x > 0].sum() / x[x < 0].abs().sum()
       if x[x < 0].abs().sum() != 0 else np.nan),
-     ('Avg. trade net profit', 'mean'),
-     ('Avg. winning trade', lambda x: x[x > 0].mean()),
-     ('Avg. losing trade', lambda x: x[x < 0].mean()),
-     ('Ratio Avg. Win:Avg. Loss', lambda x: x[x > 0].mean() /
+     ('所有交易平均净利润', 'mean'),
+     ('盈利交易平均净利润', lambda x: x[x > 0].mean()),
+     ('亏损交易平均净利润', lambda x: x[x < 0].mean()),
+     ('盈亏比率', lambda x: x[x > 0].mean() /
       x[x < 0].abs().mean() if x[x < 0].abs().mean() != 0 else np.nan),
-     ('Largest winning trade', 'max'),
-     ('Largest losing trade', 'min'),
+     ('最大盈利', 'max'),
+     ('最大亏损', 'min'),
      ])
 
 SUMMARY_STATS = OrderedDict(
-    [('Total number of round_trips', 'count'),
-     ('Percent profitable', lambda x: len(x[x > 0]) / float(len(x))),
-     ('Winning round_trips', lambda x: len(x[x > 0])),
-     ('Losing round_trips', lambda x: len(x[x < 0])),
-     ('Even round_trips', lambda x: len(x[x == 0])),
+    [('总交易数', 'count'),
+     ('盈利百分比', lambda x: len(x[x > 0]) / float(len(x))),
+     ('盈利交易数', lambda x: len(x[x > 0])),
+     ('亏损交易数', lambda x: len(x[x < 0])),
+     ('平局交易数', lambda x: len(x[x == 0])),
      ])
 
 RETURN_STATS = OrderedDict(
-    [('Avg returns all round_trips', lambda x: x.mean()),
-     ('Avg returns winning', lambda x: x[x > 0].mean()),
-     ('Avg returns losing', lambda x: x[x < 0].mean()),
-     ('Median returns all round_trips', lambda x: x.median()),
-     ('Median returns winning', lambda x: x[x > 0].median()),
-     ('Median returns losing', lambda x: x[x < 0].median()),
-     ('Largest winning trade', 'max'),
-     ('Largest losing trade', 'min'),
+    [('所有交易的平均收益', lambda x: x.mean()),
+     ('盈利交易的平均收益', lambda x: x[x > 0].mean()),
+     ('亏损交易的平均收益', lambda x: x[x < 0].mean()),
+     ('所有交易的中位数收益', lambda x: x.median()),
+     ('盈利交易的中位数收益', lambda x: x[x > 0].median()),
+     ('亏损交易的中位数收益', lambda x: x[x < 0].median()),
+     ('最大盈利交易', 'max'),
+     ('最大亏损交易', 'min'),
      ])
 
 DURATION_STATS = OrderedDict(
-    [('Avg duration', lambda x: x.mean()),
-     ('Median duration', lambda x: x.median()),
-     ('Longest duration', lambda x: x.max()),
-     ('Shortest duration', lambda x: x.min())
+    [('平均持续时间', lambda x: x.mean()),
+     ('中位数持续时间', lambda x: x.median()),
+     ('最长持续时间', lambda x: x.max()),
+     ('最短持续时间', lambda x: x.min())
      #  FIXME: Instead of x.max() - x.min() this should be
      #  rts.close_dt.max() - rts.open_dt.min() which is not
      #  available here. As it would require a new approach here
      #  that passes in multiple fields we disable these measures
      #  for now.
-     #  ('Avg # round_trips per day', lambda x: float(len(x)) /
+     #  ('平均每日回合交易数', lambda x: float(len(x)) /
      #   (x.max() - x.min()).days),
-     #  ('Avg # round_trips per month', lambda x: float(len(x)) /
+     #  ('平均每月回合交易数', lambda x: float(len(x)) /
      #   (((x.max() - x.min()).days) / APPROX_BDAYS_PER_MONTH)),
      ])
 
