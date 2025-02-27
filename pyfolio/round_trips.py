@@ -81,7 +81,7 @@ def agg_all_long_short(round_trips, col, stats_dict):
                      (key, func) for key, func in stats_dict.items()
                  ])
                  .T
-                 .rename(columns={1: 'All trades'}))
+                 .rename(columns={1: '所有交易'}))
     print('stats_all: ', stats_all.head())
     stats_long_short = (round_trips
                         .groupby('long')[col]
@@ -89,8 +89,8 @@ def agg_all_long_short(round_trips, col, stats_dict):
                             (key, func) for key, func in stats_dict.items()
                         ])
                         .T
-                        .rename(columns={False: 'Short trades',
-                                         True: 'Long trades'}))
+                        .rename(columns={False: '做空交易',
+                                         True: '做多交易'}))
 
     return stats_all.join(stats_long_short)
 
@@ -441,12 +441,12 @@ def print_round_trip_stats(round_trips, hide_pos=False):
     stats = gen_round_trip_stats(round_trips)
 
     print_table(stats['summary'], float_format='{:.2f}'.format,
-                name='Summary stats')
+                name='总览指标')
     print_table(stats['pnl'], float_format='${:.2f}'.format, name='PnL stats')
     print_table(stats['duration'], float_format='{:.2f}'.format,
-                name='Duration stats')
+                name='持有期指标')
     print_table(stats['returns'] * 100, float_format='{:.2f}%'.format,
-                name='Return stats')
+                name='收益指标')
 
     if not hide_pos:
         stats['symbols'].columns = stats['symbols'].columns.map(format_asset)
