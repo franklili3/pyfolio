@@ -9,12 +9,12 @@ import os
 import glob
 from runipy.notebook_runner import NotebookRunner
 
-from pyfolio.utils import pyfolio_root
+#from pyfolio.utils import pyfolio_root
 from pyfolio.ipycompat import read as read_notebook
 
-
+pyfolio_root = '/users/linda/myprojects/github/pyfolio/pyfolio/'
 def test_nbs():
-    path = os.path.join(pyfolio_root(), 'examples', '*.ipynb')
+    path = os.path.join(pyfolio_root, 'examples', '*.ipynb')
     for ipynb in glob.glob(path):
         with open(ipynb) as f:
             nb = read_notebook(f, 'json')
