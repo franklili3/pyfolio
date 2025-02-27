@@ -266,7 +266,7 @@ def extract_round_trips(transactions,
                                    })
 
     roundtrips = pd.DataFrame(roundtrips)
-    # print('roundtrips: ', roundtrips.head())
+    print('roundtrips: ', roundtrips.head())
     roundtrips['duration'] = roundtrips['close_dt'].sub(roundtrips['open_dt'])
 
     if portfolio_value is not None:
