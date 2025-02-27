@@ -23,52 +23,52 @@ import numpy as np
 from .utils import print_table, format_asset
 
 PNL_STATS = OrderedDict(
-    [('Total profit', lambda x: x.sum()),
-     ('Gross profit', lambda x: x[x > 0].sum()),
-     ('Gross loss', lambda x: x[x < 0].sum()),
-     ('Profit factor', lambda x: x[x > 0].sum() / x[x < 0].abs().sum()
+    [('总净利润', lambda x: x.sum()),
+     ('总盈利', lambda x: x[x > 0].sum()),
+     ('总亏损', lambda x: x[x < 0].sum()),
+     ('利润因子', lambda x: x[x > 0].sum() / x[x < 0].abs().sum()
       if x[x < 0].abs().sum() != 0 else np.nan),
-     ('Avg. trade net profit', 'mean'),
-     ('Avg. winning trade', lambda x: x[x > 0].mean()),
-     ('Avg. losing trade', lambda x: x[x < 0].mean()),
-     ('Ratio Avg. Win:Avg. Loss', lambda x: x[x > 0].mean() /
+     ('所有交易平均净利润', 'mean'),
+     ('盈利交易平均净利润', lambda x: x[x > 0].mean()),
+     ('亏损交易平均净利润', lambda x: x[x < 0].mean()),
+     ('盈亏比率', lambda x: x[x > 0].mean() /
       x[x < 0].abs().mean() if x[x < 0].abs().mean() != 0 else np.nan),
-     ('Largest winning trade', 'max'),
-     ('Largest losing trade', 'min'),
+     ('最大盈利', 'max'),
+     ('最大亏损', 'min'),
      ])
 
 SUMMARY_STATS = OrderedDict(
-    [('Total number of round_trips', 'count'),
-     ('Percent profitable', lambda x: len(x[x > 0]) / float(len(x))),
-     ('Winning round_trips', lambda x: len(x[x > 0])),
-     ('Losing round_trips', lambda x: len(x[x < 0])),
-     ('Even round_trips', lambda x: len(x[x == 0])),
+    [('总交易数', 'count'),
+     ('盈利百分比', lambda x: len(x[x > 0]) / float(len(x))),
+     ('盈利交易数', lambda x: len(x[x > 0])),
+     ('亏损交易数', lambda x: len(x[x < 0])),
+     ('平局交易数', lambda x: len(x[x == 0])),
      ])
 
 RETURN_STATS = OrderedDict(
-    [('Avg returns all round_trips', lambda x: x.mean()),
-     ('Avg returns winning', lambda x: x[x > 0].mean()),
-     ('Avg returns losing', lambda x: x[x < 0].mean()),
-     ('Median returns all round_trips', lambda x: x.median()),
-     ('Median returns winning', lambda x: x[x > 0].median()),
-     ('Median returns losing', lambda x: x[x < 0].median()),
-     ('Largest winning trade', 'max'),
-     ('Largest losing trade', 'min'),
+    [('所有交易的平均收益', lambda x: x.mean()),
+     ('盈利交易的平均收益', lambda x: x[x > 0].mean()),
+     ('亏损交易的平均收益', lambda x: x[x < 0].mean()),
+     ('所有交易的中位数收益', lambda x: x.median()),
+     ('盈利交易的中位数收益', lambda x: x[x > 0].median()),
+     ('亏损交易的中位数收益', lambda x: x[x < 0].median()),
+     ('最大盈利交易', 'max'),
+     ('最大亏损交易', 'min'),
      ])
 
 DURATION_STATS = OrderedDict(
-    [('Avg duration', lambda x: x.mean()),
-     ('Median duration', lambda x: x.median()),
-     ('Longest duration', lambda x: x.max()),
-     ('Shortest duration', lambda x: x.min())
+    [('平均持续时间-天', lambda x: x.mean().days),
+     ('中位数持续时间-天', lambda x: x.median().days),
+     ('最长持续时间-天', lambda x: x.max().days),
+     ('最短持续时间-天', lambda x: x.min().days)
      #  FIXME: Instead of x.max() - x.min() this should be
      #  rts.close_dt.max() - rts.open_dt.min() which is not
      #  available here. As it would require a new approach here
      #  that passes in multiple fields we disable these measures
      #  for now.
-     #  ('Avg # round_trips per day', lambda x: float(len(x)) /
+     #  ('平均每日回合交易数', lambda x: float(len(x)) /
      #   (x.max() - x.min()).days),
-     #  ('Avg # round_trips per month', lambda x: float(len(x)) /
+     #  ('平均每月回合交易数', lambda x: float(len(x)) /
      #   (((x.max() - x.min()).days) / APPROX_BDAYS_PER_MONTH)),
      ])
 
@@ -77,15 +77,20 @@ def agg_all_long_short(round_trips, col, stats_dict):
     stats_all = (round_trips
                  .assign(ones=1)
                  .groupby('ones')[col]
-                 .agg(stats_dict)
+                 .agg([
+                     (key, func) for key, func in stats_dict.items()
+                 ])
                  .T
-                 .rename(columns={1.0: 'All trades'}))
+                 .rename(columns={1: '所有交易'}))
+    # print('stats_all: ', stats_all.head())
     stats_long_short = (round_trips
                         .groupby('long')[col]
-                        .agg(stats_dict)
+                        .agg([
+                            (key, func) for key, func in stats_dict.items()
+                        ])
                         .T
-                        .rename(columns={False: 'Short trades',
-                                         True: 'Long trades'}))
+                        .rename(columns={False: '做空交易',
+                                         True: '做多交易'}))
 
     return stats_all.join(stats_long_short)
 
@@ -118,6 +123,7 @@ def _groupby_consecutive(txn, max_delta=pd.Timedelta('8h')):
             transaction.amount.sum()
 
     out = []
+    # print('txn: ', txn.head())
     for _, t in txn.groupby('symbol'):
         t = t.sort_index()
         t.index.name = 'dt'
@@ -140,10 +146,12 @@ def _groupby_consecutive(txn, max_delta=pd.Timedelta('8h')):
         grouped = grouped_rest.join(grouped_price)
 
         out.append(grouped)
+    # print('out: ', out)
 
-    out = pd.concat(out)
-    out = out.set_index('dt')
-    return out
+    out1 = pd.concat(out)
+    # print('out1: ', out1)
+    out2 = out1.set_index('dt')
+    return out2
 
 
 def extract_round_trips(transactions,
@@ -195,17 +203,23 @@ def extract_round_trips(transactions,
         rt_returns are the returns in regards to the invested capital
         into that partiulcar round-trip.
     """
+    # print('transactions: ', transactions.head())
 
-    transactions = _groupby_consecutive(transactions)
+    transactions_consecutive = _groupby_consecutive(transactions)
     roundtrips = []
+    # print('transactions_consecutive: ', transactions_consecutive.head())
+    transactions_symbol = transactions_consecutive.groupby('symbol')
+    # print('transactions_symbol: ', transactions_symbol.head())
 
-    for sym, trans_sym in transactions.groupby('symbol'):
+    for sym, trans_sym in transactions_symbol:
         trans_sym = trans_sym.sort_index()
         price_stack = deque()
         dt_stack = deque()
         trans_sym['signed_price'] = trans_sym.price * \
             np.sign(trans_sym.amount)
         trans_sym['abs_amount'] = trans_sym.amount.abs().astype(int)
+        # print('trans_sym: ', trans_sym.head())
+
         for dt, t in trans_sym.iterrows():
             if t.price < 0:
                 warnings.warn('Negative price detected, ignoring for'
@@ -213,6 +227,7 @@ def extract_round_trips(transactions,
                 continue
 
             indiv_prices = [t.signed_price] * t.abs_amount
+
             if (len(price_stack) == 0) or \
                (copysign(1, price_stack[-1]) == copysign(1, t.amount)):
                 price_stack.extend(indiv_prices)
@@ -239,6 +254,8 @@ def extract_round_trips(transactions,
                         # Push additional stock-prices onto stack
                         price_stack.append(price)
                         dt_stack.append(dt)
+                # print('pnl: ', pnl)
+                # print('open_dt: ', cur_open_dts[0])
 
                 roundtrips.append({'pnl': pnl,
                                    'open_dt': cur_open_dts[0],
@@ -249,7 +266,7 @@ def extract_round_trips(transactions,
                                    })
 
     roundtrips = pd.DataFrame(roundtrips)
-
+    # print('roundtrips: ', roundtrips.head())
     roundtrips['duration'] = roundtrips['close_dt'].sub(roundtrips['open_dt'])
 
     if portfolio_value is not None:
@@ -294,31 +311,54 @@ def add_closing_transactions(positions, transactions):
     """
 
     closed_txns = transactions[['symbol', 'amount', 'price']]
+    # print('closed_txns: ', closed_txns.head())
 
     pos_at_end = positions.drop('cash', axis=1).iloc[-1]
+    # print('pos_at_end: ', pos_at_end.head())
+
     open_pos = pos_at_end.replace(0, np.nan).dropna()
+    # print('open_pos: ', open_pos.head())
     # Add closing round_trips one second after the close to be sure
     # they don't conflict with other round_trips executed at that time.
     end_dt = open_pos.name + pd.Timedelta(seconds=1)
+    # print('end_dt type: ', type(end_dt))
+    end_dt = pd.Timestamp(end_dt)
+    for sym_array, ending_val in open_pos.items():
+        sym = sym_array[0]
+        # print('sym: ', sym)
+        # print('ending_val: ', ending_val)
 
-    for sym, ending_val in open_pos.iteritems():
         txn_sym = transactions[transactions.symbol == sym]
-
+        # print('txn_sym: ', txn_sym)
         ending_amount = txn_sym.amount.sum()
+        # print('ending_amount: ', ending_amount)
 
         ending_price = ending_val / ending_amount
-        closing_txn = OrderedDict([
-            ('amount', -ending_amount),
-            ('price', ending_price),
-            ('symbol', sym),
-        ])
+        # print('ending_price: ', ending_price)
+        #closing_txn = OrderedDict([
+        #    ('amount', -ending_amount),
+        #    ('price', ending_price),
+        #    ('symbol', sym),
+        #])
+        closing_txn = pd.DataFrame({
+            'amount': [-ending_amount],
+            'price': [ending_price],
+            'symbol': [sym]
+        }, index=[end_dt])
+        # print('closing_txn: ', closing_txn)
+        # closing_txn = pd.DataFrame(closing_txn, index=[end_dt])
+        closed_txns1 = pd.concat([closed_txns, closing_txn])
+    # print('closed_txns1: ', closed_txns1.tail())
 
-        closing_txn = pd.DataFrame(closing_txn, index=[end_dt])
-        closed_txns = closed_txns.append(closing_txn)
+    #closed_txns = closed_txns[closed_txns.amount != 0]
+    # Check if closed_txns is empty before filtering
+    if not closed_txns.empty:
+        # Ensure amount is numeric and filter
+        closed_txns1['amount'] = pd.to_numeric(closed_txns1['amount'], errors='coerce')
+        closed_txns2 = closed_txns1[closed_txns1['amount'] != 0]
+    # print('closed_txns2: ', closed_txns2.head())
 
-    closed_txns = closed_txns[closed_txns.amount != 0]
-
-    return closed_txns
+    return closed_txns1
 
 
 def apply_sector_mappings_to_round_trips(round_trips, sector_mappings):
@@ -378,7 +418,9 @@ def gen_round_trip_stats(round_trips):
                                           RETURN_STATS)
 
     stats['symbols'] = \
-        round_trips.groupby('symbol')['returns'].agg(RETURN_STATS).T
+        round_trips.groupby('symbol')['returns'].agg([
+                    (key, func) for key, func in RETURN_STATS.items()
+                    ]).T
 
     return stats
 
@@ -401,14 +443,14 @@ def print_round_trip_stats(round_trips, hide_pos=False):
     stats = gen_round_trip_stats(round_trips)
 
     print_table(stats['summary'], float_format='{:.2f}'.format,
-                name='Summary stats')
-    print_table(stats['pnl'], float_format='${:.2f}'.format, name='PnL stats')
+                name='总览指标')
+    print_table(stats['pnl'], float_format='{:.2f}'.format, name='盈亏指标')
     print_table(stats['duration'], float_format='{:.2f}'.format,
-                name='Duration stats')
+                name='持有期指标')
     print_table(stats['returns'] * 100, float_format='{:.2f}%'.format,
-                name='Return stats')
+                name='收益指标')
 
     if not hide_pos:
         stats['symbols'].columns = stats['symbols'].columns.map(format_asset)
         print_table(stats['symbols'] * 100,
-                    float_format='{:.2f}%'.format, name='Symbol stats')
+                    float_format='{:.2f}%'.format, name='交易品种指标')

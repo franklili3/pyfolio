@@ -160,13 +160,17 @@ def adjust_returns_for_slippage(returns, positions, transactions,
     """
 
     slippage = 0.0001 * slippage_bps
+    #print('positions: ', positions.head())
     portfolio_value = positions.sum(axis=1)
+    #print('portfolio_value: ', portfolio_value.head())
+
     pnl = portfolio_value * returns
     traded_txn = get_txn_vol(transactions)
     #print('traded_txn: ', traded_txn.head())
     traded_value = traded_txn.txn_volume
     # 确保索引对齐
     slippage_dollars_df = traded_value.reindex(pnl.index, fill_value=0) * slippage
+    #print('slippage_dollars_df: ', slippage_dollars_df.head())
     # 确保 slippage_dollars 是 Series
     if isinstance(slippage_dollars_df, pd.DataFrame):
         slippage_dollars = slippage_dollars_df.squeeze()  # 将 DataFrame 转换为 Series
@@ -180,12 +184,15 @@ def adjust_returns_for_slippage(returns, positions, transactions,
     #slippage_dollars = traded_value * slippage
     #adjusted_pnl = pnl.add(-slippage_dollars, fill_value=0)
     adjusted_pnl = pnl - slippage_dollars
+    #print('adjusted_pnl: ', adjusted_pnl.head())
     adjusted_returns = returns * adjusted_pnl / pnl
+    adjusted_returns = adjusted_returns.fillna(0)
+    #print('adjusted_returns: ', adjusted_returns.head())
 
     return adjusted_returns
 
 
-def get_turnover(positions, transactions, denominator='AGB'):
+def get_turnover(positions, transactions, denominator='portfolio_value'):
     """
      - Value of purchases and sales divided
     by either the actual gross book or the portfolio value
@@ -221,13 +228,13 @@ def get_turnover(positions, transactions, denominator='AGB'):
     txn_vol = get_txn_vol(transactions)
     #print(txn_vol.head())  # Check the structure of the DataFrame
     traded_value = txn_vol.txn_volume
-
+    #print('traded_value: ', traded_value.head())
     if denominator == 'AGB':
         # Actual gross book is the same thing as the algo's GMV
         # We want our denom to be avg(AGB previous, AGB current)
         AGB = positions.drop('cash', axis=1).abs().sum(axis=1)
         denom = AGB.rolling(2).mean()
-
+        #print('denom: ', denom.head())
         # Since the first value of pd.rolling returns NaN, we
         # set our "day 0" AGB to 0.
         denom.iloc[0] = AGB.iloc[0] / 2
@@ -243,4 +250,5 @@ def get_turnover(positions, transactions, denominator='AGB'):
     denom.index = denom.index.normalize()
     turnover = traded_value.div(denom, axis='index')
     turnover = turnover.fillna(0)
+    turnover.name = '换手率'
     return turnover

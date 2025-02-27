@@ -172,8 +172,10 @@ def create_full_tear_sheet(returns,
     if (unadjusted_returns is None) and (slippage is not None) and\
        (transactions is not None):
         unadjusted_returns = returns.copy()
+        # print('unadjusted_returns: ', unadjusted_returns.head())
         returns = txn.adjust_returns_for_slippage(returns, positions,
                                                   transactions, slippage)
+        # print('adjusted_returns: ', returns.head())
 
     positions = utils.check_intraday(estimate_intraday, returns,
                                      positions, transactions)
@@ -561,7 +563,7 @@ def create_returns_tear_sheet(returns,
         ax=ax_returns,
     )
     ax_returns.set_title(
-        '收益率')
+        '日收益率')
 
     if benchmark_rets is not None:
         plotting.plot_rolling_beta(
@@ -569,19 +571,25 @@ def create_returns_tear_sheet(returns,
 
     plotting.plot_rolling_volatility(
         returns, factor_returns=benchmark_rets, ax=ax_rolling_volatility)
+    ax_rolling_volatility.set_title(
+        '6个月滚动波动率')
 
     plotting.plot_rolling_sharpe(
         returns, ax=ax_rolling_sharpe)
-
+    ax_rolling_sharpe.set_title(
+        '6个月滚动夏普比率')
     # Drawdowns
     plotting.plot_drawdown_periods(
         returns, top=5, ax=ax_drawdown)
 
     plotting.plot_drawdown_underwater(
         returns=returns, ax=ax_underwater)
-
+    ax_underwater.set_title(
+        '回撤比率')
     plotting.plot_monthly_returns_heatmap(returns, ax=ax_monthly_heatmap)
     plotting.plot_annual_returns(returns, ax=ax_annual_returns)
+    ax_annual_returns.set_title(
+        '年收益率')    
     plotting.plot_monthly_returns_dist(returns, ax=ax_monthly_dist)
 
     plotting.plot_return_quantiles(
@@ -762,7 +770,7 @@ def create_txn_tear_sheet(returns, positions, transactions,
     except ValueError:
         warnings.warn('Unable to generate turnover plot.', UserWarning)
 
-    plotting.plot_txn_time_hist(transactions, ax=ax_txn_timings)
+    #plotting.plot_txn_time_hist(transactions, ax=ax_txn_timings)
 
     if unadjusted_returns is not None:
         ax_slippage_sweep = plt.subplot(gs[4, :])
@@ -821,12 +829,15 @@ def create_round_trip_tear_sheet(returns, positions, transactions,
 
     transactions_closed = round_trips.add_closing_transactions(positions,
                                                                transactions)
+    # print('transactions_closed: ', transactions_closed.head())
+    portfolio_value = positions.sum(axis='columns') / (1 + returns)
+    # print('portfolio_value: ', portfolio_value.head())
     # extract_round_trips requires BoD portfolio_value
     trades = round_trips.extract_round_trips(
         transactions_closed,
-        portfolio_value=positions.sum(axis='columns') / (1 + returns)
+        portfolio_value=portfolio_value
     )
-
+    # print('trades: ', trades.head())
     if len(trades) < 5:
         warnings.warn(
             """Fewer than 5 round-trip trades made.
@@ -857,16 +868,18 @@ def create_round_trip_tear_sheet(returns, positions, transactions,
     plotting.plot_prob_profit_trade(trades, ax=ax_prob_profit_trade)
 
     trade_holding_times = [x.days for x in trades['duration']]
-    sns.distplot(trade_holding_times, kde=False, ax=ax_holding_time)
-    ax_holding_time.set(xlabel='Holding time in days')
+    sns.histplot(trade_holding_times, bins=30, ax=ax_holding_time)  # 使用 histplot
+    ax_holding_time.set(xlabel='持有天数的分布')
+    ax_holding_time.set(ylabel='笔数')
 
-    sns.distplot(trades.pnl, kde=False, ax=ax_pnl_per_round_trip_dollars)
-    ax_pnl_per_round_trip_dollars.set(xlabel='PnL per round-trip trade in $')
+    sns.histplot(trades.pnl, bins=30, ax=ax_pnl_per_round_trip_dollars)
+    ax_pnl_per_round_trip_dollars.set(xlabel='每笔交易净利润的分布')
+    ax_pnl_per_round_trip_dollars.set(ylabel='笔数')
 
-    sns.distplot(trades.returns.dropna() * 100, kde=False,
+    sns.histplot(trades.returns.dropna() * 100, bins=30,
                  ax=ax_pnl_per_round_trip_pct)
-    ax_pnl_per_round_trip_pct.set(
-        xlabel='Round-trip returns in %')
+    ax_pnl_per_round_trip_pct.set(xlabel='每笔交易收益率%的分布')
+    ax_pnl_per_round_trip_pct.set(ylabel='笔数')
 
     gs.tight_layout(fig)
 
@@ -917,7 +930,7 @@ def create_interesting_times_tear_sheet(returns, benchmark_rets=None,
 
     utils.print_table(pd.DataFrame(rets_interesting)
                       .describe().transpose()
-                      .loc[:, ['均值', '最小值', '最大值']] * 100,
+                      .loc[:, ['mean', 'min', 'max']] * 100,
                       name='压力测试',
                       float_format='{0:.2f}%'.format)
 
