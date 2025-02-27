@@ -81,11 +81,13 @@ def agg_all_long_short(round_trips, col, stats_dict):
                      (key, func) for key, func in stats_dict.items()
                  ])
                  .T
-                 .rename(columns={0: 'All trades'}))
+                 .rename(columns={1: 'All trades'}))
     print('stats_all: ', stats_all.head())
     stats_long_short = (round_trips
                         .groupby('long')[col]
-                        .agg(list(stats_dict.values()))
+                        .agg([
+                            (key, func) for key, func in stats_dict.items()
+                        ])
                         .T
                         .rename(columns={False: 'Short trades',
                                          True: 'Long trades'}))
