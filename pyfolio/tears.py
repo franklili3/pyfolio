@@ -172,10 +172,10 @@ def create_full_tear_sheet(returns,
     if (unadjusted_returns is None) and (slippage is not None) and\
        (transactions is not None):
         unadjusted_returns = returns.copy()
-        #print('unadjusted_returns: ', unadjusted_returns.head())
+        # print('unadjusted_returns: ', unadjusted_returns.head())
         returns = txn.adjust_returns_for_slippage(returns, positions,
                                                   transactions, slippage)
-        #print('adjusted_returns: ', returns.head())
+        # print('adjusted_returns: ', returns.head())
 
     positions = utils.check_intraday(estimate_intraday, returns,
                                      positions, transactions)
@@ -829,15 +829,15 @@ def create_round_trip_tear_sheet(returns, positions, transactions,
 
     transactions_closed = round_trips.add_closing_transactions(positions,
                                                                transactions)
-    #print('transactions_closed: ', transactions_closed.head())
+    # print('transactions_closed: ', transactions_closed.head())
     portfolio_value = positions.sum(axis='columns') / (1 + returns)
-    #print('portfolio_value: ', portfolio_value.head())
+    # print('portfolio_value: ', portfolio_value.head())
     # extract_round_trips requires BoD portfolio_value
     trades = round_trips.extract_round_trips(
         transactions_closed,
         portfolio_value=portfolio_value
     )
-    #print('trades: ', trades.head())
+    # print('trades: ', trades.head())
     if len(trades) < 5:
         warnings.warn(
             """Fewer than 5 round-trip trades made.

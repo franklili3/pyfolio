@@ -57,10 +57,10 @@ RETURN_STATS = OrderedDict(
      ])
 
 DURATION_STATS = OrderedDict(
-    [('平均持续时间', lambda x: x.mean()),
-     ('中位数持续时间', lambda x: x.median()),
-     ('最长持续时间', lambda x: x.max()),
-     ('最短持续时间', lambda x: x.min())
+    [('平均持续时间', lambda x: x.mean().days),
+     ('中位数持续时间', lambda x: x.median().days),
+     ('最长持续时间', lambda x: x.max().days),
+     ('最短持续时间', lambda x: x.min().days)
      #  FIXME: Instead of x.max() - x.min() this should be
      #  rts.close_dt.max() - rts.open_dt.min() which is not
      #  available here. As it would require a new approach here
@@ -82,7 +82,7 @@ def agg_all_long_short(round_trips, col, stats_dict):
                  ])
                  .T
                  .rename(columns={1: '所有交易'}))
-    print('stats_all: ', stats_all.head())
+    # print('stats_all: ', stats_all.head())
     stats_long_short = (round_trips
                         .groupby('long')[col]
                         .agg([
@@ -418,7 +418,9 @@ def gen_round_trip_stats(round_trips):
                                           RETURN_STATS)
 
     stats['symbols'] = \
-        round_trips.groupby('symbol')['returns'].agg(list(RETURN_STATS.values())).T
+        round_trips.groupby('symbol')['returns'].agg([
+                    (key, func) for key, func in RETURN_STATS.items()
+                    ]).T
 
     return stats
 
@@ -442,7 +444,7 @@ def print_round_trip_stats(round_trips, hide_pos=False):
 
     print_table(stats['summary'], float_format='{:.2f}'.format,
                 name='总览指标')
-    print_table(stats['pnl'], float_format='${:.2f}'.format, name='PnL stats')
+    print_table(stats['pnl'], float_format='{:.2f}'.format, name='盈亏指标')
     print_table(stats['duration'], float_format='{:.2f}'.format,
                 name='持有期指标')
     print_table(stats['returns'] * 100, float_format='{:.2f}%'.format,
@@ -451,4 +453,4 @@ def print_round_trip_stats(round_trips, hide_pos=False):
     if not hide_pos:
         stats['symbols'].columns = stats['symbols'].columns.map(format_asset)
         print_table(stats['symbols'] * 100,
-                    float_format='{:.2f}%'.format, name='Symbol stats')
+                    float_format='{:.2f}%'.format, name='交易品种指标')
