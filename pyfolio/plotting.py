@@ -2029,7 +2029,7 @@ def show_profit_attribution(round_trips):
 
     total_pnl = round_trips['pnl'].sum()
     pnl_attribution = round_trips.groupby('symbol')['pnl'].sum() / total_pnl
-    pnl_attribution.name = ''
+    pnl_attribution.name = '交易品种'
 
     pnl_attribution.index = pnl_attribution.index.map(utils.format_asset)
     utils.print_table(
@@ -2037,7 +2037,7 @@ def show_profit_attribution(round_trips):
             inplace=False,
             ascending=False,
         ),
-        name='Profitability (PnL / PnL total) per name',
+        name='每个交易品种的净利润占比(净利润/总净利润)',
         float_format='{:.2%}'.format,
     )
 

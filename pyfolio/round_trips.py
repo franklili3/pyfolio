@@ -57,10 +57,10 @@ RETURN_STATS = OrderedDict(
      ])
 
 DURATION_STATS = OrderedDict(
-    [('平均持续时间', lambda x: x.mean().days),
-     ('中位数持续时间', lambda x: x.median().days),
-     ('最长持续时间', lambda x: x.max().days),
-     ('最短持续时间', lambda x: x.min().days)
+    [('平均持续时间-天', lambda x: x.mean().days),
+     ('中位数持续时间-天', lambda x: x.median().days),
+     ('最长持续时间-天', lambda x: x.max().days),
+     ('最短持续时间-天', lambda x: x.min().days)
      #  FIXME: Instead of x.max() - x.min() this should be
      #  rts.close_dt.max() - rts.open_dt.min() which is not
      #  available here. As it would require a new approach here
