@@ -77,15 +77,15 @@ def agg_all_long_short(round_trips, col, stats_dict):
     stats_all = (round_trips
                  .assign(ones=1)
                  .groupby('ones')[col]
-                 .agg({
-                     'count': 'count',
-                     'percent_profitable': lambda x: (x > 0).mean(),
-                     'total_profit': 'sum',
-                     'gross_profit': lambda x: x[x > 0].sum(),
-                     'gross_loss': lambda x: x[x < 0].sum(),
-                     'number_of_winning_trades': lambda x: (x > 0).sum(),
-                     'number_of_losing_trades': lambda x: (x < 0).sum()
-                })
+                 .agg([
+                     ('count', 'count'),
+                     ('percent_profitable', lambda x: (x > 0).mean()),
+                     ('total_profit', 'sum'),
+                     ('gross_profit', lambda x: x[x > 0].sum()),
+                     ('gross_loss', lambda x: x[x < 0].sum()),
+                     ('number_of_winning_trades', lambda x: (x > 0).sum()),
+                     ('number_of_losing_trades', lambda x: (x < 0).sum())
+                ])
                  .T
                  .rename(columns={1.0: 'All trades'}))
     stats_long_short = (round_trips
