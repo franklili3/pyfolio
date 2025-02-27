@@ -868,16 +868,16 @@ def create_round_trip_tear_sheet(returns, positions, transactions,
     plotting.plot_prob_profit_trade(trades, ax=ax_prob_profit_trade)
 
     trade_holding_times = [x.days for x in trades['duration']]
-    sns.distplot(trade_holding_times, kde=False, ax=ax_holding_time)
-    ax_holding_time.set(xlabel='Holding time in days')
+    sns.histplot(trade_holding_times, bins=30, ax=ax_holding_time)  # 使用 histplot
+    ax_holding_time.set(xlabel='持有天数的分布')
 
     sns.distplot(trades.pnl, kde=False, ax=ax_pnl_per_round_trip_dollars)
-    ax_pnl_per_round_trip_dollars.set(xlabel='PnL per round-trip trade in $')
+    ax_pnl_per_round_trip_dollars.set(xlabel='每笔交易净利润的分布')
 
     sns.distplot(trades.returns.dropna() * 100, kde=False,
                  ax=ax_pnl_per_round_trip_pct)
     ax_pnl_per_round_trip_pct.set(
-        xlabel='Round-trip returns in %')
+        xlabel='每笔交易收益率%的分布')
 
     gs.tight_layout(fig)
 

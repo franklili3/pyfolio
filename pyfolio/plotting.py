@@ -2090,8 +2090,8 @@ def plot_prob_profit_trade(round_trips, ax=None):
     ax.axvline(lower_perc, color='0.5')
     ax.axvline(upper_perc, color='0.5')
 
-    ax.set_xlabel('Probability of making a profitable decision')
-    ax.set_ylabel('Belief')
+    ax.set_xlabel('盈利交易的概率')
+    ax.set_ylabel('概率')
     ax.set_xlim(lower_plot, upper_plot)
     ax.set_ylim((0, y.max() + 1.))
 
