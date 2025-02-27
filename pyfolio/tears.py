@@ -837,7 +837,7 @@ def create_round_trip_tear_sheet(returns, positions, transactions,
         transactions_closed,
         portfolio_value=portfolio_value
     )
-
+    print('trades: ', trades.head())
     if len(trades) < 5:
         warnings.warn(
             """Fewer than 5 round-trip trades made.
