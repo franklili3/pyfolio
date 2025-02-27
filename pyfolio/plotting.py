@@ -1977,11 +1977,22 @@ def plot_round_trip_lifetimes(round_trips, disp_amount=16, lsize=18, ax=None):
 
     if ax is None:
         ax = plt.subplot()
-
+    
     symbols_sample = round_trips.symbol.unique()
     np.random.seed(1)
+    '''
     sample = np.random.choice(round_trips.symbol.unique(), replace=False,
                               size=min(disp_amount, len(symbols_sample)))
+    ax.set_yticks(range(disp_amount))
+    ax.set_yticklabels([utils.format_asset(s) for s in sample])
+    '''
+    sample = round_trips['symbol'].unique()  # 获取唯一的交易符号
+    ax.set_yticks(range(len(sample)))  # 设置 y 轴刻度
+    ax.set_yticklabels([utils.format_asset(s) for s in sample])  # 设置 y 轴标签
+    # 确保刻度数量与标签数量一致
+    if len(sample) != len(ax.get_yticks()):
+        ax.set_yticklabels([utils.format_asset(s) for s in sample[:len(ax.get_yticks())]])
+
     sample_round_trips = round_trips[round_trips.symbol.isin(sample)]
 
     symbol_idx = pd.Series(np.arange(len(sample)), index=sample)
@@ -1994,8 +2005,6 @@ def plot_round_trip_lifetimes(round_trips, disp_amount=16, lsize=18, ax=None):
                     [y_ix, y_ix], color=c,
                     linewidth=lsize, solid_capstyle='butt')
 
-    ax.set_yticks(range(disp_amount))
-    ax.set_yticklabels([utils.format_asset(s) for s in sample])
 
     ax.set_ylim((-0.5, min(len(sample), disp_amount) - 0.5))
     blue = patches.Rectangle([0, 0], 1, 1, color='b', label='Long')
@@ -2029,7 +2038,7 @@ def show_profit_attribution(round_trips):
 
     total_pnl = round_trips['pnl'].sum()
     pnl_attribution = round_trips.groupby('symbol')['pnl'].sum() / total_pnl
-    pnl_attribution.name = '交易品种'
+    pnl_attribution.name = ''
 
     pnl_attribution.index = pnl_attribution.index.map(utils.format_asset)
     utils.print_table(
@@ -2037,7 +2046,7 @@ def show_profit_attribution(round_trips):
             inplace=False,
             ascending=False,
         ),
-        name='每个交易品种的净利润占比(净利润/总净利润)',
+        name='每个交易品种的净利润占比',
         float_format='{:.2%}'.format,
     )
 
