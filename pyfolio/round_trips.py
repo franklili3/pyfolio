@@ -338,9 +338,9 @@ def add_closing_transactions(positions, transactions):
         print('transactions 数据框的符号: ', transactions['symbol'].iloc[0,0])
         print('transactions 数据框的 symbol 列的数据类型: ', transactions['symbol'].dtypes)
         print('sym 的数据类型: ', type(sym))
-        transactions['symbol'] = transactions['symbol'].str.strip()  # 去除空格
-        transactions['symbol'] = transactions['symbol'].str.upper()  # 转换为大写
-        sym = sym.upper()  # 确保 sym 也是大写
+        transactions['symbol'] = transactions['symbol'].apply(lambda x: x.str.strip())  # 去除空格
+        transactions['symbol'] = transactions['symbol'].apply(lambda x: x.str.upper())  # 转换为大写
+        sym = str(sym).strip().upper()  # 去除空格并转换为大写
         print('筛选条件 sym: ', sym)
         # 在提取 txn_sym 之前，检查是否有与 sym 匹配的记录
         txn_sym = transactions[transactions['symbol'] == sym]
