@@ -334,6 +334,7 @@ def add_closing_transactions(positions, transactions):
         print('ending_val: ', ending_val)
         # 在提取交易符号之前，打印 transactions 的信息
         print('transactions 数据框的头部: ', transactions.head())
+        print('transactions symbol列 的头部: ', transactions['symbol'].head())
         print('transactions 数据框的符号: ', transactions['symbol'].iloc[0,0])
         print('transactions 数据框的 symbol 列的数据类型: ', transactions['symbol'].dtype)
         print('sym 的数据类型: ', type(sym))
