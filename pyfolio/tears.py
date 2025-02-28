@@ -823,6 +823,7 @@ def create_round_trip_tear_sheet(returns, positions, transactions,
     return_fig : boolean, optional
         If True, returns the figure that was plotted on.
     """
+    print('transactions_create_round_trip_tear_sheet: ', transactions.head())
 
     positions = utils.check_intraday(estimate_intraday, returns,
                                      positions, transactions)

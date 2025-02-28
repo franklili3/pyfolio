@@ -313,6 +313,7 @@ def add_closing_transactions(positions, transactions):
     closed_txns : pd.DataFrame
         Transactions with closing transactions appended.
     """
+    print('transactions_add_closing_transactions: ', transactions.head())
 
     closed_txns = transactions[['symbol', 'amount', 'price']]
     print('closed_txns: ', closed_txns.head())
