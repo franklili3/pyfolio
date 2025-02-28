@@ -336,7 +336,7 @@ def add_closing_transactions(positions, transactions):
         print('transactions 数据框的头部: ', transactions.head())
         print('transactions symbol列 的头部: ', transactions['symbol'].head())
         print('transactions 数据框的符号: ', transactions['symbol'].iloc[0,0])
-        print('transactions 数据框的 symbol 列的数据类型: ', transactions['symbol'].dtype)
+        print('transactions 数据框的 symbol 列的数据类型: ', transactions['symbol'].dtypes)
         print('sym 的数据类型: ', type(sym))
         transactions['symbol'] = transactions['symbol'].str.strip()  # 去除空格
         transactions['symbol'] = transactions['symbol'].str.upper()  # 转换为大写
