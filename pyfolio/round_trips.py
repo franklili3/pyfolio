@@ -332,7 +332,7 @@ def add_closing_transactions(positions, transactions):
         print('sym: ', sym)
         print('ending_val: ', ending_val)
 
-        txn_sym = transactions[transactions.symbol == sym]
+        txn_sym = transactions[transactions['symbol'] == sym]
         print('txn_sym: ', txn_sym)
         ending_amount = txn_sym.amount.sum()
         print('ending_amount: ', ending_amount)
