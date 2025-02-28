@@ -329,12 +329,22 @@ def add_closing_transactions(positions, transactions):
     print('end_dt type: ', type(end_dt))
     end_dt = pd.Timestamp(end_dt)
     for sym_array, ending_val in open_pos.items():
+        print('sym_array: ', sym_array)
         sym = sym_array[0]
         print('sym: ', sym)
         print('ending_val: ', ending_val)
+        # 在提取交易符号之前，打印 transactions 的信息
+        print('transactions 数据框的头部: ', transactions.head())
+        print('transactions 数据框的符号: ', transactions['symbol'].unique())
 
+        # 在提取 txn_sym 之前，检查是否有与 sym 匹配的记录
         txn_sym = transactions[transactions['symbol'] == sym]
-        print('txn_sym: ', txn_sym)
+        if txn_sym.empty:
+            print(f'没有找到与符号 {sym} 匹配的交易记录。')
+        else:
+            print('找到的交易记录: ', txn_sym)
+        # txn_sym = transactions[transactions['symbol'] == sym]
+        # print('txn_sym: ', txn_sym)
         ending_amount = txn_sym.amount.sum()
         print('ending_amount: ', ending_amount)
 
