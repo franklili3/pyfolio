@@ -203,13 +203,13 @@ def extract_round_trips(transactions,
         rt_returns are the returns in regards to the invested capital
         into that partiulcar round-trip.
     """
-    # print('transactions: ', transactions.head())
+    print('transactions: ', transactions.head())
 
     transactions_consecutive = _groupby_consecutive(transactions)
     roundtrips = []
-    # print('transactions_consecutive: ', transactions_consecutive.head())
+    print('transactions_consecutive: ', transactions_consecutive.head())
     transactions_symbol = transactions_consecutive.groupby('symbol')
-    # print('transactions_symbol: ', transactions_symbol.head())
+    print('transactions_symbol: ', transactions_symbol.head())
 
     for sym, trans_sym in transactions_symbol:
         trans_sym = trans_sym.sort_index()
@@ -218,7 +218,7 @@ def extract_round_trips(transactions,
         trans_sym['signed_price'] = trans_sym.price * \
             np.sign(trans_sym.amount)
         trans_sym['abs_amount'] = trans_sym.amount.abs().astype(int)
-        # print('trans_sym: ', trans_sym.head())
+        print('trans_sym: ', trans_sym.head())
 
         for dt, t in trans_sym.iterrows():
             if t.price < 0:
@@ -254,8 +254,12 @@ def extract_round_trips(transactions,
                         # Push additional stock-prices onto stack
                         price_stack.append(price)
                         dt_stack.append(dt)
-                # print('pnl: ', pnl)
-                # print('open_dt: ', cur_open_dts[0])
+                print('pnl: ', pnl)
+                print('open_dt: ', cur_open_dts[0])
+                print('close_dt: ', dt)
+                print('long: ', price < 0)
+                print('rt_returns: ', pnl / invested)
+                print('symbol: ', sym)
 
                 roundtrips.append({'pnl': pnl,
                                    'open_dt': cur_open_dts[0],
