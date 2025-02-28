@@ -335,7 +335,7 @@ def add_closing_transactions(positions, transactions):
         print('ending_val: ', ending_val)
         # 在提取交易符号之前，打印 transactions 的信息
         print('transactions 数据框的头部: ', transactions.head())
-        print('transactions 数据框的符号: ', transactions['symbol'].unique())
+        print('transactions 数据框的符号: ', transactions['symbol'].iloc[0,0])
 
         # 在提取 txn_sym 之前，检查是否有与 sym 匹配的记录
         txn_sym = transactions[transactions['symbol'] == sym]
