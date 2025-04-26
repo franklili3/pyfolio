@@ -823,9 +823,11 @@ def create_round_trip_tear_sheet(returns, positions, transactions,
     return_fig : boolean, optional
         If True, returns the figure that was plotted on.
     """
+    print('transactions_create_round_trip_tear_sheet: ', transactions.head())
 
     positions = utils.check_intraday(estimate_intraday, returns,
                                      positions, transactions)
+    print('positions_check_intraday: ', positions.head())
 
     transactions_closed = round_trips.add_closing_transactions(positions,
                                                                transactions)
@@ -931,7 +933,7 @@ def create_interesting_times_tear_sheet(returns, benchmark_rets=None,
     utils.print_table(pd.DataFrame(rets_interesting)
                       .describe().transpose()
                       .loc[:, ['mean', 'min', 'max']] * 100,
-                      name='压力测试',
+                      name='日收益率压力测试',
                       float_format='{0:.2f}%'.format)
 
     if benchmark_rets is not None:
@@ -956,11 +958,11 @@ def create_interesting_times_tear_sheet(returns, benchmark_rets=None,
         if benchmark_rets is not None:
             ep.cum_returns(bmark_interesting[name]).plot(
                 ax=ax, color='gray', label='基准', alpha=0.6)
-            ax.legend(['算法',
+            ax.legend(['策略',
                        '基准'],
                       loc=legend_loc, frameon=True, framealpha=0.5)
         else:
-            ax.legend(['算法'],
+            ax.legend(['策略'],
                       loc=legend_loc, frameon=True, framealpha=0.5)
 
         ax.set_title(name)

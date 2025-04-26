@@ -6,6 +6,9 @@
 		{
 			"name": "runipy",
 			"path": "../runipy"
+		},
+		{
+			"path": "../MoneyDoubleSignal"
 		}
 	],
 	"settings": {}

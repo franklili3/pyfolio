@@ -1643,7 +1643,7 @@ def plot_slippage_sweep(returns, positions, transactions,
 
     slippage_sweep.plot(alpha=1.0, lw=0.5, ax=ax)
 
-    ax.set_title('Cumulative returns given additional per-dollar slippage')
+    ax.set_title('增加每1美元交易的滑点成本对累计收益率的影响')
     ax.set_ylabel('')
 
     ax.legend(loc='center left', frameon=True, framealpha=0.5)
@@ -1690,10 +1690,10 @@ def plot_slippage_sensitivity(returns, positions, transactions,
 
     avg_returns_given_slippage.plot(alpha=1.0, lw=2, ax=ax)
 
-    ax.set_title('Average annual returns given additional per-dollar slippage')
+    ax.set_title('增加每1美元交易的滑点成本对年化收益率的影响')
     ax.set_xticks(np.arange(0, 100, 10))
-    ax.set_ylabel('Average annual return')
-    ax.set_xlabel('Per-dollar slippage (bps)')
+    ax.set_ylabel('年化收益率')
+    ax.set_xlabel('每1美元交易的滑点(bps)')
 
     return ax
 

@@ -204,11 +204,14 @@ def extract_round_trips(transactions,
         into that partiulcar round-trip.
     """
     print('transactions: ', transactions.head())
+    print('transactions: ', transactions.head())
 
     transactions_consecutive = _groupby_consecutive(transactions)
     roundtrips = []
     print('transactions_consecutive: ', transactions_consecutive.head())
+    print('transactions_consecutive: ', transactions_consecutive.head())
     transactions_symbol = transactions_consecutive.groupby('symbol')
+    print('transactions_symbol: ', transactions_symbol.head())
     print('transactions_symbol: ', transactions_symbol.head())
 
     for sym, trans_sym in transactions_symbol:
@@ -218,6 +221,7 @@ def extract_round_trips(transactions,
         trans_sym['signed_price'] = trans_sym.price * \
             np.sign(trans_sym.amount)
         trans_sym['abs_amount'] = trans_sym.amount.abs().astype(int)
+        print('trans_sym: ', trans_sym.head())
         print('trans_sym: ', trans_sym.head())
 
         for dt, t in trans_sym.iterrows():
@@ -309,32 +313,48 @@ def add_closing_transactions(positions, transactions):
     closed_txns : pd.DataFrame
         Transactions with closing transactions appended.
     """
+    print('transactions_add_closing_transactions: ', transactions.head())
 
     closed_txns = transactions[['symbol', 'amount', 'price']]
-    # print('closed_txns: ', closed_txns.head())
+    print('closed_txns: ', closed_txns.head())
 
     pos_at_end = positions.drop('cash', axis=1).iloc[-1]
-    # print('pos_at_end: ', pos_at_end.head())
+    print('pos_at_end: ', pos_at_end.head())
 
     open_pos = pos_at_end.replace(0, np.nan).dropna()
-    # print('open_pos: ', open_pos.head())
+    print('open_pos: ', open_pos.head())
     # Add closing round_trips one second after the close to be sure
     # they don't conflict with other round_trips executed at that time.
     end_dt = open_pos.name + pd.Timedelta(seconds=1)
-    # print('end_dt type: ', type(end_dt))
+    print('end_dt type: ', type(end_dt))
     end_dt = pd.Timestamp(end_dt)
     for sym_array, ending_val in open_pos.items():
+        print('sym_array: ', sym_array)
         sym = sym_array[0]
-        # print('sym: ', sym)
-        # print('ending_val: ', ending_val)
-
-        txn_sym = transactions[transactions.symbol == sym]
+        print('ending_val: ', ending_val)
+        # 在提取交易符号之前，打印 transactions 的信息
+        print('transactions 数据框的头部: ', transactions.head())
+        print('transactions symbol列 的头部: ', transactions['symbol'].head())
+        print('transactions 数据框的符号: ', transactions['symbol'].iloc[0,0])
+        print('transactions 数据框的 symbol 列的数据类型: ', transactions['symbol'].dtypes)
+        print('sym 的数据类型: ', type(sym))
+        transactions['symbol'] = transactions['symbol'].apply(lambda x: x.str.strip())  # 去除空格
+        transactions['symbol'] = transactions['symbol'].apply(lambda x: x.str.upper())  # 转换为大写
+        sym = str(sym).strip().upper()  # 去除空格并转换为大写
+        print('筛选条件 sym: ', sym)
+        # 在提取 txn_sym 之前，检查是否有与 sym 匹配的记录
+        txn_sym = transactions[transactions['symbol'] == sym]
+        if txn_sym.empty:
+            print(f'没有找到与符号 {sym} 匹配的交易记录。')
+        else:
+            print('找到的交易记录: ', txn_sym)
+        # txn_sym = transactions[transactions['symbol'] == sym]
         # print('txn_sym: ', txn_sym)
         ending_amount = txn_sym.amount.sum()
-        # print('ending_amount: ', ending_amount)
+        print('ending_amount: ', ending_amount)
 
         ending_price = ending_val / ending_amount
-        # print('ending_price: ', ending_price)
+        print('ending_price: ', ending_price)
         #closing_txn = OrderedDict([
         #    ('amount', -ending_amount),
         #    ('price', ending_price),
@@ -345,10 +365,10 @@ def add_closing_transactions(positions, transactions):
             'price': [ending_price],
             'symbol': [sym]
         }, index=[end_dt])
-        # print('closing_txn: ', closing_txn)
+        print('closing_txn: ', closing_txn)
         # closing_txn = pd.DataFrame(closing_txn, index=[end_dt])
         closed_txns1 = pd.concat([closed_txns, closing_txn])
-    # print('closed_txns1: ', closed_txns1.tail())
+    print('closed_txns1: ', closed_txns1.tail())
 
     #closed_txns = closed_txns[closed_txns.amount != 0]
     # Check if closed_txns is empty before filtering
@@ -356,7 +376,7 @@ def add_closing_transactions(positions, transactions):
         # Ensure amount is numeric and filter
         closed_txns1['amount'] = pd.to_numeric(closed_txns1['amount'], errors='coerce')
         closed_txns2 = closed_txns1[closed_txns1['amount'] != 0]
-    # print('closed_txns2: ', closed_txns2.head())
+    print('closed_txns1: ', closed_txns1.head())
 
     return closed_txns1
 
