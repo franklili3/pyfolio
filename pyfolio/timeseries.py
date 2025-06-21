@@ -943,7 +943,7 @@ def get_max_drawdown(returns):
     return get_max_drawdown_underwater(underwater)
 
 
-def get_top_drawdowns(returns, top=10):
+def get_top_drawdowns(returns, top=4):
     """
     Finds top drawdowns, sorted by drawdown amount.
 
@@ -986,7 +986,7 @@ def get_top_drawdowns(returns, top=10):
     return drawdowns
 
 
-def gen_drawdown_table(returns, top=10):
+def gen_drawdown_table(returns, top=4):
     """
     Places top drawdowns in a table.
 
